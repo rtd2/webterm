@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Terminal</title>
+	<link rel="stylesheet" href="css/pure.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+    	
+    </style>
+	<script src="js/scripts.js"></script>
+    <script>
+        var fs = {
+            home: {
+                rt: {
+                    desktop: {
+                        files: ["abc.txt", "urmum.txt"]
+                    },
+                    downloads: {},
+                    documents: {}
+                }
+            },
+            bin: {}
+        };
+        
+        var pwd = "~";
+        
+        window.addEventListener("keyup", function(e){
+            var commands = document.getElementById("command");
+            var command = commands.value;
+            var len = command.length;
+            
+            if (len > 0) {
+                commands.size = len + 1;
+            } else {
+                commands.size = 1;
+            }
+            
+            if (e.keyCode === 13) {
+                var history = document.getElementById("history");
+                switch(command.toLowerCase()){
+                        
+                    case "help":
+                        history.innerHTML += "<p>WebTerm:" + pwd + " " + "rt$  " + command + "</p>";
+                        commands.size = 1;
+                        break;
+                        
+                    case "cd /home/rt/desktop":
+                        history.innerHTML += "<p>WebTerm:" + pwd + " " + "rt$  " + command + "</p>";
+                        pwd = "/home/rt/desktop";
+                        commands.size = 1;
+                        break;
+                        
+                    case "pwd":
+                        history.innerHTML += "<p>WebTerm:" + pwd + " " + "rt$  " + command + "</p>";
+                        history.innerHTML += "<p>/home/rt</p>";
+                        commands.size = 1;
+                        break;
+                        
+                    case "ll":
+                        history.innerHTML += "<p>WebTerm:" + pwd + " " + "rt$  " + command + "</p>";
+                        commands.size = 1;
+                        break;
+                        
+                    case "clear":
+                        history.innerHTML = "";
+                        commands.size = 1;
+                        break;
+                        
+                    case "youtube":
+                        window.open('http://www.youtube.com','_blank');
+                        history.innerHTML += "<p>WebTerm:" + pwd + " " + "rt$  " + command + "</p>";
+                        commands.size = 1;
+                        break;
+                        
+                    case "youtube -s":
+                        var base = "https://www.youtube.com/results?search_query=";
+                        var term = window.prompt("What to search?");
+                        if (term === "") {
+                            
+                        } else {
+                            var url = base + term;
+                            window.open(url, '_blank');
+                        }
+                        history.innerHTML += "<p>WebTerm:" + pwd + " " + "rt$  " + command + "</p>";
+                        commands.size = 1;
+                        break;
+                        
+                }
+                commands.value = "";
+                commands.size = 1;
+            }
+	}, false);
+    </script>
+</head>
+<body>
+	<div class="pure-g">
+		<div class="pure-u-1">
+            <div id="history"></div>
+			<p style="display: inline;" id="block">WebTerm:~ rt$  </p><input id="command" size="1" autofocus="autofocus">
+		</div>
+	</div>
+	
+</body>
+</html>
+
+<!--http://www.dynamicdrive.com/forums/showthread.php?17450-Emulating-a-terminal-like-caret-with-javascript-and-css-->

@@ -1,0 +1,20 @@
+@font-face {
+    font-family: oldconsole;
+    src: url('../fonts/clacon.ttf');
+}
+
+body { background: #2E312C; }
+p { color: #9DCE91; font-size: 30px; font-family: 'oldconsole'; margin: 0px;}
+textarea, input {
+    background: #2E312C;
+    border: 0px;
+    color: #9DCE91;
+    font-family: 'oldconsole';
+    font-size: 30px;
+    background-image: url(../images/block.png);
+    background-repeat: no-repeat;
+    background-position: 100% 0%;
+    cursor: none;
+}
+textarea:focus, input:focus{ outline: 0; }
+#block {  }
