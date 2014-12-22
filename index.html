@@ -17,14 +17,16 @@
                     desktop: {
                         files: ["abc.txt", "urmum.txt"]
                     },
-                    downloads: {},
+                    downloads: {
+                        files: ["example.txt", "document.txt", "another.txt"]
+                    },
                     documents: {}
                 }
             },
             bin: {}
         };
         
-        var pwd = "~";
+        var pwd = ["~", fs.home.rt, "/home/rt"];
         
         window.addEventListener("keyup", function(e){
             var commands = document.getElementById("command");
@@ -42,24 +44,38 @@
                 switch(command.toLowerCase()){
                         
                     case "help":
-                        history.innerHTML += "<p>WebTerm:" + pwd + " " + "rt$  " + command + "</p>";
+                        history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
                         commands.size = 1;
                         break;
                         
                     case "cd /home/rt/desktop":
-                        history.innerHTML += "<p>WebTerm:" + pwd + " " + "rt$  " + command + "</p>";
-                        pwd = "/home/rt/desktop";
+                        history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
+                        pwd = ["/home/rt/desktop", fs.home.rt.desktop, "/home/rt/desktop"]; //display, dot notation, pwd display
+                        document.getElementById("block").innerHTML = "WebTerm:" + pwd[0] + " rt$ "  
+                        commands.size = 1;
+                        break;
+                        
+                    case "mkdir":
+                        history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
+                        var length = pwd[1].files.length;
+                        var name = window.prompt("What is the folder called?");
+                        pwd[1].files[length] = name;
                         commands.size = 1;
                         break;
                         
                     case "pwd":
-                        history.innerHTML += "<p>WebTerm:" + pwd + " " + "rt$  " + command + "</p>";
-                        history.innerHTML += "<p>/home/rt</p>";
+                        history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
+                        history.innerHTML += "<p>" + pwd[2] + "</p>";
                         commands.size = 1;
                         break;
                         
                     case "ll":
-                        history.innerHTML += "<p>WebTerm:" + pwd + " " + "rt$  " + command + "</p>";
+                        var list = "";
+                        for (var i = 0; i < pwd[1].files.length; i++) {
+                            list += "<p style='color: white'>" + pwd[1].files[i] + "</p>";
+                        }
+                        history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
+                        history.innerHTML += "<p>" + list + "</p>";
                         commands.size = 1;
                         break;
                         
@@ -70,7 +86,7 @@
                         
                     case "youtube":
                         window.open('http://www.youtube.com','_blank');
-                        history.innerHTML += "<p>WebTerm:" + pwd + " " + "rt$  " + command + "</p>";
+                        history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
                         commands.size = 1;
                         break;
                         
@@ -83,7 +99,7 @@
                             var url = base + term;
                             window.open(url, '_blank');
                         }
-                        history.innerHTML += "<p>WebTerm:" + pwd + " " + "rt$  " + command + "</p>";
+                        history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
                         commands.size = 1;
                         break;
                         
@@ -98,7 +114,7 @@
 	<div class="pure-g">
 		<div class="pure-u-1">
             <div id="history"></div>
-			<p style="display: inline;" id="block">WebTerm:~ rt$  </p><input id="command" size="1" autofocus="autofocus">
+			<p id="block">WebTerm:~ rt$  </p><input id="command" size="1" autofocus="autofocus">
 		</div>
 	</div>
 	
