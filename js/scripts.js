@@ -1,39 +1,84 @@
+// virtual filesystem
 var fs = {
-            home: {
-                rt: {
-                    desktop: {
-                        files: ["abc.txt", "urmum.txt"]
-                    },
-                    downloads: {
-                        files: ["example.txt", "document.txt", "another.txt"]
-                    },
-                    documents: {}
-                }
+    home: {
+        rt: {
+            desktop: {
+                files: ["abc.txt", "urmum.txt"]
             },
-            bin: {}
-        };
-        
-var pwd = ["~", fs.home.rt, "/home/rt"];
+            downloads: {
+                files: ["example.txt", "document.txt", "another.txt"]
+            },
+            documents: {}
+        }
+    },
+    bin: {}
+};
+
+var pwd = ["~", fs.home.rt, "/home/rt"]; // display, dot notation, cd display
+var commands = document.getElementById("command");
+
+
+var hist = [];
+var histindex = 0;
+var count = 0;
 
 window.addEventListener("keyup", checkCommand, false);
 
 function checkCommand(e) {
 
-    var commands = document.getElementById("command");
-    var command = commands.value;
+    var command = commands.value.toLowerCase();
     var len = command.length;
+    var history = document.getElementById("history");
     var commandArgs = command.split(" ");
-    console.log(commandArgs);
-    
+
     if (len > 0) {
+
         commands.size = len + 1;
+
     } else {
+
         commands.size = 1;
     }
-    
-    if (e.keyCode === 13) {
 
-        var history = document.getElementById("history");
+    // terminal history
+    // up key
+    if (e.keyCode === 38) {
+
+        if (count === 0) {
+
+            histindex = hist.length;
+
+        }
+
+        if (count <= hist.length - 1) {
+
+            histindex--;
+            commands.size = hist[histindex].length + 1;
+            commands.value = hist[histindex];
+            count++;
+        }
+
+    }
+
+    // down key
+    if (e.keyCode === 40) {
+
+        if (count !== 1) {
+
+            histindex = histindex + 1;
+            commands.size = hist[histindex].length + 1;
+            commands.value = hist[histindex];
+            count--;
+
+        } else {
+            commands.value = "";
+            commands.size = 1;
+        }
+
+    }
+
+    // enter key
+    if (e.keyCode === 13) {
 
         if (commandArgs.length > 2) {
 
@@ -48,85 +93,104 @@ function checkCommand(e) {
                 }
 
                 term = term.slice(0,-3);
-                console.log(term);
 
-                if (term === "") {
-                    
-                } else {
+                if (term !== "") {
                     var url = base + term;
                     window.open(url, '_blank');
                 }
                 history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
-                commands.size = 1;
+
+                hist.push(command);
+                count = 0;
+
                 break;
             }
 
         }   else {
-                
-                switch(command.toLowerCase()){
-                
+
+                switch(command){
+
                 case "help":
                     history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
-                    commands.size = 1;
+
+                    // display help
+
+                    // terminal history
+                    hist.push(command);
+                    count = 0;
+
                     break;
-                    
+
                 case "cd /home/rt/desktop":
                     history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
-                    pwd = ["/home/rt/desktop", fs.home.rt.desktop, "/home/rt/desktop"]; //display, dot notation, pwd display
+
+                    pwd = ["/home/rt/desktop", fs.home.rt.desktop, "/home/rt/desktop"];
                     document.getElementById("block").innerHTML = "WebTerm:" + pwd[0] + " rt$ "  
-                    commands.size = 1;
+
+                    hist.push(command);
+                    count = 0;
+
                     break;
-                    
+
                 case "mkdir":
                     history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
+
                     var length = pwd[1].files.length;
                     var name = window.prompt("What is the folder called?");
                     pwd[1].files[length] = name;
-                    commands.size = 1;
+
+                    hist.push(command);
+                    count = 0;
+
                     break;
-                    
+
                 case "pwd":
                     history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
+
                     history.innerHTML += "<p>" + pwd[2] + "</p>";
-                    commands.size = 1;
+
+                    hist.push(command);
+                    count = 0;
+
                     break;
-                    
+
                 case "ll":
                     var list = "";
                     for (var i = 0; i < pwd[1].files.length; i++) {
                         list += "<p style='color: white'>" + pwd[1].files[i] + "</p>";
                     }
                     history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
+
                     history.innerHTML += "<p>" + list + "</p>";
-                    commands.size = 1;
+
+                    hist.push(command);
+                    count = 0;
+
                     break;
-                    
+
                 case "clear":
                     history.innerHTML = "";
-                    commands.size = 1;
+
+                    hist.push(command);
+                    count = 0;
+
                     break;
-                    
+
                 case "youtube":
+                    history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
+
                     window.open('http://www.youtube.com','_blank');
-                    history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
-                    commands.size = 1;
+
+                    hist.push(command);
+                    count = 0;
+
                     break;
-                    
-                case "youtube -s":
-                    var base = "https://www.youtube.com/results?search_query=";
-                    var term = window.prompt("What to search?");
-                    if (term === "") {
-                        
-                    } else {
-                        var url = base + term;
-                        window.open(url, '_blank');
-                    }
-                    history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
-                    commands.size = 1;
-                    break;
+
             }
-        }   
+        }
+
         commands.value = "";
         commands.size = 1; 
-    }
-}
+    } // enter key
+
+} // checkCommand
