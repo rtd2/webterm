@@ -65,7 +65,7 @@ function checkCommand(e) {
 
         if (count !== 1) {
 
-            histindex = histindex + 1;
+            histindex++
             commands.size = hist[histindex].length + 1;
             commands.value = hist[histindex];
             count--;
