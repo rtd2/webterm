@@ -73,6 +73,7 @@ function checkCommand(e) {
         } else {
             commands.value = "";
             commands.size = 1;
+            count = 0;
         }
 
     }
