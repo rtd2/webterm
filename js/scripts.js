@@ -101,7 +101,7 @@ function checkCommand(e) {
                 }
                 history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
 
-                hist.push(command);
+                addToHistory(command);
                 count = 0;
 
                 break;
@@ -117,7 +117,7 @@ function checkCommand(e) {
                     // display help
 
                     // terminal history
-                    hist.push(command);
+                    addToHistory(command);
                     count = 0;
 
                     break;
@@ -128,7 +128,7 @@ function checkCommand(e) {
                     pwd = ["/home/rt/desktop", fs.home.rt.desktop, "/home/rt/desktop"];
                     document.getElementById("block").innerHTML = "WebTerm:" + pwd[0] + " rt$ "  
 
-                    hist.push(command);
+                    addToHistory(command);
                     count = 0;
 
                     break;
@@ -140,7 +140,7 @@ function checkCommand(e) {
                     var name = window.prompt("What is the folder called?");
                     pwd[1].files[length] = name;
 
-                    hist.push(command);
+                    addToHistory(command);
                     count = 0;
 
                     break;
@@ -150,7 +150,7 @@ function checkCommand(e) {
 
                     history.innerHTML += "<p>" + pwd[2] + "</p>";
 
-                    hist.push(command);
+                    addToHistory(command);
                     count = 0;
 
                     break;
@@ -164,7 +164,7 @@ function checkCommand(e) {
 
                     history.innerHTML += "<p>" + list + "</p>";
 
-                    hist.push(command);
+                    addToHistory(command);
                     count = 0;
 
                     break;
@@ -172,7 +172,7 @@ function checkCommand(e) {
                 case "clear":
                     history.innerHTML = "";
 
-                    hist.push(command);
+                    addToHistory(command);
                     count = 0;
 
                     break;
@@ -182,7 +182,7 @@ function checkCommand(e) {
 
                     window.open('http://www.youtube.com','_blank');
 
-                    hist.push(command);
+                    addToHistory(command);
                     count = 0;
 
                     break;
@@ -195,3 +195,11 @@ function checkCommand(e) {
     } // enter key
 
 } // checkCommand
+
+
+function addToHistory(command) {
+    var lastHistItem = hist.slice(-1);
+    if(lastHistItem != command){
+        hist.push(command);
+    }
+}
