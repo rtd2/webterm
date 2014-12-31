@@ -65,7 +65,7 @@ function checkCommand(e) {
 
         if (count !== 1) {
 
-            histindex++
+            histindex++;
             commands.size = hist[histindex].length + 1;
             commands.value = hist[histindex];
             count--;
@@ -198,8 +198,7 @@ function checkCommand(e) {
 
 
 function addToHistory(command) {
-    var lastHistItem = hist.slice(-1);
-    if(lastHistItem != command){
+    if(hist.slice(-1) != command){
         hist.push(command);
     }
 }
