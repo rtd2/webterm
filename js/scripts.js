@@ -8,13 +8,15 @@ var fs = {
             downloads: {
                 files: ["example.txt", "document.txt", "another.txt"]
             },
-            documents: {}
+            documents: {
+                files: []
+            }
         }
     },
     bin: {}
 };
 
-var helpList = ["help", "youtube", "youtube -s", "pwd", "mkdir", "ll", "cd /home/rt/desktop", "clear"];
+var helpList = ["help", "youtube", "youtube -s", "pwd", "mkdir", "mkdir called", "touch", "touch called", "ll", "cd /home/rt/desktop", "clear"];
 
 var pwd = ["~", fs.home.rt, "/home/rt"]; // display, dot notation, cd display
 var commands = document.getElementById("command");
@@ -88,7 +90,8 @@ function checkCommand(e) {
 
             switch(commandArgs[0] + " " + commandArgs[1]){
 
-            case "youtube -s":
+            case "youtube -s": // search youtube with argument passed in
+
                 var base = "https://www.youtube.com/results?search_query=";
                 var term = "";
 
@@ -108,7 +111,7 @@ function checkCommand(e) {
 
                 break;
 
-            case "mkdir called":
+            case "mkdir called": // if folder doesn't exist, create it and add to fs
 
                     var folderName = commandArgs.slice(2).join(" ");
 
@@ -125,13 +128,33 @@ function checkCommand(e) {
                     count = 0;
 
                     break;
+
+            case "touch called": // if file doesn't exist, create it and add to documents folder
+
+                    var fileName = commandArgs.slice(2).join(" ");
+
+                    var docs = pwd[1].documents.files;
+                    if (docs.indexOf(fileName) != -1) {
+                        history.innerHTML += webtermHTML;
+                        history.innerHTML += "<p>File called " + fileName + " already exists.</p>";
+                    } else {
+                        docs.push(fileName);
+                        history.innerHTML += webtermHTML;
+                        history.innerHTML += "<p>File called " + fileName + " successfully created.</p>";
+                    }
+
+                    addToHistory(command);
+                    count = 0;
+
+                    break;        
             } //switch
 
         }   else {
 
                 switch(command){
 
-                case "help":
+                case "help": // show list of commands
+
                     history.innerHTML += webtermHTML;
                     var displayCommands = "";
                     // display help
@@ -147,7 +170,8 @@ function checkCommand(e) {
 
                     break;
 
-                case "cd /home/rt/desktop":
+                case "cd /home/rt/desktop": // fake cd functionality
+
                     history.innerHTML += webtermHTML;
 
                     pwd = ["/home/rt/desktop", fs.home.rt.desktop, "/home/rt/desktop"];
@@ -158,7 +182,7 @@ function checkCommand(e) {
 
                     break;
 
-                case "mkdir":
+                case "mkdir": // if folder doesn't exist, create it and add to fs
 
                     var folderName = window.prompt("What will the folder be called?");
 
@@ -176,7 +200,26 @@ function checkCommand(e) {
 
                     break;
 
-                case "pwd":
+                case "touch": // if file doesn't exist, create it and add to documents folder
+
+                    var fileName = window.prompt("What will the file be called?");
+                    var docs = pwd[1].documents.files;
+                    if (docs.indexOf(fileName) != -1) {
+                        history.innerHTML += webtermHTML;
+                        history.innerHTML += "<p>File called " + fileName + " already exists.</p>";
+                    } else {
+                        docs.push(fileName);
+                        history.innerHTML += webtermHTML;
+                        history.innerHTML += "<p>File called " + fileName + " successfully created.</p>";
+                    }
+
+                    addToHistory(command);
+                    count = 0;
+
+                    break;
+
+                case "pwd": // show present working directory
+
                     history.innerHTML += webtermHTML;
 
                     history.innerHTML += "<p>" + pwd[2] + "</p>";
@@ -186,11 +229,22 @@ function checkCommand(e) {
 
                     break;
 
-                case "ll":
+                case "ll": // show all files in fs/home/rt
+
                     var list = "";
-                    for (var i = 0; i < pwd[1].files.length; i++) {
-                        list += "<p style='color: white'>" + pwd[1].files[i] + "</p>";
+
+                    // loop through objects in fs to show files
+                    for (var key in pwd[1]) {
+                       var obj = pwd[1][key];
+                       for (var prop in obj) {
+                          // important check that this is objects own property 
+                          // not from prototype prop inherited
+                          if(obj.hasOwnProperty(prop) && obj[prop].length > 0){
+                            list += "<p class='file'>" + key + " = " + obj[prop] + "</p>";
+                          } else {list += "<p class='file'>" + key + " = empty</p>";}
+                       }
                     }
+
                     history.innerHTML += webtermHTML;
 
                     history.innerHTML += "<p>" + list + "</p>";
@@ -200,7 +254,8 @@ function checkCommand(e) {
 
                     break;
 
-                case "clear":
+                case "clear": //clear page
+
                     history.innerHTML = "";
 
                     addToHistory(command);
@@ -208,7 +263,8 @@ function checkCommand(e) {
 
                     break;
 
-                case "youtube":
+                case "youtube": // open youtube in new tab
+
                     history.innerHTML += webtermHTML;
 
                     window.open('http://www.youtube.com','_blank');
