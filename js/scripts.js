@@ -24,7 +24,7 @@ var hist = [];
 var histindex = 0;
 var count = 0;
 
-window.addEventListener("keyup", checkCommand, false);
+commands.addEventListener("keyup", checkCommand, false);
 
 function checkCommand(e) {
 
@@ -107,13 +107,31 @@ function checkCommand(e) {
                 count = 0;
 
                 break;
-            }
+
+            case "mkdir called":
+
+                    var folderName = commandArgs.slice(2).join(" ");
+
+                    if (pwd[1].hasOwnProperty(folderName)) {
+                        history.innerHTML = "<p>Folder already exists.</p>";
+                        history.innerHTML += webtermHTML;
+                    } else {
+                        pwd[1][folderName] = {files: []};
+                        history.innerHTML = "<p>" + folderName + " successfully created.</p>";
+                    }
+
+                    addToHistory(command);
+                    count = 0;
+
+                    break;
+            } //switch
 
         }   else {
 
                 switch(command){
 
                 case "help":
+                    history.innerHTML += webtermHTML;
                     var displayCommands = "";
                     // display help
                     for (var i = 0; i < helpList.length; i++) {
@@ -121,7 +139,6 @@ function checkCommand(e) {
                     }
 
                     history.innerHTML += displayCommands;
-                    history.innerHTML += webtermHTML;
 
                     // terminal history
                     addToHistory(command);
@@ -142,11 +159,16 @@ function checkCommand(e) {
 
                 case "mkdir":
 
-                    history.innerHTML += webtermHTML;
-                    var length = pwd[1].files.length;
-                    var name = window.prompt("What is the folder called?");
-                    pwd[1].files[length] = name;
-                    
+                    var folderName = window.prompt("What will the folder be called?");
+
+                    if (pwd[1].hasOwnProperty(folderName)) {
+                        history.innerHTML = "<p>Folder already exists.</p>";
+                        history.innerHTML += webtermHTML;
+                    } else {
+                        pwd[1][folderName] = {files: []};
+                        history.innerHTML = "<p>" + folderName + " successfully created.</p>";
+                    }
+
                     addToHistory(command);
                     count = 0;
 
