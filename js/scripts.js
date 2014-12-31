@@ -29,6 +29,7 @@ function checkCommand(e) {
     var command = commands.value.toLowerCase();
     var len = command.length;
     var history = document.getElementById("history");
+    var webtermHTML = "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
     var commandArgs = command.split(" ");
 
     if (len > 0) {
@@ -99,8 +100,7 @@ function checkCommand(e) {
                     var url = base + term;
                     window.open(url, '_blank');
                 }
-                history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
-
+                history.innerHTML += webtermHTML;
                 addToHistory(command);
                 count = 0;
 
@@ -112,7 +112,7 @@ function checkCommand(e) {
                 switch(command){
 
                 case "help":
-                    history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
+                    history.innerHTML += webtermHTML;
 
                     // display help
 
@@ -123,10 +123,10 @@ function checkCommand(e) {
                     break;
 
                 case "cd /home/rt/desktop":
-                    history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
+                    history.innerHTML += webtermHTML;
 
                     pwd = ["/home/rt/desktop", fs.home.rt.desktop, "/home/rt/desktop"];
-                    document.getElementById("block").innerHTML = "WebTerm:" + pwd[0] + " rt$ "  
+                    document.getElementById("block").innerHTML = "WebTerm:" + pwd[0] + " rt$ ";
 
                     addToHistory(command);
                     count = 0;
@@ -134,7 +134,7 @@ function checkCommand(e) {
                     break;
 
                 case "mkdir":
-                    history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
+                    history.innerHTML += webtermHTML;
 
                     var length = pwd[1].files.length;
                     var name = window.prompt("What is the folder called?");
@@ -146,7 +146,7 @@ function checkCommand(e) {
                     break;
 
                 case "pwd":
-                    history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
+                    history.innerHTML += webtermHTML;
 
                     history.innerHTML += "<p>" + pwd[2] + "</p>";
 
@@ -160,7 +160,7 @@ function checkCommand(e) {
                     for (var i = 0; i < pwd[1].files.length; i++) {
                         list += "<p style='color: white'>" + pwd[1].files[i] + "</p>";
                     }
-                    history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
+                    history.innerHTML += webtermHTML;
 
                     history.innerHTML += "<p>" + list + "</p>";
 
@@ -178,7 +178,7 @@ function checkCommand(e) {
                     break;
 
                 case "youtube":
-                    history.innerHTML += "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
+                    history.innerHTML += webtermHTML;
 
                     window.open('http://www.youtube.com','_blank');
 
