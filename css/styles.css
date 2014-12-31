@@ -18,3 +18,7 @@ textarea, input {
 }
 textarea:focus, input:focus{ outline: 0; }
 #block { display: inline; }
+
+.file {
+    color: white;
+}
