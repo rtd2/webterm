@@ -113,11 +113,12 @@ function checkCommand(e) {
                     var folderName = commandArgs.slice(2).join(" ");
 
                     if (pwd[1].hasOwnProperty(folderName)) {
-                        history.innerHTML = "<p>Folder already exists.</p>";
                         history.innerHTML += webtermHTML;
+                        history.innerHTML += "<p>Folder called " + folderName + " already exists.</p>";
                     } else {
                         pwd[1][folderName] = {files: []};
-                        history.innerHTML = "<p>" + folderName + " successfully created.</p>";
+                        history.innerHTML += webtermHTML;
+                        history.innerHTML += "<p>Folder called " + folderName + " successfully created.</p>";
                     }
 
                     addToHistory(command);
@@ -162,11 +163,12 @@ function checkCommand(e) {
                     var folderName = window.prompt("What will the folder be called?");
 
                     if (pwd[1].hasOwnProperty(folderName)) {
-                        history.innerHTML = "<p>Folder already exists.</p>";
                         history.innerHTML += webtermHTML;
+                        history.innerHTML += "<p>Folder called " + folderName + " already exists.</p>";
                     } else {
                         pwd[1][folderName] = {files: []};
-                        history.innerHTML = "<p>" + folderName + " successfully created.</p>";
+                        history.innerHTML += webtermHTML;
+                        history.innerHTML += "<p>Folder called " + folderName + " successfully created.</p>";
                     }
 
                     addToHistory(command);
