@@ -138,7 +138,7 @@ function checkCommand(e) {
                         history.innerHTML += webtermHTML;
                         history.innerHTML += "<p>File called " + fileName + " already exists.</p>";
                     } else {
-                        docs.push(fileName);
+                        docs.push(fileName + ".txt");
                         history.innerHTML += webtermHTML;
                         history.innerHTML += "<p>File called " + fileName + " successfully created.</p>";
                     }
@@ -208,7 +208,7 @@ function checkCommand(e) {
                         history.innerHTML += webtermHTML;
                         history.innerHTML += "<p>File called " + fileName + " already exists.</p>";
                     } else {
-                        docs.push(fileName);
+                        docs.push(fileName + ".txt");
                         history.innerHTML += webtermHTML;
                         history.innerHTML += "<p>File called " + fileName + " successfully created.</p>";
                     }
