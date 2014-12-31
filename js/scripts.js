@@ -14,6 +14,8 @@ var fs = {
     bin: {}
 };
 
+var helpList = ["help", "youtube", "youtube -s", "pwd", "mkdir", "ll", "cd /home/rt/desktop", "clear"];
+
 var pwd = ["~", fs.home.rt, "/home/rt"]; // display, dot notation, cd display
 var commands = document.getElementById("command");
 
@@ -112,9 +114,14 @@ function checkCommand(e) {
                 switch(command){
 
                 case "help":
-                    history.innerHTML += webtermHTML;
-
+                    var displayCommands = "";
                     // display help
+                    for (var i = 0; i < helpList.length; i++) {
+                        displayCommands += "<p>" + helpList[i] + "</p>";
+                    }
+
+                    history.innerHTML += displayCommands;
+                    history.innerHTML += webtermHTML;
 
                     // terminal history
                     addToHistory(command);
@@ -134,12 +141,12 @@ function checkCommand(e) {
                     break;
 
                 case "mkdir":
-                    history.innerHTML += webtermHTML;
 
+                    history.innerHTML += webtermHTML;
                     var length = pwd[1].files.length;
                     var name = window.prompt("What is the folder called?");
                     pwd[1].files[length] = name;
-
+                    
                     addToHistory(command);
                     count = 0;
 
@@ -187,6 +194,8 @@ function checkCommand(e) {
 
                     break;
 
+                default:
+                    history.innerHTML = "<p>No such command exists. Type 'help' for a list of commands.</p>";
             }
         }
 
