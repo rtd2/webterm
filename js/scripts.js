@@ -68,11 +68,12 @@ function checkCommand(e) {
     // down key
     if (e.keyCode === 40) {
 
-        if (count !== 1) {
-
+        if (count > 1) {
+            
             histindex++;
             commands.size = hist[histindex].length + 1;
             commands.value = hist[histindex];
+            
             count--;
 
         } else {
