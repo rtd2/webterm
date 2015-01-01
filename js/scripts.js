@@ -86,8 +86,62 @@ function checkCommand(e) {
 
     // enter key
     if (e.keyCode === 13) {
+        
+        if (commandArgs.length === 2) {
 
-        if (commandArgs.length > 2) {
+            switch(commandArgs[0]){
+
+                case "mkdir": // if folder doesn't exist, create it and add to fs
+
+                        var folderName = commandArgs.slice(1).join(" ");
+
+                        if (pwd[1].hasOwnProperty(folderName)) {
+                            history.innerHTML += webtermHTML;
+                            history.innerHTML += "<p>Folder called " + folderName + " already exists.</p>";
+                        } else {
+                            pwd[1][folderName] = {files: []};
+                            history.innerHTML += webtermHTML;
+                            history.innerHTML += "<p>Folder called " + folderName + " successfully created.</p>";
+                        }
+
+                        addToHistory(command);
+                        count = 0;
+
+                        break;
+                    
+                case "touch": // if file doesn't exist, create it and add to documents folder
+
+                    var fileName = commandArgs.slice(1).join(" ");
+
+                    var docs = pwd[1].documents.files;
+                    if (docs.indexOf(fileName) != -1) {
+                        history.innerHTML += webtermHTML;
+                        history.innerHTML += "<p>File called " + fileName + " already exists.</p>";
+                    } else {
+                        docs.push(fileName + ".txt");
+                        history.innerHTML += webtermHTML;
+                        history.innerHTML += "<p>File called " + fileName + " successfully created.</p>";
+                    }
+
+                    addToHistory(command);
+                    count = 0;
+
+                    break;
+                    
+                case "cd": // change directory
+
+                    var directory = commandArgs.slice(1).join(" ");
+
+                    
+                    
+                    addToHistory(command);
+                    count = 0;
+
+                    break;
+
+            }
+            
+        } else if (commandArgs.length > 2) {
 
             switch(commandArgs[0] + " " + commandArgs[1]){
 
@@ -106,48 +160,14 @@ function checkCommand(e) {
                     var url = base + term;
                     window.open(url, '_blank');
                 }
+                    
                 history.innerHTML += webtermHTML;
+                    
                 addToHistory(command);
                 count = 0;
 
                 break;
-
-            case "mkdir called": // if folder doesn't exist, create it and add to fs
-
-                    var folderName = commandArgs.slice(2).join(" ");
-
-                    if (pwd[1].hasOwnProperty(folderName)) {
-                        history.innerHTML += webtermHTML;
-                        history.innerHTML += "<p>Folder called " + folderName + " already exists.</p>";
-                    } else {
-                        pwd[1][folderName] = {files: []};
-                        history.innerHTML += webtermHTML;
-                        history.innerHTML += "<p>Folder called " + folderName + " successfully created.</p>";
-                    }
-
-                    addToHistory(command);
-                    count = 0;
-
-                    break;
-
-            case "touch called": // if file doesn't exist, create it and add to documents folder
-
-                    var fileName = commandArgs.slice(2).join(" ");
-
-                    var docs = pwd[1].documents.files;
-                    if (docs.indexOf(fileName) != -1) {
-                        history.innerHTML += webtermHTML;
-                        history.innerHTML += "<p>File called " + fileName + " already exists.</p>";
-                    } else {
-                        docs.push(fileName + ".txt");
-                        history.innerHTML += webtermHTML;
-                        history.innerHTML += "<p>File called " + fileName + " successfully created.</p>";
-                    }
-
-                    addToHistory(command);
-                    count = 0;
-
-                    break;        
+                    
             } //switch
 
         }   else {
@@ -165,7 +185,6 @@ function checkCommand(e) {
 
                     history.innerHTML += displayCommands;
 
-                    // terminal history
                     addToHistory(command);
                     count = 0;
 
@@ -177,24 +196,6 @@ function checkCommand(e) {
 
                     pwd = ["/home/rt/desktop", fs.home.rt.desktop, "/home/rt/desktop"];
                     document.getElementById("block").innerHTML = "WebTerm:" + pwd[0] + " rt$ ";
-
-                    addToHistory(command);
-                    count = 0;
-
-                    break;
-
-                case "mkdir": // if folder doesn't exist, create it and add to fs
-
-                    var folderName = window.prompt("What will the folder be called?");
-
-                    if (pwd[1].hasOwnProperty(folderName)) {
-                        history.innerHTML += webtermHTML;
-                        history.innerHTML += "<p>Folder called " + folderName + " already exists.</p>";
-                    } else {
-                        pwd[1][folderName] = {files: []};
-                        history.innerHTML += webtermHTML;
-                        history.innerHTML += "<p>Folder called " + folderName + " successfully created.</p>";
-                    }
 
                     addToHistory(command);
                     count = 0;
@@ -281,7 +282,7 @@ function checkCommand(e) {
         }
 
         commands.value = "";
-        commands.size = 1; 
+        commands.size = 1;
     } // enter key
 
 } // checkCommand
