@@ -146,6 +146,30 @@ function checkCommand(e) {
 
                 break;
                     
+                case "rm": // if file doesn't exist, create it and add to documents folder
+
+                    var fileName = commandArgs.slice(1).join(" ");
+
+                    var files = pwd[1].files;
+                                        
+                    if (files.indexOf(fileName) !== -1) {
+                        
+                        files.pop(fileName);
+                        history.innerHTML += webtermHTML;
+                        
+                        
+                    } else {
+                        
+                        history.innerHTML += webtermHTML;
+                        history.innerHTML += "<p>rm: cannot remove '" + fileName + "': No such file or directory</p>";
+                        
+                    }
+
+                    addToHistory(command);
+                    count = 0;
+
+                break;
+                    
                 case "cd": // change directory
 
                     var directory = commandArgs.slice(1).join(" ");
