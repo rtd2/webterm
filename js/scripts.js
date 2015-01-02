@@ -29,8 +29,8 @@ var histindex = 0;
 var count = 0;
 
 function addToHistory(command) {
-    
-    if (hist.slice(-1) !== command) {
+        
+    if (hist.slice(-1) != command) {
         
         hist.push(command);
         
@@ -55,8 +55,8 @@ function checkCommand(e) {
     }
 
     // terminal history
-    // up key
-    if (e.keyCode === 38) {
+
+    if (e.keyCode === 38) { // up key
 
         if (count === 0) {
 
@@ -74,8 +74,7 @@ function checkCommand(e) {
 
     }
 
-    // down key
-    if (e.keyCode === 40) {
+    if (e.keyCode === 40) { // down key
 
         if (count > 1) {
             
@@ -93,10 +92,9 @@ function checkCommand(e) {
 
     }
 
-    // enter key
-    if (e.keyCode === 13) {
+    if (e.keyCode === 13) { // enter key
         
-        if (commandArgs.length === 2) {
+        if (commandArgs.length === 2) { // if the command entered has one argument
 
             switch (commandArgs[0]) {
 
@@ -146,7 +144,7 @@ function checkCommand(e) {
 
                 break;
                     
-                case "rm": // if file doesn't exist, create it and add to documents folder
+                case "rm": // if file exists, remove it
 
                     var fileName = commandArgs.slice(1).join(" ");
 
@@ -170,9 +168,25 @@ function checkCommand(e) {
 
                 break;
                     
+                case "echo":
+
+                    var echo = commandArgs.slice(1).join(" ");
+                    console.log(echo);
+                                        
+                    history.innerHTML += webtermHTML;
+                    history.innerHTML += "<p>" + echo + "</p>";
+
+                    addToHistory(command);
+                    count = 0;
+
+                break;
+                    
                 case "cd": // change directory
 
                     var directory = commandArgs.slice(1).join(" ");
+                    
+                    console.log(directory);
+                    pwd = "";
                     
                     addToHistory(command);
                     count = 0;
@@ -181,7 +195,7 @@ function checkCommand(e) {
 
             }
             
-        } else if (commandArgs.length > 2) {
+        } else if (commandArgs.length > 2) { // if the command entered has more than one argument
 
             switch (commandArgs[0] + " " + commandArgs[1]) {
 
@@ -214,7 +228,7 @@ function checkCommand(e) {
                     
             } //switch
 
-        } else {
+        } else { // if the command entered has no arguments
 
             switch (command) {
 
@@ -235,6 +249,19 @@ function checkCommand(e) {
                     count = 0;
 
                 break;
+                    
+                case "history":
+                                        
+                    history.innerHTML += webtermHTML;
+                    for (var key in hist) {
+                        
+                        history.innerHTML += "<p>" + hist[key] + "</p>";
+                    }
+                    
+                    addToHistory(command);
+                    count = 0;
+
+                break;
 
                 case "cd /home/rt/desktop": // fake cd functionality
 
@@ -251,7 +278,6 @@ function checkCommand(e) {
                 case "pwd": // show present working directory
 
                     history.innerHTML += webtermHTML;
-
                     history.innerHTML += "<p>" + pwd[2] + "</p>";
 
                     addToHistory(command);
@@ -287,7 +313,7 @@ function checkCommand(e) {
 
                 break;
 
-                case "clear": //clear page
+                case "clear": // clear page
 
                     history.innerHTML = "";
 
@@ -307,7 +333,7 @@ function checkCommand(e) {
 
                 break;
 
-                case "cd": // change directory
+                case "cd": // change directory, no argument
 
                     pwd = ["~", fs.home.rt, "/home/rt"];
 
@@ -315,14 +341,24 @@ function checkCommand(e) {
                     count = 0;
 
                 break;
+                    
+                case "date":
+                    
+                    history.innerHTML += webtermHTML;
+                    history.innerHTML = "<p>" + Date() + "</p>";
+                    
+                    addToHistory(command);
+                    count = 0;
+                    
+                break;
 
                 default:
                     history.innerHTML = "<p>No such command exists. Type 'help' for a list of commands.</p>";
             }
         }
 
-        commands.value = "";
-        commands.size = 1;
+        commands.value = ""; // reset command line
+        commands.size = 1; // reset caret
     } // enter key
 
 } // checkCommand
