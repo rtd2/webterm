@@ -97,7 +97,7 @@ function checkCommand(e) {
 
                         if (pwd[1].hasOwnProperty(folderName)) {
                             history.innerHTML += webtermHTML;
-                            history.innerHTML += "<p>Folder called " + folderName + " already exists.</p>";
+                            history.innerHTML += "<p>mkdir: cannot create directory '" + folderName + "': File exists</p>";
                         } else {
                             pwd[1][folderName] = {files: []};
                             history.innerHTML += webtermHTML;
@@ -116,7 +116,7 @@ function checkCommand(e) {
                     var docs = pwd[1].documents.files;
                     if (docs.indexOf(fileName) != -1) {
                         history.innerHTML += webtermHTML;
-                        history.innerHTML += "<p>File called " + fileName + " already exists.</p>";
+                        history.innerHTML += "<p>touch: cannot create file '" + fileName + "': File exists</p>";
                     } else {
                         docs.push(fileName + ".txt");
                         history.innerHTML += webtermHTML;
@@ -131,7 +131,7 @@ function checkCommand(e) {
                 case "cd": // change directory
 
                     var directory = commandArgs.slice(1).join(" ");
-
+                    
                     
                     
                     addToHistory(command);
@@ -145,28 +145,28 @@ function checkCommand(e) {
 
             switch(commandArgs[0] + " " + commandArgs[1]){
 
-            case "youtube -s": // search youtube with argument passed in
+                case "youtube -s": // search youtube with argument passed in
 
-                var base = "https://www.youtube.com/results?search_query=";
-                var term = "";
+                    var base = "https://www.youtube.com/results?search_query=";
+                    var term = "";
 
-                for (var i = 2; i < commandArgs.length; i++) {
-                    term += commandArgs[i] + "%20";
-                }
+                    for (var i = 2; i < commandArgs.length; i++) {
+                        term += commandArgs[i] + "%20";
+                    }
 
-                term = term.slice(0,-3);
+                    term = term.slice(0,-3);
 
-                if (term !== "") {
-                    var url = base + term;
-                    window.open(url, '_blank');
-                }
-                    
-                history.innerHTML += webtermHTML;
-                    
-                addToHistory(command);
-                count = 0;
+                    if (term !== "") {
+                        var url = base + term;
+                        window.open(url, '_blank');
+                    }
 
-                break;
+                    history.innerHTML += webtermHTML;
+
+                    addToHistory(command);
+                    count = 0;
+
+                    break;
                     
             } //switch
 
@@ -174,110 +174,92 @@ function checkCommand(e) {
 
                 switch(command){
 
-                case "help": // show list of commands
+                    case "help": // show list of commands
 
-                    history.innerHTML += webtermHTML;
-                    var displayCommands = "";
-                    // display help
-                    for (var i = 0; i < helpList.length; i++) {
-                        displayCommands += "<p>" + helpList[i] + "</p>";
-                    }
-
-                    history.innerHTML += displayCommands;
-
-                    addToHistory(command);
-                    count = 0;
-
-                    break;
-
-                case "cd /home/rt/desktop": // fake cd functionality
-
-                    history.innerHTML += webtermHTML;
-
-                    pwd = ["/home/rt/desktop", fs.home.rt.desktop, "/home/rt/desktop"];
-                    document.getElementById("block").innerHTML = "WebTerm:" + pwd[0] + " rt$ ";
-
-                    addToHistory(command);
-                    count = 0;
-
-                    break;
-
-                case "touch": // if file doesn't exist, create it and add to documents folder
-
-                    var fileName = window.prompt("What will the file be called?");
-                    var docs = pwd[1].documents.files;
-                    if (docs.indexOf(fileName) != -1) {
                         history.innerHTML += webtermHTML;
-                        history.innerHTML += "<p>File called " + fileName + " already exists.</p>";
-                    } else {
-                        docs.push(fileName + ".txt");
+                        var displayCommands = "";
+                        // display help
+                        for (var i = 0; i < helpList.length; i++) {
+                            displayCommands += "<p>" + helpList[i] + "</p>";
+                        }
+
+                        history.innerHTML += displayCommands;
+
+                        addToHistory(command);
+                        count = 0;
+
+                        break;
+
+                    case "cd /home/rt/desktop": // fake cd functionality
+
                         history.innerHTML += webtermHTML;
-                        history.innerHTML += "<p>File called " + fileName + " successfully created.</p>";
-                    }
 
-                    addToHistory(command);
-                    count = 0;
+                        pwd = ["/home/rt/desktop", fs.home.rt.desktop, "/home/rt/desktop"];
+                        document.getElementById("block").innerHTML = "WebTerm:" + pwd[0] + " rt$ ";
 
-                    break;
+                        addToHistory(command);
+                        count = 0;
 
-                case "pwd": // show present working directory
+                        break;
 
-                    history.innerHTML += webtermHTML;
+                    case "pwd": // show present working directory
 
-                    history.innerHTML += "<p>" + pwd[2] + "</p>";
+                        history.innerHTML += webtermHTML;
 
-                    addToHistory(command);
-                    count = 0;
+                        history.innerHTML += "<p>" + pwd[2] + "</p>";
 
-                    break;
+                        addToHistory(command);
+                        count = 0;
 
-                case "ll": // show all files in fs/home/rt
+                        break;
 
-                    var list = "";
+                    case "ll": // show all files in fs/home/rt
 
-                    // loop through objects in fs to show files
-                    for (var key in pwd[1]) {
-                       var obj = pwd[1][key];
-                       for (var prop in obj) {
-                          // important check that this is objects own property 
-                          // not from prototype prop inherited
-                          if(obj.hasOwnProperty(prop) && obj[prop].length > 0){
-                            list += "<p class='file'>" + key + " = " + obj[prop] + "</p>";
-                          } else {list += "<p class='file'>" + key + " = empty</p>";}
-                       }
-                    }
+                        var list = "";
 
-                    history.innerHTML += webtermHTML;
+                        // loop through objects in fs to show files
+                        for (var key in pwd[1]) {
+                           var obj = pwd[1][key];
+                           for (var prop in obj) {
+                              // important check that this is objects own property 
+                              // not from prototype prop inherited
+                              if(obj.hasOwnProperty(prop) && obj[prop].length > 0){
+                                list += "<p class='file'>" + key + " = " + obj[prop] + "</p>";
+                              } else {list += "<p class='file'>" + key + " = empty</p>";}
+                           }
+                        }
 
-                    history.innerHTML += "<p>" + list + "</p>";
+                        history.innerHTML += webtermHTML;
 
-                    addToHistory(command);
-                    count = 0;
+                        history.innerHTML += "<p>" + list + "</p>";
 
-                    break;
+                        addToHistory(command);
+                        count = 0;
 
-                case "clear": //clear page
+                        break;
 
-                    history.innerHTML = "";
+                    case "clear": //clear page
 
-                    addToHistory(command);
-                    count = 0;
+                        history.innerHTML = "";
 
-                    break;
+                        addToHistory(command);
+                        count = 0;
 
-                case "youtube": // open youtube in new tab
+                        break;
 
-                    history.innerHTML += webtermHTML;
+                    case "youtube": // open youtube in new tab
 
-                    window.open('http://www.youtube.com','_blank');
+                        history.innerHTML += webtermHTML;
 
-                    addToHistory(command);
-                    count = 0;
+                        window.open('http://www.youtube.com','_blank');
 
-                    break;
+                        addToHistory(command);
+                        count = 0;
 
-                default:
-                    history.innerHTML = "<p>No such command exists. Type 'help' for a list of commands.</p>";
+                        break;
+
+                    default:
+                        history.innerHTML = "<p>No such command exists. Type 'help' for a list of commands.</p>";
             }
         }
 
