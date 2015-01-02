@@ -10,8 +10,10 @@ var fs = {
             },
             documents: {
                 files: []
-            }
+            },
+            files: []
         }
+        
     },
     bin: {}
 };
@@ -113,12 +115,13 @@ function checkCommand(e) {
 
                     var fileName = commandArgs.slice(1).join(" ");
 
-                    var docs = pwd[1].documents.files;
-                    if (docs.indexOf(fileName) != -1) {
+                    var files = pwd[1].files;
+                                        
+                    if (files.indexOf(fileName) != -1) {
                         history.innerHTML += webtermHTML;
                         history.innerHTML += "<p>touch: cannot create file '" + fileName + "': File exists</p>";
                     } else {
-                        docs.push(fileName + ".txt");
+                        files.push(fileName);
                         history.innerHTML += webtermHTML;
                         history.innerHTML += "<p>File called " + fileName + " successfully created.</p>";
                     }
@@ -257,6 +260,15 @@ function checkCommand(e) {
                         count = 0;
 
                         break;
+                        
+                    case "cd": // change directory
+
+                        pwd = ["~", fs.home.rt, "/home/rt"];
+                    
+                        addToHistory(command);
+                        count = 0;
+
+                    break;
 
                     default:
                         history.innerHTML = "<p>No such command exists. Type 'help' for a list of commands.</p>";
