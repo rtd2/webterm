@@ -150,7 +150,7 @@ var terminal = {
     // -----------------------------------------------------------------------
     // List the files and folders of the pwd
     // -----------------------------------------------------------------------
-    ll: function() {
+    ls: function() {
         var list = "";
 
         for (var key in pwd[1]) { // loop through objects in fs to show files
@@ -169,7 +169,7 @@ var terminal = {
         }
 
         output.innerHTML += outputHTML;
-        output.innerHTML += "<p>" + list + "</p>";
+        output.innerHTML += list;
     },
     // -----------------------------------------------------------------------
     // If file exists in pwd, delete it
@@ -248,7 +248,7 @@ var terminal = {
             count = 0;
         }
     },
-};
+}; // end terminal object
 
 var helpList = ["help", "youtube", "youtube -s", "pwd", "mkdir", "touch", "ll", "cd /home/rt/desktop", "clear"];
 var pwd = ["~", terminal.fs.home.rt, "/home/rt"];
@@ -257,7 +257,7 @@ var histindex = 0;
 var count = 0;
 
 function addToHistory(command) {
-        
+    
     if (terminal.hist.slice(-1) != command) {
         
         terminal.hist.push(command);
@@ -279,14 +279,9 @@ function checkCommand(e) {
         input.size = 1;
     }
 
+    if (e.keyCode === 38) { terminal.up(); }
 
-    if (e.keyCode === 38) { // up key
-        terminal.up();
-    }
-
-    if (e.keyCode === 40) { // down key
-        terminal.down();
-    }
+    if (e.keyCode === 40) { terminal.down(); }
 
     if (e.keyCode === 13) { // enter key
         
@@ -294,27 +289,27 @@ function checkCommand(e) {
 
             switch (commandArgs[0]) {
 
-                case "mkdir": // make directory in pwd
+                case "mkdir":
                     terminal.mkdir();
                     addToHistory(command);
                 break;
                     
-                case "touch": // if file doesn't exist in pwd, create it
+                case "touch":
                     terminal.touch();
                     addToHistory(command);
                 break;
                     
-                case "rm": // if file exists in pwd, remove it
+                case "rm":
                     terminal.rm();
                     addToHistory(command);
                 break;
                     
-                case "echo": // repeat argument as string
+                case "echo":
                     terminal.echo();
                     addToHistory(command);
                 break;
                     
-                case "cd": // change directory
+                case "cd":
                     terminal.cd();
                     addToHistory(command);
                 break;
@@ -325,7 +320,7 @@ function checkCommand(e) {
 
             switch (commandArgs[0] + " " + commandArgs[1]) {
 
-                case "youtube -s": // search youtube with argument passed in
+                case "youtube -s":
                     terminal.youtubeFlagS();
                     addToHistory(command);
                 break;
@@ -363,8 +358,8 @@ function checkCommand(e) {
                     addToHistory(command);
                 break;
 
-                case "ll":
-                    terminal.ll();
+                case "ls":
+                    terminal.ls();
                     addToHistory(command);
                 break;
 
