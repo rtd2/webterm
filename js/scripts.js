@@ -317,7 +317,10 @@ function checkCommand(e) {
                     terminal.cd();
                     addToHistory(command);
                 break;
-
+                
+                default:
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
             }
             
         } else if (commandArgs.length > 2) { // if the command entered has more than one argument
@@ -329,7 +332,10 @@ function checkCommand(e) {
                     addToHistory(command);
                 break;
                     
-            } //switch
+                default:
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
+            }
 
         } else { // if the command entered has no arguments
 
@@ -388,7 +394,8 @@ function checkCommand(e) {
                 break;
 
                 default:
-                    output.innerHTML = "<p>No such command exists. Type 'help' for a list of commands.</p>";
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
             }
         }
 
