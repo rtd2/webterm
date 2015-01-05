@@ -321,7 +321,7 @@ var terminal = {
     },
 }; // end terminal object
 
-var helpList = ["help", "youtube", "youtube -s", "pwd", "mkdir", "touch", "ll", "cd /home/rt/desktop", "clear"];
+var helpList = ["help", "youtube", "youtube -s", "pwd", "mkdir", "touch", "ls", "cd", "clear", "history", "signin", "signout", "theme", "version", "rm", "echo", "date"];
 var pwd = ["~", terminal.fs.home.rt, "/home/rt"];
 var input = document.getElementById("input");
 var histindex = 0;
