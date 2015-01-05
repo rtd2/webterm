@@ -14,7 +14,7 @@ var terminal = {
                 documents: {
                     files: []
                 },
-                files: []
+                files: ["readme.txt"]
             }
         },
         bin: {}
@@ -160,11 +160,16 @@ var terminal = {
 
                     list += "<p class='file'>" + key + " = " + obj[prop] + "</p>";
 
-                } else {
+                } else if ( Array.isArray(obj[prop]) ) {
 
-                    list += "<p class='file'>" + key + " = empty</p>";
+                    
+                    for (var i = 0; i < obj[prop].length; i++) {
 
-                }
+                        list += "<p class='file'>" + key + " = " + obj[prop][i] + "</p>";
+
+                    }
+
+                } else { list += "<p class='file'>" + key + " = empty</p>"; }
             }
         }
 

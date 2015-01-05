@@ -1,3 +1,3 @@
 webterm
 =======
-Terminal simulation in the web, written in JavaScript.
+Terminal simulation on the web, written in JavaScript.
