@@ -76,7 +76,6 @@ var terminal = {
     // -----------------------------------------------------------------------
     theme: function() {
         var theme = commandArgs.slice(1).join(" ");
-        termtheme = 
         
         output.innerHTML += outputHTML;
         
@@ -110,7 +109,7 @@ var terminal = {
                         
         } else {
             
-            output.innerHTML += "<p style='color:" + termtheme[1] + "'>There is no such theme</p>"
+            output.innerHTML += "<p style='color:" + termtheme[1] + "'>theme: There is no such theme</p>"
             
         }
 
