@@ -24,8 +24,9 @@ var terminal = {
 // -----------------------------------------------------------------------
     hist: [],
     ver: "0.1",
-    user: "rt",
+    user: "user",
     theme: "old",
+    commandLine: document.getElementById("commandLine"),
     
 // -----------------------------------------------------------------------
 // TERMINAL METHODS
@@ -66,6 +67,26 @@ var terminal = {
 
         output.innerHTML += outputHTML;
         output.innerHTML += "<p>" + echo + "</p>";
+    },
+    // -----------------------------------------------------------------------
+    // Change the terminal's user
+    // -----------------------------------------------------------------------
+    signin: function() {
+        var user = commandArgs.slice(1).join(" ");
+        
+        terminal.user = user;
+        commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + user + "$ ";
+
+        output.innerHTML += outputHTML;
+    },
+    // -----------------------------------------------------------------------
+    // Change the terminal's user back to default
+    // -----------------------------------------------------------------------
+    signout: function() {
+        terminal.user = "user";
+        commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
+
+        output.innerHTML += outputHTML;
     },
     // -----------------------------------------------------------------------
     // Output the terminal history array
@@ -303,6 +324,11 @@ function checkCommand(e) {
                     addToHistory(command);
                 break;
                     
+                case "signin":
+                    terminal.signin();
+                    addToHistory(command);
+                break;
+                    
                 case "rm":
                     terminal.rm();
                     addToHistory(command);
@@ -346,6 +372,11 @@ function checkCommand(e) {
                     addToHistory(command);
                 break;
                     
+                case "signout":
+                    terminal.signout();
+                    addToHistory(command);
+                break;
+                    
                 case "version":
                     terminal.version();
                     addToHistory(command);
@@ -353,13 +384,6 @@ function checkCommand(e) {
                     
                 case "history":
                     terminal.history();
-                    addToHistory(command);
-                break;
-
-                case "cd /home/rt/desktop":
-                    output.innerHTML += outputHTML;
-                    pwd = ["/home/rt/desktop", terminal.fs.home.rt.desktop, "/home/rt/desktop"];
-                    document.getElementById("commandLine").innerHTML = "WebTerm:" + pwd[0] + user + "$ ";
                     addToHistory(command);
                 break;
 
