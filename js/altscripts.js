@@ -156,14 +156,14 @@ var terminal = {
         for (var key in pwd[1]) { // loop through objects in fs to show files
             var obj = pwd[1][key];
             for (var prop in obj) { // important check that this is objects own property not from prototype prop inherited
-                if (obj.hasOwnProperty(prop) && obj[prop].length > 0) {
+                if ( obj.hasOwnProperty(prop) && obj[prop].length > 0 ) {
 
                     list += "<p class='file'>" + key + " = " + obj[prop] + "</p>";
 
-                } else if ( Array.isArray(obj[prop]) ) {
+                } else if ( Array.isArray(obj[prop] && obj[prop].length > 0 ) ) {
 
                     
-                    for (var i = 0; i < obj[prop].length; i++) {
+                    for ( var i = 0; i < obj[prop].length; i++ ) {
 
                         list += "<p class='file'>" + key + " = " + obj[prop][i] + "</p>";
 
