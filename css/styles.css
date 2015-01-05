@@ -20,13 +20,11 @@ textarea:focus, input:focus{ outline: 0; }
 #commandLine { display: inline; }
 
 .file {
-    color: white;
     display: inline;
     margin-right: 20px;
 }
 
 .folder {
-    color: SlateBlue;
     display: inline;
     margin-right: 20px;
 }

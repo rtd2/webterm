@@ -25,7 +25,10 @@ var terminal = {
     hist: [],
     ver: "0.1",
     user: "user",
-    theme: "old",
+    termthemes: {
+        white: ["#FFF", "#000", "#999", "Green"],
+        old: ["#2E312C", "#9DCE91", "#FFF", "SlateBlue"]
+    },
     commandLine: document.getElementById("commandLine"),
     
 // -----------------------------------------------------------------------
@@ -39,7 +42,7 @@ var terminal = {
 
         for (var i = 0; i < helpList.length; i++) {
 
-            displayCommands += "<p>" + helpList[i] + "</p>";
+            displayCommands += "<p style='color:" + termtheme[1] + "'>" + helpList[i] + "</p>";
 
         }
 
@@ -57,7 +60,7 @@ var terminal = {
     // -----------------------------------------------------------------------
     date: function() {
         output.innerHTML += outputHTML;
-        output.innerHTML += "<p>" + Date() + "</p>";
+        output.innerHTML += "<p style='color:" + termtheme[1] + "'>" + Date() + "</p>";
     },
     // -----------------------------------------------------------------------
     // Output argument as a string
@@ -66,7 +69,51 @@ var terminal = {
         var echo = commandArgs.slice(1).join(" ");
 
         output.innerHTML += outputHTML;
-        output.innerHTML += "<p>" + echo + "</p>";
+        output.innerHTML += "<p style='color:" + termtheme[1] + "'>" + echo + "</p>";
+    },
+    // -----------------------------------------------------------------------
+    // Change the terminal theme
+    // -----------------------------------------------------------------------
+    theme: function() {
+        var theme = commandArgs.slice(1).join(" ");
+        termtheme = 
+        
+        output.innerHTML += outputHTML;
+        
+        if (theme === "white") {
+            
+            termtheme = terminal.termthemes.white;
+            
+            document.body.style.background = termtheme[0];
+            input.style.color = termtheme[1];
+            input.style.background = termtheme[0];
+            commandLine.style.color = termtheme[1];
+            
+            var putNodes = output.childNodes;
+            for (var i = 0; i < putNodes.length; i++) {
+                putNodes[i].style.color = termtheme[1];
+            }
+            
+        } else if (theme === "old") {
+            
+            termtheme = terminal.termthemes.old;
+            
+            document.body.style.background = termtheme[0];
+            input.style.color = termtheme[1];
+            input.style.background = termtheme[0];
+            commandLine.style.color = termtheme[1];
+            
+            var putNodes = output.childNodes;
+            for (var i = 0; i < putNodes.length; i++) {
+                putNodes[i].style.color = termtheme[1];
+            }
+                        
+        } else {
+            
+            output.innerHTML += "<p style='color:" + termtheme[1] + "'>There is no such theme</p>"
+            
+        }
+
     },
     // -----------------------------------------------------------------------
     // Change the terminal's user
@@ -95,7 +142,7 @@ var terminal = {
         output.innerHTML += outputHTML;
         for (var key in terminal.hist) {
 
-            output.innerHTML += "<p>" + terminal.hist[key] + "</p>";
+            output.innerHTML += "<p style='color:" + termtheme[1] + "'>" + terminal.hist[key] + "</p>";
         }
     },
     // -----------------------------------------------------------------------
@@ -103,7 +150,7 @@ var terminal = {
     // -----------------------------------------------------------------------
     version: function() {
         output.innerHTML += outputHTML;
-        output.innerHTML += "<p>WebTerm " + terminal.ver + "</p>";
+        output.innerHTML += "<p style='color:" + termtheme[1] + "'>WebTerm " + terminal.ver + "</p>";
     },
     // -----------------------------------------------------------------------
     // If the folder doesn't exist in pwd, create it
@@ -114,13 +161,13 @@ var terminal = {
         if (pwd[1].hasOwnProperty(folderName)) {
 
             output.innerHTML += outputHTML;
-            output.innerHTML += "<p>mkdir: cannot create directory '" + folderName + "': File exists</p>";
+            output.innerHTML += "<p style='color:" + termtheme[1] + "'>mkdir: cannot create directory '" + folderName + "': File exists</p>";
 
         } else {
 
             pwd[1][folderName] = {files: []};
             output.innerHTML += outputHTML;
-            output.innerHTML += "<p>Folder called " + folderName + " successfully created.</p>";
+            output.innerHTML += "<p style='color:" + termtheme[1] + "'>Folder called " + folderName + " successfully created.</p>";
 
         }
     },
@@ -166,7 +213,7 @@ var terminal = {
     // -----------------------------------------------------------------------
     pwd: function() {
         output.innerHTML += outputHTML;
-        output.innerHTML += "<p>" + pwd[2] + "</p>";
+        output.innerHTML += "<p style='color:" + termtheme[1] + "'>" + pwd[2] + "</p>";
     },
     // -----------------------------------------------------------------------
     // List the files and folders of the pwd
@@ -181,7 +228,7 @@ var terminal = {
             
             if (keys[key] !== "files") {
                 
-                list+= "<p class='folder'>" + keys[key] + "</p>";
+                list+= "<p class='folder' style='color:" + termtheme[3] + "'>" + keys[key] + "</p>";
                 
             }
             
@@ -189,7 +236,7 @@ var terminal = {
         
         for (var file in files) {
             
-            list += "<p class='file'>" + files[file] + "</p>";
+            list += "<p class='file' style='color:" + termtheme[2] + "'>" + files[file] + "</p>";
             
         }
 
@@ -212,7 +259,7 @@ var terminal = {
         } else {
 
             output.innerHTML += outputHTML;
-            output.innerHTML += "<p>rm: cannot remove '" + fileName + "': No such file or directory</p>";
+            output.innerHTML += "<p style='color:" + termtheme[1] + "'>rm: cannot remove '" + fileName + "': No such file or directory</p>";
 
         }
     },
@@ -227,13 +274,13 @@ var terminal = {
         if (files.indexOf(fileName) !== -1) {
 
             output.innerHTML += outputHTML;
-            output.innerHTML += "<p>touch: cannot create file '" + fileName + "': File exists</p>";
+            output.innerHTML += "<p style='color:" + termtheme[1] + "'>touch: cannot create file '" + fileName + "': File exists</p>";
 
         } else {
 
             files.push(fileName);
             output.innerHTML += outputHTML;
-            output.innerHTML += "<p>File called " + fileName + " successfully created.</p>";
+            output.innerHTML += "<p style='color:" + termtheme[1] + "'>File called " + fileName + " successfully created.</p>";
 
         }
     },
@@ -280,6 +327,7 @@ var pwd = ["~", terminal.fs.home.rt, "/home/rt"];
 var input = document.getElementById("input");
 var histindex = 0;
 var count = 0;
+var termtheme = terminal.termthemes.old;
 
 function addToHistory(command) {
     
@@ -296,7 +344,7 @@ function checkCommand(e) {
     var len = command.length;
     var output = document.getElementById("output");
     commandArgs = command.split(" ");
-    outputHTML = "<p>WebTerm:" + pwd[0] + " " + terminal.user + "$ " + command + "</p>";
+    outputHTML = "<p style='color:" + termtheme[1] + "'>WebTerm:" + pwd[0] + " " + terminal.user + "$ " + command + "</p>";
 
     if (len > 0) { // adjust the caret
         input.size = len + 1;
@@ -329,6 +377,11 @@ function checkCommand(e) {
                     addToHistory(command);
                 break;
                     
+                case "theme":
+                    terminal.theme();
+                    addToHistory(command);
+                break;
+                    
                 case "rm":
                     terminal.rm();
                     addToHistory(command);
@@ -346,7 +399,7 @@ function checkCommand(e) {
                 
                 default:
                     output.innerHTML += outputHTML;
-                    output.innerHTML += "<p>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
+                    output.innerHTML += "<p style='color:" + termtheme[1] + "'>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
             }
             
         } else if (commandArgs.length > 2) { // if the command entered has more than one argument
@@ -360,7 +413,7 @@ function checkCommand(e) {
                     
                 default:
                     output.innerHTML += outputHTML;
-                    output.innerHTML += "<p>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
+                    output.innerHTML += "<p style='color:" + termtheme[1] + "'>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
             }
 
         } else { // if the command entered has no arguments
@@ -419,7 +472,7 @@ function checkCommand(e) {
 
                 default:
                     output.innerHTML += outputHTML;
-                    output.innerHTML += "<p>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
+                    output.innerHTML += "<p style='color:" + termtheme[1] + "'>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
             }
         }
 
