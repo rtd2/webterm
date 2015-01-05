@@ -1,96 +1,291 @@
-// virtual filesystem
-var fs = {
-    home: {
-        rt: {
-            desktop: {
-                files: ["abc.txt", "urmum.txt"]
-            },
-            downloads: {
-                files: ["example.txt", "document.txt", "another.txt"]
-            },
-            documents: {
-                files: []
-            },
-            files: []
+var terminal = {
+// -----------------------------------------------------------------------
+// VIRTUAL FILESYSTEM
+// -----------------------------------------------------------------------
+    fs: {
+        home: {
+            rt: {
+                desktop: {
+                    files: ["abc.txt", "urmum.txt"]
+                },
+                downloads: {
+                    files: ["example.txt", "document.txt", "another.txt"]
+                },
+                documents: {
+                    files: []
+                },
+                files: ["readme.txt"]
+            }
+        },
+        bin: {}
+    },
+// -----------------------------------------------------------------------
+// MORE TERMINAL PROPERTIES
+// -----------------------------------------------------------------------
+    hist: [],
+    ver: "0.1",
+    user: "rt",
+    theme: "old",
+    
+// -----------------------------------------------------------------------
+// TERMINAL METHODS
+// -----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
+    // Display help information, list of commands
+    // -----------------------------------------------------------------------
+    help: function() {
+        var displayCommands = "";
+
+        for (var i = 0; i < helpList.length; i++) {
+
+            displayCommands += "<p>" + helpList[i] + "</p>";
+
+        }
+
+        output.innerHTML += outputHTML;
+        output.innerHTML += displayCommands;
+    },
+    // -----------------------------------------------------------------------
+    // Clear the terminal output
+    // -----------------------------------------------------------------------
+    clear: function() {
+        output.innerHTML = "";
+    },
+    // -----------------------------------------------------------------------
+    // Display current date, time, and timezone
+    // -----------------------------------------------------------------------
+    date: function() {
+        output.innerHTML += outputHTML;
+        output.innerHTML += "<p>" + Date() + "</p>";
+    },
+    // -----------------------------------------------------------------------
+    // Output argument as a string
+    // -----------------------------------------------------------------------
+    echo: function() {
+        var echo = commandArgs.slice(1).join(" ");
+
+        output.innerHTML += outputHTML;
+        output.innerHTML += "<p>" + echo + "</p>";
+    },
+    // -----------------------------------------------------------------------
+    // Output the terminal history array
+    // -----------------------------------------------------------------------
+    history: function() {
+        output.innerHTML += outputHTML;
+        for (var key in terminal.hist) {
+
+            output.innerHTML += "<p>" + terminal.hist[key] + "</p>";
+        }
+    },
+    // -----------------------------------------------------------------------
+    // Output the version of the terminal
+    // -----------------------------------------------------------------------
+    version: function() {
+        output.innerHTML += outputHTML;
+        output.innerHTML += "<p>WebTerm " + terminal.ver + "</p>";
+    },
+    // -----------------------------------------------------------------------
+    // If the folder doesn't exist in pwd, create it
+    // -----------------------------------------------------------------------
+    mkdir: function() {
+        var folderName = commandArgs.slice(1).join(" ");
+
+        if (pwd[1].hasOwnProperty(folderName)) {
+
+            output.innerHTML += outputHTML;
+            output.innerHTML += "<p>mkdir: cannot create directory '" + folderName + "': File exists</p>";
+
+        } else {
+
+            pwd[1][folderName] = {files: []};
+            output.innerHTML += outputHTML;
+            output.innerHTML += "<p>Folder called " + folderName + " successfully created.</p>";
+
+        }
+    },
+    // -----------------------------------------------------------------------
+    // Change directory ================ not yet functional
+    // -----------------------------------------------------------------------
+    cd: function() {
+        var directory = commandArgs.slice(1).join(" ");
+        pwd = "";
+    },
+    // -----------------------------------------------------------------------
+    // Open Youtube in a new tab
+    // -----------------------------------------------------------------------
+    youtube: function() {
+        output.innerHTML += outputHTML;
+        window.open('http://www.youtube.com','_blank');
+    },
+    // -----------------------------------------------------------------------
+    // Open Youtube in a new tab
+    // -----------------------------------------------------------------------
+    youtubeFlagS: function() {
+        var base = "https://www.youtube.com/results?search_query=";
+        var term = "";
+        output.innerHTML += outputHTML;
+
+        for (var i = 2; i < commandArgs.length; i++) {
+
+            term += commandArgs[i] + "%20";
+
+        }
+
+        term = term.slice(0,-3);
+
+        if (term !== "") {
+
+            var url = base + term;
+            window.open(url, '_blank');
+
+        }
+    },
+    // -----------------------------------------------------------------------
+    // Output the present working directory
+    // -----------------------------------------------------------------------
+    pwd: function() {
+        output.innerHTML += outputHTML;
+        output.innerHTML += "<p>" + pwd[2] + "</p>";
+    },
+    // -----------------------------------------------------------------------
+    // List the files and folders of the pwd
+    // -----------------------------------------------------------------------
+    ls: function() {
+        
+        var list = "";
+        var keys = Object.keys(pwd[1]);
+        var files = pwd[1].files;
+        
+        for (var key in keys) {
+            
+            if (keys[key] !== "files") {
+                
+                list+= "<p class='folder'>" + keys[key] + "</p>";
+                
+            }
+            
         }
         
+        for (var file in files) {
+            
+            list += "<p class='file'>" + files[file] + "</p>";
+            
+        }
+
+        output.innerHTML += outputHTML;
+        output.innerHTML += list;
     },
-    bin: {}
-};
+    // -----------------------------------------------------------------------
+    // If file exists in pwd, delete it
+    // -----------------------------------------------------------------------
+    rm: function() {
+        
+        var fileName = commandArgs.slice(1).join(" ");
+        var files = pwd[1].files;
 
-var helpList = ["help", "youtube", "youtube -s", "pwd", "mkdir", "mkdir called", "touch", "touch called", "ll", "cd /home/rt/desktop", "clear"];
+        if (files.indexOf(fileName) !== -1) {
 
-var pwd = ["~", fs.home.rt, "/home/rt"]; // display, dot notation, cd display
-var commands = document.getElementById("command");
+            files.pop(fileName);
+            output.innerHTML += outputHTML;
 
+        } else {
 
-var hist = [];
+            output.innerHTML += outputHTML;
+            output.innerHTML += "<p>rm: cannot remove '" + fileName + "': No such file or directory</p>";
+
+        }
+    },
+    // -----------------------------------------------------------------------
+    // If file doesn't exist in pwd, create it
+    // -----------------------------------------------------------------------
+    touch: function() {
+        
+        var fileName = commandArgs.slice(1).join(" ");
+        var files = pwd[1].files;
+
+        if (files.indexOf(fileName) !== -1) {
+
+            output.innerHTML += outputHTML;
+            output.innerHTML += "<p>touch: cannot create file '" + fileName + "': File exists</p>";
+
+        } else {
+
+            files.push(fileName);
+            output.innerHTML += outputHTML;
+            output.innerHTML += "<p>File called " + fileName + " successfully created.</p>";
+
+        }
+    },
+    // -----------------------------------------------------------------------
+    // Cycle from last index of terminal.hist array
+    // -----------------------------------------------------------------------
+    up: function() {
+        if (count === 0) {
+            
+            histindex = terminal.hist.length;
+            
+        }
+
+        if (count <= terminal.hist.length - 1) {
+
+            histindex--;
+            input.size = terminal.hist[histindex].length + 1;
+            input.value = terminal.hist[histindex];
+            count++;
+        }
+    },
+    // -----------------------------------------------------------------------
+    // Cycle from last index of terminal.hist array
+    // -----------------------------------------------------------------------
+    down: function() {
+        if (count > 1) {
+            
+            histindex++;
+            input.size = terminal.hist[histindex].length + 1;
+            input.value = terminal.hist[histindex];
+            count--;
+
+        } else {
+            
+            input.value = "";
+            input.size = 1;
+            count = 0;
+        }
+    },
+}; // end terminal object
+
+var helpList = ["help", "youtube", "youtube -s", "pwd", "mkdir", "touch", "ll", "cd /home/rt/desktop", "clear"];
+var pwd = ["~", terminal.fs.home.rt, "/home/rt"];
+var input = document.getElementById("input");
 var histindex = 0;
 var count = 0;
 
 function addToHistory(command) {
+    
+    if (terminal.hist.slice(-1) != command) {
         
-    if (hist.slice(-1) != command) {
-        
-        hist.push(command);
+        terminal.hist.push(command);
         
     }
 }
 
 function checkCommand(e) {
 
-    var command = commands.value.toLowerCase();
+    var command = input.value.toLowerCase();
     var len = command.length;
-    var history = document.getElementById("history");
-    var webtermHTML = "<p>WebTerm:" + pwd[0] + " " + "rt$  " + command + "</p>";
-    var commandArgs = command.split(" ");
+    var output = document.getElementById("output");
+    commandArgs = command.split(" ");
+    outputHTML = "<p>WebTerm:" + pwd[0] + " " + terminal.user + "$ " + command + "</p>";
 
-    if (len > 0) {
-
-        commands.size = len + 1;
-
+    if (len > 0) { // adjust the caret
+        input.size = len + 1;
     } else {
-
-        commands.size = 1;
+        input.size = 1;
     }
 
-    // terminal history
+    if (e.keyCode === 38) { terminal.up(); }
 
-    if (e.keyCode === 38) { // up key
-
-        if (count === 0) {
-
-            histindex = hist.length;
-
-        }
-
-        if (count <= hist.length - 1) {
-
-            histindex--;
-            commands.size = hist[histindex].length + 1;
-            commands.value = hist[histindex];
-            count++;
-        }
-
-    }
-
-    if (e.keyCode === 40) { // down key
-
-        if (count > 1) {
-            
-            histindex++;
-            commands.size = hist[histindex].length + 1;
-            commands.value = hist[histindex];
-            count--;
-
-        } else {
-            
-            commands.value = "";
-            commands.size = 1;
-            count = 0;
-        }
-
-    }
+    if (e.keyCode === 40) { terminal.down(); }
 
     if (e.keyCode === 13) { // enter key
         
@@ -98,99 +293,29 @@ function checkCommand(e) {
 
             switch (commandArgs[0]) {
 
-                case "mkdir": // if folder doesn't exist, create it and add to fs
-
-                    var folderName = commandArgs.slice(1).join(" ");
-
-                    if (pwd[1].hasOwnProperty(folderName)) {
-                        
-                        history.innerHTML += webtermHTML;
-                        history.innerHTML += "<p>mkdir: cannot create directory '" + folderName + "': File exists</p>";
-                        
-                    } else {
-                        
-                        pwd[1][folderName] = {files: []};
-                        history.innerHTML += webtermHTML;
-                        history.innerHTML += "<p>Folder called " + folderName + " successfully created.</p>";
-                        
-                    }
-
+                case "mkdir":
+                    terminal.mkdir();
                     addToHistory(command);
-                    count = 0;
-
                 break;
                     
-                case "touch": // if file doesn't exist, create it and add to documents folder
-
-                    var fileName = commandArgs.slice(1).join(" ");
-
-                    var files = pwd[1].files;
-                                        
-                    if (files.indexOf(fileName) !== -1) {
-                        
-                        history.innerHTML += webtermHTML;
-                        history.innerHTML += "<p>touch: cannot create file '" + fileName + "': File exists</p>";
-                        
-                    } else {
-                        
-                        files.push(fileName);
-                        history.innerHTML += webtermHTML;
-                        history.innerHTML += "<p>File called " + fileName + " successfully created.</p>";
-                        
-                    }
-
+                case "touch":
+                    terminal.touch();
                     addToHistory(command);
-                    count = 0;
-
                 break;
                     
-                case "rm": // if file exists, remove it
-
-                    var fileName = commandArgs.slice(1).join(" ");
-
-                    var files = pwd[1].files;
-                                        
-                    if (files.indexOf(fileName) !== -1) {
-                        
-                        files.pop(fileName);
-                        history.innerHTML += webtermHTML;
-                        
-                        
-                    } else {
-                        
-                        history.innerHTML += webtermHTML;
-                        history.innerHTML += "<p>rm: cannot remove '" + fileName + "': No such file or directory</p>";
-                        
-                    }
-
+                case "rm":
+                    terminal.rm();
                     addToHistory(command);
-                    count = 0;
-
                 break;
                     
                 case "echo":
-
-                    var echo = commandArgs.slice(1).join(" ");
-                    console.log(echo);
-                                        
-                    history.innerHTML += webtermHTML;
-                    history.innerHTML += "<p>" + echo + "</p>";
-
+                    terminal.echo();
                     addToHistory(command);
-                    count = 0;
-
                 break;
                     
-                case "cd": // change directory
-
-                    var directory = commandArgs.slice(1).join(" ");
-                    
-                    console.log(directory);
-                    pwd = "";
-                    
+                case "cd":
+                    terminal.cd();
                     addToHistory(command);
-                    count = 0;
-
                 break;
 
             }
@@ -199,31 +324,9 @@ function checkCommand(e) {
 
             switch (commandArgs[0] + " " + commandArgs[1]) {
 
-                case "youtube -s": // search youtube with argument passed in
-
-                    var base = "https://www.youtube.com/results?search_query=";
-                    var term = "";
-
-                    for (var i = 2; i < commandArgs.length; i++) {
-                        
-                        term += commandArgs[i] + "%20";
-                        
-                    }
-
-                    term = term.slice(0,-3);
-
-                    if (term !== "") {
-                        
-                        var url = base + term;
-                        window.open(url, '_blank');
-                        
-                    }
-
-                    history.innerHTML += webtermHTML;
-
+                case "youtube -s":
+                    terminal.youtubeFlagS();
                     addToHistory(command);
-                    count = 0;
-
                 break;
                     
             } //switch
@@ -232,135 +335,68 @@ function checkCommand(e) {
 
             switch (command) {
 
-                case "help": // show list of commands
-
-                    history.innerHTML += webtermHTML;
-                    var displayCommands = "";
-                    
-                    for (var i = 0; i < helpList.length; i++) { // display help
-                        
-                        displayCommands += "<p>" + helpList[i] + "</p>";
-                        
-                    }
-
-                    history.innerHTML += displayCommands;
-
+                case "help":
+                    terminal.help();
                     addToHistory(command);
-                    count = 0;
-
+                break;
+                    
+                case "version":
+                    terminal.version();
+                    addToHistory(command);
                 break;
                     
                 case "history":
-                                        
-                    history.innerHTML += webtermHTML;
-                    for (var key in hist) {
-                        
-                        history.innerHTML += "<p>" + hist[key] + "</p>";
-                    }
-                    
+                    terminal.history();
                     addToHistory(command);
-                    count = 0;
-
                 break;
 
-                case "cd /home/rt/desktop": // fake cd functionality
-
-                    history.innerHTML += webtermHTML;
-
-                    pwd = ["/home/rt/desktop", fs.home.rt.desktop, "/home/rt/desktop"];
-                    document.getElementById("block").innerHTML = "WebTerm:" + pwd[0] + " rt$ ";
-
+                case "cd /home/rt/desktop":
+                    output.innerHTML += outputHTML;
+                    pwd = ["/home/rt/desktop", terminal.fs.home.rt.desktop, "/home/rt/desktop"];
+                    document.getElementById("commandLine").innerHTML = "WebTerm:" + pwd[0] + user + "$ ";
                     addToHistory(command);
-                    count = 0;
-
                 break;
 
-                case "pwd": // show present working directory
-
-                    history.innerHTML += webtermHTML;
-                    history.innerHTML += "<p>" + pwd[2] + "</p>";
-
+                case "pwd":
+                    terminal.pwd();
                     addToHistory(command);
-                    count = 0;
-
                 break;
 
-                case "ll": // show all files in fs/home/rt
-
-                    var list = "";
-
-                    
-                    for (var key in pwd[1]) { // loop through objects in fs to show files
-                        var obj = pwd[1][key];
-                        for (var prop in obj) { // important check that this is objects own property not from prototype prop inherited
-                            if (obj.hasOwnProperty(prop) && obj[prop].length > 0) {
-                                
-                                list += "<p class='file'>" + key + " = " + obj[prop] + "</p>";
-                                
-                            } else {
-                                
-                                list += "<p class='file'>" + key + " = empty</p>";
-                            
-                            }
-                        }
-                    }
-
-                    history.innerHTML += webtermHTML;
-                    history.innerHTML += "<p>" + list + "</p>";
-
+                case "ls":
+                    terminal.ls();
                     addToHistory(command);
-                    count = 0;
-
                 break;
 
-                case "clear": // clear page
-
-                    history.innerHTML = "";
-
+                case "clear":
+                    terminal.clear();
                     addToHistory(command);
-                    count = 0;
-
                 break;
 
-                case "youtube": // open youtube in new tab
-
-                    history.innerHTML += webtermHTML;
-
-                    window.open('http://www.youtube.com','_blank');
-
+                case "youtube":
+                    terminal.youtube();
                     addToHistory(command);
-                    count = 0;
-
                 break;
 
-                case "cd": // change directory, no argument
-
-                    pwd = ["~", fs.home.rt, "/home/rt"];
-
+                case "cd":
+                    pwd = ["~", terminal.fs.home.rt, "/home/rt"];
                     addToHistory(command);
-                    count = 0;
-
                 break;
                     
                 case "date":
-                    
-                    history.innerHTML += webtermHTML;
-                    history.innerHTML = "<p>" + Date() + "</p>";
-                    
+                    terminal.date();
                     addToHistory(command);
-                    count = 0;
-                    
                 break;
 
                 default:
-                    history.innerHTML = "<p>No such command exists. Type 'help' for a list of commands.</p>";
+                    output.innerHTML = "<p>No such command exists. Type 'help' for a list of commands.</p>";
             }
         }
 
-        commands.value = ""; // reset command line
-        commands.size = 1; // reset caret
+        input.value = ""; // reset command line
+        input.size = 1; // reset caret
+        count = 0; // reset up/down history
     } // enter key
 
 } // checkCommand
 
-commands.addEventListener("keyup", checkCommand, false);
+input.addEventListener("keyup", checkCommand, false);

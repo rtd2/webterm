@@ -21,4 +21,12 @@ textarea:focus, input:focus{ outline: 0; }
 
 .file {
     color: white;
+    display: inline;
+    margin-right: 20px;
+}
+
+.folder {
+    color: SlateBlue;
+    display: inline;
+    margin-right: 20px;
 }
