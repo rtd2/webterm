@@ -25,9 +25,7 @@ var terminal = {
     hist: [],
     ver: "0.1",
     user: "user",
-    lastLogin: function() {
-        return new Date();
-    },
+    lastLogin: "",
     termthemes: {
         white: ["#FFF", "#000", "#999", "Green"], // background, text, file, folder
         old: ["#2E312C", "#9DCE91", "#FFF", "SlateBlue"]
@@ -131,13 +129,16 @@ var terminal = {
         // create username cookie and set username to terminal.user. cookie will expire in 30 days after creation
         var now = new Date();
         var expiry = new Date(now);
-        var expiryNum = expiry.setDate(expiry.getDate()+30);
+        var expiryNum = expiry.setDate(expiry.getDate() + 1);
         document.cookie = "username=" + terminal.user; + "expires=" + expiryNum;
     },
     // -----------------------------------------------------------------------
     // Change the terminal's user back to default
     // -----------------------------------------------------------------------
     signout: function() {
+
+        document.cookie = "username=" + terminal.user; + "expires=Thu, 18 Dec 2013 12:00:00 UTC";
+
         terminal.user = "user";
         commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
 
@@ -442,6 +443,56 @@ var input = document.getElementById("input");
 var histindex = 0;
 var count = 0;
 var termtheme = terminal.termthemes.old;
+
+
+
+
+
+
+
+
+// cookie stuff
+function getCookie(cookieName) {
+    var name = cookieName + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i<ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1);
+        if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+    }
+    return "";
+}
+
+
+
+
+function lastLogin() {
+        return new Date();
+    }
+
+terminal.lastLogin = lastLogin();
+
+//set last login cookie
+document.cookie = "lastlogin=" + terminal.lastLogin;
+
+
+
+
+
+var username = getCookie("username");
+var lastLogin = getCookie("lastlogin");
+if ( username !== "") {
+    output = document.getElementById("output");
+    output.innerHTML = "<p style='color:" + termtheme[1] + "'>Welcome back " + username + ". Last login: " + lastLogin + "</p>";
+}
+
+
+
+
+
+
+
+
 
 function addToHistory(command) {
     
