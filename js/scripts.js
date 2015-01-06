@@ -25,6 +25,9 @@ var terminal = {
     hist: [],
     ver: "0.1",
     user: "user",
+    lastLogin: function() {
+        return new Date();
+    },
     termthemes: {
         white: ["#FFF", "#000", "#999", "Green"], // background, text, file, folder
         old: ["#2E312C", "#9DCE91", "#FFF", "SlateBlue"]
@@ -120,11 +123,16 @@ var terminal = {
     // -----------------------------------------------------------------------
     signin: function() {
         var user = commandArgs.slice(1).join(" ");
-        
+
         terminal.user = user;
         commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + user + "$ ";
-
         output.innerHTML += outputHTML;
+
+        // create username cookie and set username to terminal.user. cookie will expire in 30 days after creation
+        var now = new Date();
+        var expiry = new Date(now);
+        var expiryNum = expiry.setDate(expiry.getDate()+30);
+        document.cookie = "username=" + terminal.user; + "expires=" + expiryNum;
     },
     // -----------------------------------------------------------------------
     // Change the terminal's user back to default
