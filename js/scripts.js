@@ -171,11 +171,38 @@ var terminal = {
         }
     },
     // -----------------------------------------------------------------------
-    // Change directory ================ not yet functional
+    // Change directory
     // -----------------------------------------------------------------------
     cd: function() {
         var directory = commandArgs.slice(1).join(" ");
-        pwd = "";
+        
+        function replaceAll(find, replace, str) {
+            return str.replace(new RegExp(find, 'g'), replace);
+        }
+        
+        var fsdir = replaceAll("/", ".", directory);
+        
+        while(fsdir.charAt(0) === '.') {
+            fsdir = fsdir.substr(1);
+        }
+                        
+        function index(obj,is, value) {
+            if (typeof is == 'string')
+                return index(obj, is.split('.'), value);
+            else if (is.length == 1 && value !== undefined)
+                return obj[is[0]] = value;
+            else if (is.length == 0)
+                return obj;
+            else
+                return index(obj[is[0]],is.slice(1), value);
+        }
+        
+        var termfsdir = index(terminal.fs, fsdir);
+        
+        pwd = [directory, termfsdir, directory];
+        commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
+        
+        output.innerHTML += outputHTML;
     },
     // -----------------------------------------------------------------------
     // Open Youtube in a new tab
