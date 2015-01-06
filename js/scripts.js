@@ -4,7 +4,7 @@ var terminal = {
 // -----------------------------------------------------------------------
     fs: {
         home: {
-            rt: {
+            user: {
                 desktop: {
                     files: ["abc.txt", "urmum.txt"]
                 },
@@ -26,7 +26,7 @@ var terminal = {
     ver: "0.1",
     user: "user",
     termthemes: {
-        white: ["#FFF", "#000", "#999", "Green"],
+        white: ["#FFF", "#000", "#999", "Green"], // background, text, file, folder
         old: ["#2E312C", "#9DCE91", "#FFF", "SlateBlue"]
     },
     commandLine: document.getElementById("commandLine"),
@@ -89,6 +89,7 @@ var terminal = {
             commandLine.style.color = termtheme[1];
             
             var putNodes = output.childNodes;
+            console.log(putNodes);
             for (var i = 0; i < putNodes.length; i++) {
                 putNodes[i].style.color = termtheme[1];
             }
@@ -195,6 +196,7 @@ var terminal = {
 
 
             var current = pwd[2];
+            console.log(current);
             var le = pwd[2].length - 1;
             while(current.charAt(le) !== '/') {
                 current = current.substr(0, current.length - 1);
@@ -246,33 +248,34 @@ var terminal = {
     // -----------------------------------------------------------------------
     // Open Youtube in a new tab
     // -----------------------------------------------------------------------
-    youtube: function() {
-        output.innerHTML += outputHTML;
-        window.open('http://www.youtube.com','_blank');
-    },
-    // -----------------------------------------------------------------------
-    // Open Youtube in a new tab
-    // -----------------------------------------------------------------------
-    youtubeFlagS: function() {
-        var base = "https://www.youtube.com/results?search_query=";
-        var term = "";
-        output.innerHTML += outputHTML;
+    youtube: {
+        default: function() {
+            output.innerHTML += outputHTML;
+            window.open('http://www.youtube.com','_blank');
+        },
+        s: function() {
+            var base = "https://www.youtube.com/results?search_query=";
+            var term = "";
+            output.innerHTML += outputHTML;
 
-        for (var i = 2; i < commandArgs.length; i++) {
+            for (var i = 2; i < commandArgs.length; i++) {
 
-            term += commandArgs[i] + "%20";
+                term += commandArgs[i] + "%20";
 
+            }
+
+            term = term.slice(0,-3);
+
+            if (term !== "") {
+
+                var url = base + term;
+                window.open(url, '_blank');
+
+            }
         }
-
-        term = term.slice(0,-3);
-
-        if (term !== "") {
-
-            var url = base + term;
-            window.open(url, '_blank');
-
-        }
+        
     },
+    
     // -----------------------------------------------------------------------
     // Output the present working directory
     // -----------------------------------------------------------------------
@@ -283,30 +286,68 @@ var terminal = {
     // -----------------------------------------------------------------------
     // List the files and folders of the pwd
     // -----------------------------------------------------------------------
-    ls: function() {
+    ls: {
+        default: function() {
         
-        var list = "";
-        var keys = Object.keys(pwd[1]);
-        var files = pwd[1].files;
-        
-        for (var key in keys) {
-            
-            if (keys[key] !== "files") {
-                
-                list+= "<p class='folder' style='color:" + termtheme[3] + "'>" + keys[key] + "</p>";
-                
-            }
-            
-        }
-        
-        for (var file in files) {
-            
-            list += "<p class='file' style='color:" + termtheme[2] + "'>" + files[file] + "</p>";
-            
-        }
+            var list = "";
+            var keys = Object.keys(pwd[1]);
+            var files = pwd[1].files;
 
-        output.innerHTML += outputHTML;
-        output.innerHTML += list;
+            for (var key in keys) {
+
+                if (keys[key] !== "files") {
+
+                    list+= "<p class='folder' style='color:" + termtheme[3] + "'>" + keys[key] + "</p>";
+
+                }
+
+            }
+
+            for (var file in files) {
+
+                list += "<p class='file' style='color:" + termtheme[2] + "'>" + files[file] + "</p>";
+
+            }
+
+            output.innerHTML += outputHTML;
+            output.innerHTML += list;
+        },
+        l: function() {
+            var flag = commandArgs.slice(1).join(" ");
+            if (flag === "-l") {
+                
+                var list = "";
+                var keys = Object.keys(pwd[1]);
+                var files = pwd[1].files;
+
+                for (var key in keys) {
+
+                    if (keys[key] !== "files") {
+
+                        list+= "<p class='folder' style='display: block; color:" + termtheme[3] + "'>" + keys[key] + "</p>";
+
+                    }
+
+                }
+
+                for (var file in files) {
+
+                    list += "<p class='file' style='display: block; color:" + termtheme[2] + "'>" + files[file] + "</p>";
+
+                }
+
+                output.innerHTML += outputHTML;
+                output.innerHTML += list;
+            } else if (flag === "--help" || flag === "-help") {
+                
+                output.innerHTML += outputHTML;
+                output.innerHTML += "<p style='color:" + termtheme[1] + "'>Help information..</p>"
+                
+            } else {
+                output.innerHTML += outputHTML;
+                output.innerHTML += "<p style='color:" + termtheme[1] + "'>ls: invalid option '" + flag + "'</p><p style='color:" + termtheme[1] + "'>Try 'ls --help' for more information.</p>"
+            }
+        }
     },
     // -----------------------------------------------------------------------
     // If file exists in pwd, delete it
@@ -388,7 +429,7 @@ var terminal = {
 }; // end terminal object
 
 var helpList = ["help", "youtube", "youtube -s", "pwd", "mkdir", "touch", "ls", "cd", "clear", "history", "signin", "signout", "theme", "version", "rm", "echo", "date"];
-var pwd = ["~", terminal.fs.home.rt, "/home/rt"];
+var pwd = ["~", terminal.fs.home.user, "/home/user"];
 var input = document.getElementById("input");
 var histindex = 0;
 var count = 0;
@@ -457,6 +498,11 @@ function checkCommand(e) {
                     addToHistory(command);
                 break;
                     
+                case "ls":
+                    terminal.ls.l();
+                    addToHistory(command);
+                break;
+                    
                 case "cd":
                     terminal.cd();
                     addToHistory(command);
@@ -472,7 +518,7 @@ function checkCommand(e) {
             switch (commandArgs[0] + " " + commandArgs[1]) {
 
                 case "youtube -s":
-                    terminal.youtubeFlagS();
+                    terminal.youtube.s();
                     addToHistory(command);
                 break;
                     
@@ -511,7 +557,7 @@ function checkCommand(e) {
                 break;
 
                 case "ls":
-                    terminal.ls();
+                    terminal.ls.default();
                     addToHistory(command);
                 break;
 
@@ -522,11 +568,6 @@ function checkCommand(e) {
 
                 case "youtube":
                     terminal.youtube();
-                    addToHistory(command);
-                break;
-
-                case "cd":
-                    pwd = ["~", terminal.fs.home.rt, "/home/rt"];
                     addToHistory(command);
                 break;
                     
