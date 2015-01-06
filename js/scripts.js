@@ -176,16 +176,6 @@ var terminal = {
     cd: function() {
         var directory = commandArgs.slice(1).join(" ");
         
-        function replaceAll(find, replace, str) {
-            return str.replace(new RegExp(find, 'g'), replace);
-        }
-        
-        var fsdir = replaceAll("/", ".", directory);
-        
-        while(fsdir.charAt(0) === '.') {
-            fsdir = fsdir.substr(1);
-        }
-                        
         function index(obj,is, value) {
             if (typeof is == 'string')
                 return index(obj, is.split('.'), value);
@@ -197,10 +187,59 @@ var terminal = {
                 return index(obj[is[0]],is.slice(1), value);
         }
         
-        var termfsdir = index(terminal.fs, fsdir);
+        function replaceAll(find, replace, str) {
+            return str.replace(new RegExp(find, 'g'), replace);
+        }
         
-        pwd = [directory, termfsdir, directory];
-        commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
+        if (directory == "..") {
+
+
+            var current = pwd[2];
+            var le = pwd[2].length - 1;
+            while(current.charAt(le) !== '/') {
+                current = current.substr(0, current.length - 1);
+                le--;
+            }
+            current = current.substr(0, current.length - 1);
+            
+            var predir = replaceAll("/", ".", current);
+            
+            while(predir.charAt(0) === '.') {
+                predir = predir.substr(1);
+            }
+            
+            var fspredir = index(terminal.fs, predir);
+            
+            pwd = [current, fspredir, current];
+            commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
+            
+        } else if (pwd[1].hasOwnProperty(directory)) {
+                  
+            var reldir = pwd[2] + "/" + directory;
+            var dotreldir = replaceAll("/", ".", reldir);
+            
+            while(dotreldir.charAt(0) === '.') {
+                dotreldir = dotreldir.substr(1);
+            }
+            
+            var fsreldir = index(terminal.fs, dotreldir);
+            
+            pwd = [reldir, fsreldir, reldir];
+            commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
+        
+        } else {
+
+            var fsdir = replaceAll("/", ".", directory);
+
+            while(fsdir.charAt(0) === '.') {
+                fsdir = fsdir.substr(1);
+            }
+
+            var termfsdir = index(terminal.fs, fsdir);
+
+            pwd = [directory, termfsdir, directory];
+            commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
+        }
         
         output.innerHTML += outputHTML;
     },
