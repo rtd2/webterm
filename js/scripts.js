@@ -130,14 +130,15 @@ var terminal = {
         var now = new Date();
         var expiry = new Date(now);
         var expiryNum = expiry.setDate(expiry.getDate() + 30);
-        document.cookie = "username=" + terminal.user; + "expires=" + expiryNum;
+        document.cookie = "username=" + terminal.user; + "expires=" + expiry;
     },
     // -----------------------------------------------------------------------
     // Change the terminal's user back to default
     // -----------------------------------------------------------------------
     signout: function() {
 
-        document.cookie = "username=" + terminal.user; + "expires=Thu, 18 Dec 2013 12:00:00 UTC";
+        var now = new Date();
+        document.cookie = "username=" + terminal.user; + "expires=" + now;
 
         terminal.user = "user";
         commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
@@ -470,6 +471,8 @@ var lastLogin = getCookie("lastlogin");
 if ( username !== "" && username !== "user") {
     output = document.getElementById("output");
     output.innerHTML = "<p style='color:" + termtheme[1] + "'>Welcome back " + username + ". Last login: " + lastLogin + "</p>";
+    terminal.user = username;
+    terminal.commandLine.innerHTML = "WebTerm:~ " + terminal.user + "$  ";
 }
 
 
@@ -489,10 +492,7 @@ function addToHistory(command) {
 
 //prevent default tab functionality
 function tab(e) {
-    if ( e.keyCode === 9 ) {
-        e.preventDefault();
-    }
-    console.log("keydown");
+    if ( e.keyCode === 9 ) { e.preventDefault(); }
 }
 
 
