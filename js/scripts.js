@@ -129,7 +129,7 @@ var terminal = {
         // create username cookie and set username to terminal.user. cookie will expire in 30 days after creation
         var now = new Date();
         var expiry = new Date(now);
-        var expiryNum = expiry.setDate(expiry.getDate() + 1);
+        var expiryNum = expiry.setDate(expiry.getDate() + 30);
         document.cookie = "username=" + terminal.user; + "expires=" + expiryNum;
     },
     // -----------------------------------------------------------------------
@@ -320,7 +320,9 @@ var terminal = {
 
             output.innerHTML += outputHTML;
             output.innerHTML += list;
+            if ( list === "" ) { output.innerHTML += "<p style='color:" + termtheme[2] + "'>empty</p>"; }
         },
+
         l: function() {
             var flag = commandArgs.slice(1).join(" ");
             if (flag === "-l") {
@@ -435,6 +437,12 @@ var terminal = {
             count = 0;
         }
     },
+    // -----------------------------------------------------------------------
+    // Cycle from last index of terminal.hist array
+    // -----------------------------------------------------------------------
+    tabComplete: function() {
+           console.log("I will do tab completion.");
+    }
 }; // end terminal object
 
 var helpList = ["help", "youtube", "youtube -s", "pwd", "mkdir", "touch", "ls", "cd", "clear", "history", "signin", "signout", "theme", "version", "rm", "echo", "date"];
@@ -445,13 +453,7 @@ var count = 0;
 var termtheme = terminal.termthemes.old;
 
 
-
-
-
-
-
-
-// cookie stuff
+// get a cookie
 function getCookie(cookieName) {
     var name = cookieName + "=";
     var ca = document.cookie.split(';');
@@ -463,36 +465,18 @@ function getCookie(cookieName) {
     return "";
 }
 
-
-
-
-function lastLogin() {
-        return new Date();
-    }
-
-terminal.lastLogin = lastLogin();
-
-//set last login cookie
-document.cookie = "lastlogin=" + terminal.lastLogin;
-
-
-
-
-
 var username = getCookie("username");
 var lastLogin = getCookie("lastlogin");
-if ( username !== "") {
+if ( username !== "" && username !== "user") {
     output = document.getElementById("output");
     output.innerHTML = "<p style='color:" + termtheme[1] + "'>Welcome back " + username + ". Last login: " + lastLogin + "</p>";
 }
 
 
+terminal.lastLogin = new Date();
 
-
-
-
-
-
+//set last login cookie
+document.cookie = "lastlogin=" + terminal.lastLogin;
 
 function addToHistory(command) {
     
@@ -502,6 +486,15 @@ function addToHistory(command) {
         
     }
 }
+
+//prevent default tab functionality
+function tab(e) {
+    if ( e.keyCode === 9 ) {
+        e.preventDefault();
+    }
+    console.log("keydown");
+}
+
 
 function checkCommand(e) {
 
@@ -516,6 +509,8 @@ function checkCommand(e) {
     } else {
         input.size = 1;
     }
+
+    if (e.keyCode === 9) { terminal.tabComplete(); }
 
     if (e.keyCode === 38) { terminal.up(); }
 
@@ -649,3 +644,4 @@ function checkCommand(e) {
 } // checkCommand
 
 input.addEventListener("keyup", checkCommand, false);
+input.addEventListener("keydown", tab, false);
