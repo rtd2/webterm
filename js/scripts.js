@@ -255,9 +255,14 @@ var terminal = {
             }
 
             var termfsdir = index(terminal.fs, fsdir);
+            console.log(termfsdir);
+            
+            if (termfsdir != undefined) {
 
-            pwd = [directory, termfsdir, directory];
-            commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
+                pwd = [directory, termfsdir, directory];
+                commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
+                
+            }
         }
         
         output.innerHTML += outputHTML;
@@ -386,6 +391,55 @@ var terminal = {
             output.innerHTML += outputHTML;
             output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot remove '" + fileName + "': No such file or directory</p>";
 
+        }
+    },
+    
+    // -----------------------------------------------------------------------
+    // Move
+    // -----------------------------------------------------------------------
+    mv: function() {
+        console.log("move");
+        
+        var filedir = commandArgs[1];
+        var destination = commandArgs[2];
+        var objProps = Object.keys(pwd[1]);
+        var objFiles = pwd[1].files;
+        
+        for (var Prop in objProps) {
+            if (filedir === objProps[Prop]) {
+                console.log("success - dir");
+                var dir = objProps[Prop];
+            }
+        }
+        
+        for (var File in objFiles) {
+            if (filedir === objFiles[File]) {
+                console.log("success - file");
+                var fil = objFiles[File];
+            }
+        }
+        
+        if (dir == undefined && fil == undefined) {
+            output.innerHTML += outputHTML;
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + filedir + "': No such file or directory</p>";
+        } else {
+            console.log("success");
+        }
+    },
+    
+    // -----------------------------------------------------------------------
+    // Copy
+    // -----------------------------------------------------------------------
+    cp: function() {
+        console.log("copy");
+        
+        var file1 = commandArgs[1];
+        var file2 = commandArgs[2];
+        var objFiles = pwd[1].files;
+        for (var file in objFiles) {
+            if (file1 === objFiles[file]) {
+                objFiles.push(file2);
+            }
         }
     },
     // -----------------------------------------------------------------------
@@ -589,6 +643,26 @@ function checkCommand(e) {
 
                 case "youtube -s":
                     terminal.youtube.s();
+                    addToHistory(command);
+                break;
+                    
+                default:
+                    if (commandArgs[0] !== "cp" && commandArgs[0] !== "mv") {
+                        output.innerHTML += outputHTML;
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
+                    }
+
+            }
+            
+            switch (commandArgs[0]) {
+
+                case "cp":
+                    terminal.cp();
+                    addToHistory(command);
+                break;
+                    
+                case "mv":
+                    terminal.mv();
                     addToHistory(command);
                 break;
                     
