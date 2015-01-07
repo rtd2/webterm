@@ -27,8 +27,18 @@ var terminal = {
     user: "user",
     lastLogin: "",
     termthemes: {
-        white: ["#FFF", "#000", "#999", "Green"], // background, text, file, folder
-        old: ["#2E312C", "#9DCE91", "#FFF", "SlateBlue"]
+        white: {
+            background: "#FFF",
+            text: "#000",
+            file: "#999",
+            folder: "Green"
+        },
+        old: {
+            background: "#2E312C",
+            text: "#9DCE91",
+            file: "#FFF",
+            folder: "SlateBlue"
+        }
     },
     commandLine: document.getElementById("commandLine"),
     
@@ -43,7 +53,7 @@ var terminal = {
 
         for (var i = 0; i < helpList.length; i++) {
 
-            displayCommands += "<p style='color:" + termtheme[1] + "'>" + helpList[i] + "</p>";
+            displayCommands += "<p style='color:" + termtheme.text + "'>" + helpList[i] + "</p>";
 
         }
 
@@ -61,7 +71,7 @@ var terminal = {
     // -----------------------------------------------------------------------
     date: function() {
         output.innerHTML += outputHTML;
-        output.innerHTML += "<p style='color:" + termtheme[1] + "'>" + Date() + "</p>";
+        output.innerHTML += "<p style='color:" + termtheme.text + "'>" + Date() + "</p>";
     },
     // -----------------------------------------------------------------------
     // Output argument as a string
@@ -70,7 +80,7 @@ var terminal = {
         var echo = commandArgs.slice(1).join(" ");
 
         output.innerHTML += outputHTML;
-        output.innerHTML += "<p style='color:" + termtheme[1] + "'>" + echo + "</p>";
+        output.innerHTML += "<p style='color:" + termtheme.text + "'>" + echo + "</p>";
     },
     // -----------------------------------------------------------------------
     // Change the terminal theme
@@ -84,34 +94,33 @@ var terminal = {
             
             termtheme = terminal.termthemes.white;
             
-            document.body.style.background = termtheme[0];
-            input.style.color = termtheme[1];
-            input.style.background = termtheme[0];
-            commandLine.style.color = termtheme[1];
+            document.body.style.background = termtheme.background;
+            input.style.color = termtheme.text;
+            input.style.background = termtheme.background;
+            commandLine.style.color = termtheme.text;
             
             var putNodes = output.childNodes;
-            console.log(putNodes);
             for (var i = 0; i < putNodes.length; i++) {
-                putNodes[i].style.color = termtheme[1];
+                putNodes[i].style.color = termtheme.text;
             }
             
         } else if (theme === "old") {
             
             termtheme = terminal.termthemes.old;
             
-            document.body.style.background = termtheme[0];
-            input.style.color = termtheme[1];
-            input.style.background = termtheme[0];
-            commandLine.style.color = termtheme[1];
+            document.body.style.background = termtheme.background;
+            input.style.color = termtheme.text;
+            input.style.background = termtheme.background;
+            commandLine.style.color = termtheme.text;
             
             var putNodes = output.childNodes;
             for (var i = 0; i < putNodes.length; i++) {
-                putNodes[i].style.color = termtheme[1];
+                putNodes[i].style.color = termtheme.text;
             }
                         
         } else {
             
-            output.innerHTML += "<p style='color:" + termtheme[1] + "'>theme: There is no such theme</p>"
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>theme: There is no such theme</p>"
             
         }
 
@@ -123,7 +132,7 @@ var terminal = {
         var user = commandArgs.slice(1).join(" ");
 
         terminal.user = user;
-        commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + user + "$ ";
+        commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
         output.innerHTML += outputHTML;
 
         // create username cookie and set username to terminal.user. cookie will expire in 30 days after creation
@@ -152,7 +161,7 @@ var terminal = {
         output.innerHTML += outputHTML;
         for (var key in terminal.hist) {
 
-            output.innerHTML += "<p style='color:" + termtheme[1] + "'>" + terminal.hist[key] + "</p>";
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>" + terminal.hist[key] + "</p>";
         }
     },
     // -----------------------------------------------------------------------
@@ -160,7 +169,7 @@ var terminal = {
     // -----------------------------------------------------------------------
     version: function() {
         output.innerHTML += outputHTML;
-        output.innerHTML += "<p style='color:" + termtheme[1] + "'>WebTerm " + terminal.ver + "</p>";
+        output.innerHTML += "<p style='color:" + termtheme.text + "'>WebTerm " + terminal.ver + "</p>";
     },
     // -----------------------------------------------------------------------
     // If the folder doesn't exist in pwd, create it
@@ -171,13 +180,13 @@ var terminal = {
         if (pwd[1].hasOwnProperty(folderName)) {
 
             output.innerHTML += outputHTML;
-            output.innerHTML += "<p style='color:" + termtheme[1] + "'>mkdir: cannot create directory '" + folderName + "': File exists</p>";
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>mkdir: cannot create directory '" + folderName + "': File exists</p>";
 
         } else {
 
             pwd[1][folderName] = {files: []};
             output.innerHTML += outputHTML;
-            output.innerHTML += "<p style='color:" + termtheme[1] + "'>Folder called " + folderName + " successfully created.</p>";
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>Folder called " + folderName + " successfully created.</p>";
 
         }
     },
@@ -204,9 +213,7 @@ var terminal = {
         
         if (directory == "..") {
 
-
             var current = pwd[2];
-            console.log(current);
             var le = pwd[2].length - 1;
             while(current.charAt(le) !== '/') {
                 current = current.substr(0, current.length - 1);
@@ -291,7 +298,7 @@ var terminal = {
     // -----------------------------------------------------------------------
     pwd: function() {
         output.innerHTML += outputHTML;
-        output.innerHTML += "<p style='color:" + termtheme[1] + "'>" + pwd[2] + "</p>";
+        output.innerHTML += "<p style='color:" + termtheme.text + "'>" + pwd[2] + "</p>";
     },
     // -----------------------------------------------------------------------
     // List the files and folders of the pwd
@@ -307,7 +314,7 @@ var terminal = {
 
                 if (keys[key] !== "files") {
 
-                    list+= "<p class='folder' style='color:" + termtheme[3] + "'>" + keys[key] + "</p>";
+                    list+= "<p class='folder' style='color:" + termtheme.folder + "'>" + keys[key] + "</p>";
 
                 }
 
@@ -315,13 +322,13 @@ var terminal = {
 
             for (var file in files) {
 
-                list += "<p class='file' style='color:" + termtheme[2] + "'>" + files[file] + "</p>";
+                list += "<p class='file' style='color:" + termtheme.file + "'>" + files[file] + "</p>";
 
             }
 
             output.innerHTML += outputHTML;
             output.innerHTML += list;
-            if ( list === "" ) { output.innerHTML += "<p style='color:" + termtheme[2] + "'>empty</p>"; }
+            if ( list === "" ) { output.innerHTML += "<p style='color:" + termtheme.text + "'>ls: The current directory is empty</p>"; }
         },
 
         l: function() {
@@ -336,7 +343,7 @@ var terminal = {
 
                     if (keys[key] !== "files") {
 
-                        list+= "<p class='folder' style='display: block; color:" + termtheme[3] + "'>" + keys[key] + "</p>";
+                        list+= "<p class='folder' style='display: block; color:" + termtheme.folder + "'>" + keys[key] + "</p>";
 
                     }
 
@@ -344,7 +351,7 @@ var terminal = {
 
                 for (var file in files) {
 
-                    list += "<p class='file' style='display: block; color:" + termtheme[2] + "'>" + files[file] + "</p>";
+                    list += "<p class='file' style='display: block; color:" + termtheme.file + "'>" + files[file] + "</p>";
 
                 }
 
@@ -353,11 +360,11 @@ var terminal = {
             } else if (flag === "--help" || flag === "-help") {
                 
                 output.innerHTML += outputHTML;
-                output.innerHTML += "<p style='color:" + termtheme[1] + "'>Help information..</p>"
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>Help information..</p>"
                 
             } else {
                 output.innerHTML += outputHTML;
-                output.innerHTML += "<p style='color:" + termtheme[1] + "'>ls: invalid option '" + flag + "'</p><p style='color:" + termtheme[1] + "'>Try 'ls --help' for more information.</p>"
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>ls: invalid option '" + flag + "'</p><p style='color:" + termtheme.text + "'>Try 'ls --help' for more information.</p>"
             }
         }
     },
@@ -377,7 +384,7 @@ var terminal = {
         } else {
 
             output.innerHTML += outputHTML;
-            output.innerHTML += "<p style='color:" + termtheme[1] + "'>rm: cannot remove '" + fileName + "': No such file or directory</p>";
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot remove '" + fileName + "': No such file or directory</p>";
 
         }
     },
@@ -392,13 +399,13 @@ var terminal = {
         if (files.indexOf(fileName) !== -1) {
 
             output.innerHTML += outputHTML;
-            output.innerHTML += "<p style='color:" + termtheme[1] + "'>touch: cannot create file '" + fileName + "': File exists</p>";
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>touch: cannot create file '" + fileName + "': File exists</p>";
 
         } else {
 
             files.push(fileName);
             output.innerHTML += outputHTML;
-            output.innerHTML += "<p style='color:" + termtheme[1] + "'>File called " + fileName + " successfully created.</p>";
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>File called " + fileName + " successfully created.</p>";
 
         }
     },
@@ -446,7 +453,7 @@ var terminal = {
     }
 }; // end terminal object
 
-var helpList = ["help", "youtube", "youtube -s", "pwd", "mkdir", "touch", "ls", "cd", "clear", "history", "signin", "signout", "theme", "version", "rm", "echo", "date"];
+var helpList = ["help", "youtube", "youtube -s [query]", "pwd", "mkdir [folder]", "touch [file]", "ls", "ls -l", "theme white", "theme old", "cd", "clear", "history", "signin [user]", "signout", "version", "rm [file]", "echo [text]", "date"];
 var pwd = ["~", terminal.fs.home.user, "/home/user"];
 var input = document.getElementById("input");
 var histindex = 0;
@@ -470,11 +477,11 @@ var username = getCookie("username");
 var lastLogin = getCookie("lastlogin");
 if ( username !== "" && username !== "user") {
     output = document.getElementById("output");
-    output.innerHTML = "<p style='color:" + termtheme[1] + "'>Welcome back " + username + ". Last login: " + lastLogin + "</p>";
-    terminal.user = username;
-    terminal.commandLine.innerHTML = "WebTerm:~ " + terminal.user + "$  ";
+    output.innerHTML = "<p style='color:" + termtheme.text + "'>Welcome back " + username + ". Last login: " + lastLogin + "</p>";
 }
-
+terminal.user = username;
+terminal.commandLine.innerHTML = "WebTerm:~ " + terminal.user + "$  ";
+"WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
 
 terminal.lastLogin = new Date();
 
@@ -502,7 +509,7 @@ function checkCommand(e) {
     var len = command.length;
     var output = document.getElementById("output");
     commandArgs = command.split(" ");
-    outputHTML = "<p style='color:" + termtheme[1] + "'>WebTerm:" + pwd[0] + " " + terminal.user + "$ " + command + "</p>";
+    outputHTML = "<p style='color:" + termtheme.text + "'>WebTerm:" + pwd[0] + " " + terminal.user + "$ " + command + "</p>";
 
     if (len > 0) { // adjust the caret
         input.size = len + 1;
@@ -564,7 +571,7 @@ function checkCommand(e) {
                 
                 default:
                     output.innerHTML += outputHTML;
-                    output.innerHTML += "<p style='color:" + termtheme[1] + "'>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
             }
             
         } else if (commandArgs.length > 2) { // if the command entered has more than one argument
@@ -578,7 +585,7 @@ function checkCommand(e) {
                     
                 default:
                     output.innerHTML += outputHTML;
-                    output.innerHTML += "<p style='color:" + termtheme[1] + "'>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
             }
 
         } else { // if the command entered has no arguments
@@ -632,7 +639,7 @@ function checkCommand(e) {
 
                 default:
                     output.innerHTML += outputHTML;
-                    output.innerHTML += "<p style='color:" + termtheme[1] + "'>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
             }
         }
 
