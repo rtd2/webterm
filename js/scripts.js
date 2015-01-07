@@ -446,10 +446,19 @@ var terminal = {
         }
     },
     // -----------------------------------------------------------------------
-    // Cycle from last index of terminal.hist array
+    // Tab completion
     // -----------------------------------------------------------------------
     tabComplete: function() {
-           console.log("I will do tab completion.");
+        var command = input.value;
+        if (command.length > 0) {
+            var objProps = Object.keys(pwd[1]);
+            for (var Prop in objProps) {
+                if (objProps[Prop].substring(0, command.length) === command) {
+                    input.value = objProps[Prop];
+                    input.size = objProps[Prop].length + 1;
+                }
+            }
+        }
     }
 }; // end terminal object
 
