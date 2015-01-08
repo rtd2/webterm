@@ -32,8 +32,7 @@ var terminal = {
             text: "#9DCE91",
             file: "#FFF",
             folder: "SlateBlue",
-            commandLine: "#9DCE91",
-            setDefault: true
+            commandLine: "#9DCE91"
         },
         white: {
             background: "#FFF",
@@ -41,7 +40,6 @@ var terminal = {
             file: "#999",
             folder: "Green",
             commandLine: "#000080",
-            setDefault: false
         },
         black: {
             background: "#111",
@@ -49,9 +47,9 @@ var terminal = {
             file: "#FFF",
             folder: "limegreen",
             commandLine: "#FF69B4",
-            setDefault: false
         }
     },
+    themeDefault: "old",
     commandLine: document.getElementById("commandLine"),
     
 // -----------------------------------------------------------------------
@@ -143,15 +141,7 @@ var terminal = {
     },
         // THIS IS NOT FUNCTIONAL
         set: function () {
-            var flag = commandArgs.slice(1);
-            var theme = commandArgs.slice(2);
-            if ( flag === "-set" ) {
-                console.log(terminal.termthemes[theme]);
-                terminal.termthemes[theme] = false;
-                console.log(terminal.termthemes[theme]);
-                console.log(termtheme.setDefault);
-                termtheme.setDefault = true;
-            }
+            terminal.themeDefault = commandArgs[2];
         }
     },
     // -----------------------------------------------------------------------
@@ -551,7 +541,7 @@ var pwd = ["~", terminal.fs.home.user, "/home/user"];
 var input = document.getElementById("input");
 var histindex = 0;
 var count = 0;
-var termtheme = terminal.termthemes.old;
+var termtheme = terminal.termthemes[terminal.themeDefault];
 
 
 // get a cookie
