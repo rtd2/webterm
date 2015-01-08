@@ -32,21 +32,24 @@ var terminal = {
             text: "#9DCE91",
             file: "#FFF",
             folder: "SlateBlue",
-            commandLine: "#9DCE91"
+            commandLine: "#9DCE91",
+            setDefault: true
         },
         white: {
             background: "#FFF",
             text: "#000",
             file: "#999",
             folder: "Green",
-            commandLine: "#000080"
+            commandLine: "#000080",
+            setDefault: false
         },
         black: {
             background: "#111",
             text: "#FFF",
             file: "#FFF",
             folder: "limegreen",
-            commandLine: "#FF69B4"
+            commandLine: "#FF69B4",
+            setDefault: false
         }
     },
     commandLine: document.getElementById("commandLine"),
@@ -94,7 +97,8 @@ var terminal = {
     // -----------------------------------------------------------------------
     // Change the terminal theme
     // -----------------------------------------------------------------------
-    theme: function() {
+    theme: {
+        defaultCase: function() {
         var theme = commandArgs.slice(1).join(" ");
         var themes = Object.keys(terminal.termthemes);
         var displayThemes = themes.join(", ");
@@ -136,6 +140,19 @@ var terminal = {
 
         }
 
+    },
+        // THIS IS NOT FUNCTIONAL
+        set: function () {
+            var flag = commandArgs.slice(1);
+            var theme = commandArgs.slice(2);
+            if ( flag === "-set" ) {
+                console.log(terminal.termthemes[theme]);
+                terminal.termthemes[theme] = false;
+                console.log(terminal.termthemes[theme]);
+                console.log(termtheme.setDefault);
+                termtheme.setDefault = true;
+            }
+        }
     },
     // -----------------------------------------------------------------------
     // Change the terminal's user
@@ -283,7 +300,7 @@ var terminal = {
     // Open Youtube in a new tab
     // -----------------------------------------------------------------------
     youtube: {
-        default: function() {
+        defaultCase: function() {
             output.innerHTML += outputHTML;
             window.open('http://www.youtube.com','_blank');
         },
@@ -321,7 +338,7 @@ var terminal = {
     // List the files and folders of the pwd
     // -----------------------------------------------------------------------
     ls: {
-        default: function() {
+        defaultCase: function() {
         
             var list = "";
             var keys = Object.keys(pwd[1]);
@@ -621,7 +638,7 @@ function checkCommand(e) {
                 break;
                     
                 case "theme":
-                    terminal.theme();
+                    terminal.theme.defaultCase();
                     addToHistory(command);
                 break;
                     
@@ -714,7 +731,7 @@ function checkCommand(e) {
                 break;
 
                 case "ls":
-                    terminal.ls.default();
+                    terminal.ls.defaultCase();
                     addToHistory(command);
                 break;
 
@@ -724,7 +741,7 @@ function checkCommand(e) {
                 break;
 
                 case "youtube":
-                    terminal.youtube();
+                    terminal.youtube.defaultCase();
                     addToHistory(command);
                 break;
                     
