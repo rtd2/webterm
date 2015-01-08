@@ -27,17 +27,26 @@ var terminal = {
     user: "user",
     lastLogin: "",
     termthemes: {
-        white: {
-            background: "#FFF",
-            text: "#000",
-            file: "#999",
-            folder: "Green"
-        },
         old: {
             background: "#2E312C",
             text: "#9DCE91",
             file: "#FFF",
-            folder: "SlateBlue"
+            folder: "SlateBlue",
+            commandLine: "#9DCE91"
+        },
+        white: {
+            background: "#FFF",
+            text: "#000",
+            file: "#999",
+            folder: "Green",
+            commandLine: "#000080"
+        },
+        black: {
+            background: "#111",
+            text: "#FFF",
+            file: "#FFF",
+            folder: "limegreen",
+            commandLine: "#FF69B4"
         }
     },
     commandLine: document.getElementById("commandLine"),
@@ -87,41 +96,44 @@ var terminal = {
     // -----------------------------------------------------------------------
     theme: function() {
         var theme = commandArgs.slice(1).join(" ");
+        var themes = Object.keys(terminal.termthemes);
+        var displayThemes = themes.join(", ");
         
+        var updateDom = function () {
+
+            document.body.style.background = termtheme.background;
+            input.style.color = termtheme.text;
+            input.style.background = termtheme.background;
+            commandLine.style.color = termtheme.commandLine;
+            
+            var putNodes = output.childNodes;
+            for (var i = 0; i < putNodes.length; i++) {
+                putNodes[i].style.color = termtheme.text;
+            }
+        };
+
         output.innerHTML += outputHTML;
-        
-        if (theme === "white") {
-            
-            termtheme = terminal.termthemes.white;
-            
-            document.body.style.background = termtheme.background;
-            input.style.color = termtheme.text;
-            input.style.background = termtheme.background;
-            commandLine.style.color = termtheme.text;
-            
-            var putNodes = output.childNodes;
-            for (var i = 0; i < putNodes.length; i++) {
-                putNodes[i].style.color = termtheme.text;
-            }
-            
-        } else if (theme === "old") {
-            
-            termtheme = terminal.termthemes.old;
-            
-            document.body.style.background = termtheme.background;
-            input.style.color = termtheme.text;
-            input.style.background = termtheme.background;
-            commandLine.style.color = termtheme.text;
-            
-            var putNodes = output.childNodes;
-            for (var i = 0; i < putNodes.length; i++) {
-                putNodes[i].style.color = termtheme.text;
-            }
-                        
-        } else {
-            
-            output.innerHTML += "<p style='color:" + termtheme.text + "'>theme: There is no such theme</p>"
-            
+
+        switch ( theme ) {
+
+            case "old":
+                termtheme = terminal.termthemes.old;
+                updateDom();
+                break;
+
+            case "black":
+                termtheme = terminal.termthemes.black;
+                updateDom();
+                break;
+
+            case "white":
+                termtheme = terminal.termthemes.white;
+                updateDom();
+                break;
+
+            default:
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>theme: There is no such theme. themes available: " + displayThemes + "</p>";
+
         }
 
     },
@@ -506,6 +518,7 @@ var terminal = {
         var command = input.value;
         if (command.length > 0) {
             var objProps = Object.keys(pwd[1]);
+            console.log(objProps);
             for (var Prop in objProps) {
                 if (objProps[Prop].substring(0, command.length) === command) {
                     input.value = objProps[Prop];
@@ -572,7 +585,7 @@ function checkCommand(e) {
     var len = command.length;
     var output = document.getElementById("output");
     commandArgs = command.split(" ");
-    outputHTML = "<p style='color:" + termtheme.text + "'>WebTerm:" + pwd[0] + " " + terminal.user + "$ " + command + "</p>";
+    outputHTML = "<p style='color:" + termtheme.text + "'><span style='color:" + termtheme.commandLine + "'>WebTerm:" + pwd[0] + " " + terminal.user + "$ </span>" + command + "</p>";
 
     if (len > 0) { // adjust the caret
         input.size = len + 1;
