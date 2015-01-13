@@ -533,6 +533,19 @@ var terminal = {
                 }
             }
         }
+    },
+    editor: function () {
+
+        // show text editor overlay
+        var editor = document.getElementById("editor");
+        var editorText = document.getElementById("editor-text");
+        editor.style.display = "inline";
+        editorText.focus();
+
+        // adjust caret ... not working
+        var command = editorText.value;
+        var len = command.length;
+        if (len > 0) { input.size = len + 1; } else { input.size = 1; }
     }
 }; // end terminal object
 
@@ -737,6 +750,11 @@ function checkCommand(e) {
                     
                 case "date":
                     terminal.date();
+                    addToHistory(command);
+                break;
+
+                case "editor":
+                    terminal.editor();
                     addToHistory(command);
                 break;
 
