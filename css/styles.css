@@ -40,8 +40,8 @@ textarea:focus, input:focus{ outline: 0; }
   padding: 0;
   margin: 0;
   position: absolute;
-  background: rgba(0,0,0,0.8);
   display: none;
+  background: rgba(0,0,0,0.8);
 }
 
 .editorFooter {
@@ -61,6 +61,14 @@ textarea:focus, input:focus{ outline: 0; }
 #footerNav {
     color: #fff;
     list-style-type: none;
+}
+
+.hide {
+    display: none;
+}
+
+.show {
+    display: inline;
 }
 
 

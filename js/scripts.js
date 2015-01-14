@@ -534,24 +534,33 @@ var terminal = {
             }
         }
     },
-    editor: function () {
+    // -----------------------------------------------------------------------
+    // Text Editor
+    // -----------------------------------------------------------------------
+    editor: {
+        editor: document.getElementById("editor"),
+        textArea: document.getElementById("editor-text"),
+        run: function () {
 
-        // show text editor overlay
-        var editor = document.getElementById("editor");
-        var editorText = document.getElementById("editor-text");
-        editor.style.display = "inline";
-        editorText.focus();
+            // show text editor overlay
+            //terminal.editor.editor.classList.toggle("hide");
+            terminal.editor.editor.style.display = "inline";
+            terminal.editor.textArea.focus();
 
-        // adjust caret ... not working
-        var command = editorText.value;
-        var len = command.length;
-        if (len > 0) { input.size = len + 1; } else { input.size = 1; }
+        },
+        exit: function () {
+            console.log("I have been called.");
+            // hide overlay and prompt to save
+            //terminal.editor.editor.classList.toggle("hide");
+            //terminal.editor.editor.style.display = "none";
+        }
     }
 }; // end terminal object
 
 var helpList = ["help", "youtube", "youtube -s [query]", "pwd", "mkdir [folder]", "touch [file]", "ls", "ls -l", "theme white", "theme old", "cd", "clear", "history", "signin [user]", "signout", "version", "rm [file]", "echo [text]", "date"];
 var pwd = ["~", terminal.fs.home.user, "/home/user"];
 var input = document.getElementById("input");
+//var editor = document.getElementById("editor");
 var histindex = 0;
 var count = 0;
 var termtheme = terminal.termthemes[terminal.themeDefault];
@@ -596,6 +605,11 @@ function addToHistory(command) {
 //prevent default tab functionality
 function tab(e) {
     if ( e.keyCode === 9 ) { e.preventDefault(); }
+}
+
+
+function textEditor(e) {
+    if ( e.keycode === 27 ) { terminal.editor.exit(); } // escape key
 }
 
 
@@ -754,7 +768,7 @@ function checkCommand(e) {
                 break;
 
                 case "editor":
-                    terminal.editor();
+                    terminal.editor.run();
                     addToHistory(command);
                 break;
 
@@ -773,3 +787,4 @@ function checkCommand(e) {
 
 input.addEventListener("keyup", checkCommand, false);
 input.addEventListener("keydown", tab, false);
+terminal.editor.textArea.addEventListener("keyup", textEditor, false);
