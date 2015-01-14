@@ -6,10 +6,44 @@ var terminal = {
         home: {
             user: {
                 desktop: {
-                    files: ["abc.txt", "urmum.txt"]
+                    files: [{
+                        // WILL HAVE TO DETERMINE WHICH ARCHITECTURE MAKES MOST SENSE
+                        {
+                            name: "abc.txt",
+                            content: "I am content",
+                            created: "",
+                            modified: ""
+                        },
+                        {
+                            name: "urmum.txt",
+                            content: "",
+                            created: "",
+                            modified: ""
+                        }
+                        
+                    }]
                 },
                 downloads: {
-                    files: ["example.txt", "document.txt", "another.txt"]
+                    files: [{
+                        example: {
+                            content: "",
+                            extension: "txt",
+                            created: "",
+                            modified: ""
+                        },
+                        "document.txt": {
+                            name: "document",
+                            content: "some content here"
+                            created: "",
+                            modified: ""
+                        },
+                        another: {
+                            name: "another.txt",
+                            created: "",
+                            modified: ""
+                        }
+                    
+                    }]
                 },
                 documents: {
                     files: []
