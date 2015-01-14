@@ -540,19 +540,48 @@ var terminal = {
     editor: {
         editor: document.getElementById("editor"),
         textArea: document.getElementById("editor-text"),
+        footer: document.getElementById("editorFooter"),
+        footerNav: document.getElementById("footerNav"),
+        highlight: document.getElementsByClassName("highlight"),
         run: function () {
 
+            // set editor to theme
+            terminal.editor.editor.style.color = termtheme.text;
+            terminal.editor.editor.style.background = termtheme.background;
+            terminal.editor.footer.style.borderColor = termtheme.text;
+            terminal.editor.footerNav.style.color = termtheme.text;
+
+            // style footer list items. iterate over items with class of highlight and apply styles.
+            for ( var i = 0; i < terminal.editor.highlight.length; i++ ) {
+
+                item = terminal.editor.highlight[i];
+                item.style.color = termtheme.background;
+                item.style.background = termtheme.text;
+
+            }
+
             // show text editor overlay
-            //terminal.editor.editor.classList.toggle("hide");
             terminal.editor.editor.style.display = "inline";
             terminal.editor.textArea.focus();
+
+            var newFile = {};
+            newFile.contents = "";
+            terminal.fs.home.user.documents.files.push(newFile);
+
+            // autosave every 3 seconds. ideally we would be prompting to save
+            setInterval(function(){ 
+                newFile.contents = terminal.editor.textArea.value;
+                console.log(newFile.contents);
+                console.log(terminal.fs.home.user.documents.files);
+            }, 3000);
 
         },
         exit: function () {
             console.log("I have been called.");
+            // stop auto save (setInterval function)
+            clearInterval();
             // hide overlay and prompt to save
-            //terminal.editor.editor.classList.toggle("hide");
-            //terminal.editor.editor.style.display = "none";
+            terminal.editor.editor.style.display = "none";
         }
     }
 }; // end terminal object
