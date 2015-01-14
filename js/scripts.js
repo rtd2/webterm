@@ -56,6 +56,15 @@ var terminal = {
 // -----------------------------------------------------------------------
 // MORE TERMINAL PROPERTIES
 // -----------------------------------------------------------------------
+    File: function ( name, content, extension, modified ) {
+
+        this.name = name;
+        this.content = content;
+        this.extension = extension;
+        this.created = Date();
+        this.modified = modified;
+
+    },
     hist: [],
     ver: "0.1",
     user: "user",
@@ -600,14 +609,14 @@ var terminal = {
             terminal.editor.editor.style.display = "inline";
             terminal.editor.textArea.focus();
 
-            var newFile = {};
-            newFile.contents = "";
-            terminal.fs.home.user.documents.files.push(newFile);
+            var file = new terminal.File("stuff"," ","txt", Date());
+            console.log(file);
+            terminal.fs.home.user.documents.files.push(file);
 
             // autosave every 3 seconds. ideally we would be prompting to save
             setInterval(function(){ 
-                newFile.contents = terminal.editor.textArea.value;
-                console.log(newFile.contents);
+                file.content = terminal.editor.textArea.value;
+                console.log(file.contents);
                 console.log(terminal.fs.home.user.documents.files);
             }, 3000);
 
