@@ -548,6 +548,8 @@ var terminal = {
             // set editor to theme
             terminal.editor.editor.style.color = termtheme.text;
             terminal.editor.editor.style.background = termtheme.background;
+            terminal.editor.textArea.style.color = termtheme.text;
+            terminal.editor.textArea.style.background = termtheme.background;
             terminal.editor.footer.style.borderColor = termtheme.text;
             terminal.editor.footerNav.style.color = termtheme.text;
 
