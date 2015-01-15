@@ -2,69 +2,79 @@ var terminal = {
 // -----------------------------------------------------------------------
 // VIRTUAL FILESYSTEM
 // -----------------------------------------------------------------------
-    fs: {
-        home: {
-            user: {
-                desktop: {
-                    files: [
-                        // WILL HAVE TO DETERMINE WHICH ARCHITECTURE MAKES MOST SENSE
-                        {
-                            name: "abc.txt",
-                            content: "I am content",
-                            created: "",
-                            modified: ""
+    "fs": {
+        "home": {
+            "user": {
+                "desktop": {
+                    "files": [{
+                        "abc.txt": {
+                            "name": "abc.txt",
+                            "shortname": "abc",
+                            "content": "I am content",
+                            "extension": ".txt",
+                            "created": "",
+                            "modified": ""
                         },
-                        {
-                            name: "urmum.txt",
-                            content: "",
-                            created: "",
-                            modified: ""
+                        "urmum.txt": {
+                            "name": "urmum.txt",
+                            "shortname": "urmum",
+                            "content": "I have content",
+                            "extension": ".txt",
+                            "created": "",
+                            "modified": ""
                         }
                         
-                    ]
+                    }],
                 },
-                downloads: {
-                    files: [{
-                        example: {
-                            content: "",
-                            extension: "txt",
-                            created: "",
-                            modified: ""
+                "downloads": {
+                    "files": [{
+                        "example.txt": {
+                            "name": "example.txt",
+                            "shortname": "example",
+                            "content": "I am content",
+                            "extension": ".txt",
+                            "created": "",
+                            "modified": ""
                         },
                         "document.txt": {
-                            name: "document",
-                            content: "some content here",
-                            created: "",
-                            modified: ""
+                            "name": "document.txt",
+                            "shortname": "document",
+                            "content": "I am content",
+                            "extension": ".txt",
+                            "created": "",
+                            "modified": ""
                         },
-                        another: {
-                            name: "another.txt",
-                            created: "",
-                            modified: ""
+                        "another.txt": {
+                            "name": "another.txt",
+                            "shortname": "another",
+                            "content": "I am content",
+                            "extension": ".txt",
+                            "created": "",
+                            "modified": ""
                         }
                     
-                    }]
+                    }],
                 },
-                documents: {
-                    files: []
+                "documents": {
+                    "files": []
                 },
-                files: ["readme.txt"]
-            }
+                "files": [{   
+                    "readme.md": {
+                        "name": "readme.txt",
+                        "shortname": "readme",
+                        "content": "I am content",
+                        "extension": ".md",
+                        "created": "",
+                        "modified": ""
+                    }
+                }],
+            },
         },
-        bin: {}
+        bin: {},
     },
 // -----------------------------------------------------------------------
 // MORE TERMINAL PROPERTIES
 // -----------------------------------------------------------------------
-    File: function ( name, content, extension, modified ) {
-
-        this.name = name;
-        this.content = content;
-        this.extension = extension;
-        this.created = Date();
-        this.modified = modified;
-
-    },
     hist: [],
     ver: "0.1",
     user: "user",
@@ -94,6 +104,20 @@ var terminal = {
     },
     themeDefault: "old",
     commandLine: document.getElementById("commandLine"),
+
+    // -----------------------------------------------------------------------
+    // New file constructor
+    // -----------------------------------------------------------------------
+    File: function ( name, shortname, content, extension) {
+
+        this.name = name;
+        this.shortname = shortname;
+        this.content = content;
+        this.extension = extension;
+        this.created = new Date();
+        this.modified = new Date();
+
+    },
     
 // -----------------------------------------------------------------------
 // TERMINAL METHODS
@@ -124,7 +148,7 @@ var terminal = {
     // -----------------------------------------------------------------------
     date: function() {
         output.innerHTML += outputHTML;
-        output.innerHTML += "<p style='color:" + termtheme.text + "'>" + Date() + "</p>";
+        output.innerHTML += "<p style='color:" + termtheme.text + "'>" + new Date() + "</p>";
     },
     // -----------------------------------------------------------------------
     // Output argument as a string
@@ -609,14 +633,15 @@ var terminal = {
             terminal.editor.editor.style.display = "inline";
             terminal.editor.textArea.focus();
 
-            var file = new terminal.File("stuff"," ","txt", Date());
+            var file = new terminal.File("stuff.txt","stuff", " ", "txt");
             console.log(file);
             terminal.fs.home.user.documents.files.push(file);
 
             // autosave every 3 seconds. ideally we would be prompting to save
             setInterval(function(){ 
                 file.content = terminal.editor.textArea.value;
-                console.log(file.contents);
+                file.modified = new Date();
+                console.log(file.content);
                 console.log(terminal.fs.home.user.documents.files);
             }, 3000);
 
@@ -868,3 +893,8 @@ function checkCommand(e) {
 input.addEventListener("keyup", checkCommand, false);
 input.addEventListener("keydown", tab, false);
 terminal.editor.textArea.addEventListener("keyup", textEditor, false);
+
+
+
+
+
