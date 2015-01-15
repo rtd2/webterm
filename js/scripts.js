@@ -648,7 +648,7 @@ var terminal = {
         },
         exit: function () {
             console.log("I have been called.");
-            // stop auto save (setInterval function)
+            // stop auto save (setInterval function)...does not work
             clearInterval();
             // hide overlay and prompt to save
             terminal.editor.editor.style.display = "none";
@@ -662,7 +662,7 @@ var terminal = {
 // START VARIABLES AND FUNCTIONS
 
 
-var helpList = ["help", "youtube", "youtube -s [query]", "pwd", "mkdir [folder]", "touch [file]", "ls", "ls -l", "theme white", "theme old", "cd", "clear", "history", "signin [user]", "signout", "version", "rm [file]", "echo [text]", "date"];
+var helpList = ["help", "youtube", "youtube -s [query]", "pwd", "mkdir [folder]", "touch [file]", "ls", "ls -l", "theme white", "theme old", "cd", "clear", "history", "signin [user]", "signout", "version", "rm [file]", "echo [text]", "date", "editor"];
 var pwd = ["~", terminal.fs.home.user, "/home/user"];
 var input = document.getElementById("input");
 //var editor = document.getElementById("editor");
@@ -714,7 +714,7 @@ function tab(e) {
 
 
 function textEditor(e) {
-    if ( e.keycode === 27 ) { terminal.editor.exit(); } // escape key
+    if ( e.keyCode === 17 && 88 ) { terminal.editor.exit(); } // escape key
 }
 
 
