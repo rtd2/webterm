@@ -58,8 +58,8 @@ var terminal = {
                 "documents": {
                     "files": []
                 },
-                "files": [{   
-                    "readme.md": {
+                "files": [
+                    {
                         "name": "readme.txt",
                         "shortname": "readme",
                         "content": "I am content",
@@ -67,7 +67,7 @@ var terminal = {
                         "created": "",
                         "modified": ""
                     }
-                }],
+                ],
             },
         },
         bin: {},
@@ -108,7 +108,7 @@ var terminal = {
     // -----------------------------------------------------------------------
     // New file constructor
     // -----------------------------------------------------------------------
-    File: function ( name, shortname, content, extension) {
+    File: function (name, shortname, content, extension) {
 
         this.name = name;
         this.shortname = shortname;
@@ -413,7 +413,7 @@ var terminal = {
 
             for (var file in files) {
 
-                list += "<p class='file' style='color:" + termtheme.file + "'>" + files[file] + "</p>";
+                list += "<p class='file' style='color:" + termtheme.file + "'>" + files[file]["name"] + "</p>";
 
             }
 
@@ -442,7 +442,7 @@ var terminal = {
 
                 for (var file in files) {
 
-                    list += "<p class='file' style='display: block; color:" + termtheme.file + "'>" + files[file] + "</p>";
+                    list += "<p class='file' style='display: block; color:" + termtheme.file + "'>" + files[file]["name"] + "</p>";
 
                 }
 
@@ -535,15 +535,17 @@ var terminal = {
         
         var fileName = commandArgs.slice(1).join(" ");
         var files = pwd[1].files;
+        console.log(files);
 
-        if (files.indexOf(fileName) !== -1) {
+        if (files.indexOf(fileName["name"]) !== -1) {
 
             output.innerHTML += outputHTML;
             output.innerHTML += "<p style='color:" + termtheme.text + "'>touch: cannot create file '" + fileName + "': File exists</p>";
 
         } else {
 
-            files.push(fileName);
+            var file = new terminal.File(fileName, fileName, " ", " ");
+            files.push(file);
             output.innerHTML += outputHTML;
             output.innerHTML += "<p style='color:" + termtheme.text + "'>File called " + fileName + " successfully created.</p>";
 
