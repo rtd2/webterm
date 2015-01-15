@@ -709,12 +709,12 @@ function addToHistory(command) {
 
 //prevent default tab functionality
 function tab(e) {
-    if ( e.keyCode === 9 ) { e.preventDefault(); }
+    if (e.keyCode === 9) { e.preventDefault(); }
 }
 
 
 function textEditor(e) {
-    if ( e.keyCode === 17 && 88 ) { terminal.editor.exit(); } // escape key
+    if (e.keyCode === 88 && e.ctrlKey) { terminal.editor.exit(); }
 }
 
 
