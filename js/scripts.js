@@ -464,8 +464,9 @@ var terminal = {
         var fileName = commandArgs.slice(1).join(" ");
         var files = pwd[1].files;
 
-        if (files.indexOf(fileName) !== -1) {
+        var fileBool = dirSearchFiles(fileName, files);
 
+        if (fileBool === true) {
             files.pop(fileName);
             output.innerHTML += outputHTML;
 
@@ -485,7 +486,8 @@ var terminal = {
         var filedir = commandArgs[1];
         var destination = commandArgs[2];
         var objProps = Object.keys(pwd[1]);
-        var objFiles = pwd[1].files;
+        var files = pwd[1].files;
+        var fileBool = dirSearchFiles(filedir, files);
         
         for (var Prop in objProps) {
             if (filedir === objProps[Prop]) {
@@ -494,11 +496,9 @@ var terminal = {
             }
         }
         
-        for (var File in objFiles) {
-            if (filedir === objFiles[File]) {
-                console.log("success - file");
-                var fil = objFiles[File];
-            }
+        if (fileBool === true) {
+            console.log("success - file");
+            var fil = filedir;
         }
         
         if (dir == undefined && fil == undefined) {
@@ -506,6 +506,7 @@ var terminal = {
             output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + filedir + "': No such file or directory</p>";
         } else {
             console.log("success");
+            output.innerHTML += outputHTML;
         }
     },
     
@@ -516,11 +517,19 @@ var terminal = {
         
         var file1 = commandArgs[1];
         var file2 = commandArgs[2];
-        var objFiles = pwd[1].files;
-        for (var file in objFiles) {
-            if (file1 === objFiles[file]) {
-                objFiles.push(file2);
-            }
+        var files = pwd[1].files;
+        var fileBool = dirSearchFiles(file1, files);
+
+        if (fileBool === true) {
+            
+            var newFile = new terminal.File(file2, file2, " ", " ");
+            files.push(newFile);
+            output.innerHTML += outputHTML;
+        } else {
+            
+            output.innerHTML += outputHTML;
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + file1 + "': No such file</p>";
+        
         }
     },
     // -----------------------------------------------------------------------
@@ -540,8 +549,8 @@ var terminal = {
 
         } else {
 
-            var file = new terminal.File(fileName, fileName, " ", " ");
-            files.push(file);
+            var newFile = new terminal.File(fileName, fileName, " ", " ");
+            files.push(newFile);
             output.innerHTML += outputHTML;
             output.innerHTML += "<p style='color:" + termtheme.text + "'>File called " + fileName + " successfully created.</p>";
 
