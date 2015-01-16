@@ -294,8 +294,11 @@ var terminal = {
             var dirObject = pathStringToObject(current);
             
             if (dirObject != undefined) {
+                
+                output.innerHTML += outputHTML;
                 pwd = [current, dirObject, current];
                 commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
+                
             }
             
         } else if (pwd[1].hasOwnProperty(directory)) {
@@ -303,6 +306,7 @@ var terminal = {
             var reldir = pwd[2] + "/" + directory;
             var dirObject = pathStringToObject(reldir);
             
+            output.innerHTML += outputHTML;
             pwd = [reldir, dirObject, reldir];
             commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
         
@@ -311,14 +315,18 @@ var terminal = {
             var dirObject = pathStringToObject(directory);
             
             if (dirObject != undefined) {
-
+                
+                output.innerHTML += outputHTML;
                 pwd = [directory, dirObject, directory];
                 commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
                 
+            } else {
+                
+                output.innerHTML += outputHTML;
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>cd: No such directory</p>";
+                
             }
         }
-        
-        output.innerHTML += outputHTML;
     },
     // -----------------------------------------------------------------------
     // Open Youtube in a new tab
@@ -466,7 +474,7 @@ var terminal = {
                 var dir = objProps[Prop];
                 var directory = getDirectory(dir);
                 if (dirObject !== null && typeof dirObject === 'object') {
-                    delete pwd[1][dir]; 
+                    delete pwd[1][dir];
                     dirObject[dir] = directory;
                     output.innerHTML += outputHTML;
                 } else {
@@ -604,13 +612,46 @@ var terminal = {
     // -----------------------------------------------------------------------
     tabComplete: function() {
         var command = input.value;
+        var commandArgs = command.split(" ");
         if (command.length > 0) {
             var objProps = Object.keys(pwd[1]);
-            console.log(objProps);
-            for (var Prop in objProps) {
-                if (objProps[Prop].substring(0, command.length) === command) {
-                    input.value = objProps[Prop];
-                    input.size = objProps[Prop].length + 1;
+            var commands = ["history", "help", "theme", "mkdir", "clear"]; // some testing values
+            var completions = [];
+            if (commandArgs.length === 1) {
+                for (var Command in commands) {
+                    (function(Command) {
+                        if (commands[Command].substring(0, command.length) === command) {
+                            completions.push(commands[Command]);
+                        }
+                    })(Command);
+                }
+                if (completions[0] != undefined && completions[1] === undefined) {
+                    input.value = completions[0];
+                    input.size = completions[0].length + 1;
+                }
+            } else if (commandArgs.length === 2) {
+                for (var Prop in objProps) {
+                    (function(Prop) {
+                        if (objProps[Prop].substring(0, commandArgs[1].length) === commandArgs[1]) {
+                            completions.push(objProps[Prop]);
+                        }
+                    })(Prop);
+                }
+                if (completions[0] != undefined && completions[1] === undefined) {
+                    input.value = commandArgs[0] + " " + completions[0];
+                    input.size = input.value.length + 1;
+                }
+            } else {
+                for (var Prop in objProps) {
+                    (function(Prop) {
+                        if (objProps[Prop].substring(0, commandArgs[2].length) === commandArgs[2]) {
+                            completions.push(objProps[Prop]);
+                        }
+                    })(Prop);
+                }
+                if (completions[0] != undefined && completions[1] === undefined) {
+                    input.value = commandArgs[0] + " " + commandArgs[1] + " " + completions[0];
+                    input.size = input.value.length + 1;
                 }
             }
         }
