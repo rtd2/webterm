@@ -464,10 +464,11 @@ var terminal = {
         var fileName = commandArgs.slice(1).join(" ");
         var files = pwd[1].files;
 
-        var fileBool = dirSearchFiles(fileName, files);
+        var file = dirGetFile(fileName, files);
 
-        if (fileBool === true) {
-            files.pop(fileName);
+        if (file !== null && typeof file === 'object') {
+            var index = files.indexOf(file);
+            files.splice(index, 1);
             output.innerHTML += outputHTML;
 
         } else {
@@ -628,7 +629,7 @@ var terminal = {
             terminal.editor.footerNav.style.color = termtheme.text;
 
             // style footer list items. iterate over items with class of highlight and apply styles.
-            for ( var i = 0; i < terminal.editor.highlight.length; i++ ) {
+            for (var i = 0; i < terminal.editor.highlight.length; i++) {
 
                 item = terminal.editor.highlight[i];
                 item.style.color = termtheme.background;
@@ -682,6 +683,14 @@ function dirSearchFiles(file, directory) {
     for (var i = 0; i < directory.length; i++) {
         if (file === directory[i]["name"]) {
             return true;
+        }
+    }
+}
+
+function dirGetFile(file, directory) {
+    for (var i = 0; i < directory.length; i++) {
+        if (file === directory[i]["name"]) {
+            return directory[i];
         }
     }
 }
@@ -905,8 +914,3 @@ function checkCommand(e) {
 input.addEventListener("keyup", checkCommand, false);
 input.addEventListener("keydown", tab, false);
 terminal.editor.textArea.addEventListener("keyup", textEditor, false);
-
-
-
-
-
