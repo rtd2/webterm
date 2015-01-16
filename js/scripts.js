@@ -462,21 +462,33 @@ var terminal = {
         
         for (var Prop in objProps) {
             if (filedir === objProps[Prop]) {
-                console.log("success - dir");
                 var dir = objProps[Prop];
             }
         }
         
         if (fileBool === true) {
-            console.log("success - file");
             var fil = filedir;
+            var file = dirGetFile(fil, files);
+            if (file !== null && typeof file === 'object') {
+                var index = files.indexOf(file);
+                files.splice(index, 1);
+            }
+            var dirObject = pathStringToObject(destination);
+            var newFile = new terminal.File(filedir, filedir, " ", " ");
+            dirObject.files.push(newFile);
+            output.innerHTML += outputHTML;
         }
         
         if (dir == undefined && fil == undefined) {
+            
             output.innerHTML += outputHTML;
             output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + filedir + "': No such file or directory</p>";
-        } else {
-            console.log("success");
+        
+        } else if (dir == undefined && fil == true) {
+            
+        
+        } else if (dir == true && fil == undefined) {
+            var dirObject = pathStringToObject(destination);
             output.innerHTML += outputHTML;
         }
     },
