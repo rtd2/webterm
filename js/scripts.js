@@ -6,8 +6,8 @@ var terminal = {
         "home": {
             "user": {
                 "desktop": {
-                    "files": [{
-                        "abc.txt": {
+                    "files": [
+                        {
                             "name": "abc.txt",
                             "shortname": "abc",
                             "content": "I am content",
@@ -15,7 +15,7 @@ var terminal = {
                             "created": "",
                             "modified": ""
                         },
-                        "urmum.txt": {
+                        {
                             "name": "urmum.txt",
                             "shortname": "urmum",
                             "content": "I have content",
@@ -23,12 +23,11 @@ var terminal = {
                             "created": "",
                             "modified": ""
                         }
-                        
-                    }],
+                    ]
                 },
                 "downloads": {
-                    "files": [{
-                        "example.txt": {
+                    "files": [
+                        {
                             "name": "example.txt",
                             "shortname": "example",
                             "content": "I am content",
@@ -36,7 +35,7 @@ var terminal = {
                             "created": "",
                             "modified": ""
                         },
-                        "document.txt": {
+                        {
                             "name": "document.txt",
                             "shortname": "document",
                             "content": "I am content",
@@ -44,7 +43,7 @@ var terminal = {
                             "created": "",
                             "modified": ""
                         },
-                        "another.txt": {
+                        {
                             "name": "another.txt",
                             "shortname": "another",
                             "content": "I am content",
@@ -52,8 +51,7 @@ var terminal = {
                             "created": "",
                             "modified": ""
                         }
-                    
-                    }],
+                    ]
                 },
                 "documents": {
                     "files": []
@@ -67,10 +65,10 @@ var terminal = {
                         "created": "",
                         "modified": ""
                     }
-                ],
-            },
+                ]
+            }
         },
-        bin: {},
+        bin: {}
     },
 // -----------------------------------------------------------------------
 // MORE TERMINAL PROPERTIES
@@ -341,7 +339,6 @@ var terminal = {
             }
 
             var termfsdir = index(terminal.fs, fsdir);
-            console.log(termfsdir);
             
             if (termfsdir != undefined) {
 
@@ -484,7 +481,6 @@ var terminal = {
     // Move
     // -----------------------------------------------------------------------
     mv: function() {
-        console.log("move");
         
         var filedir = commandArgs[1];
         var destination = commandArgs[2];
@@ -517,7 +513,6 @@ var terminal = {
     // Copy
     // -----------------------------------------------------------------------
     cp: function() {
-        console.log("copy");
         
         var file1 = commandArgs[1];
         var file2 = commandArgs[2];
@@ -535,9 +530,10 @@ var terminal = {
         
         var fileName = commandArgs.slice(1).join(" ");
         var files = pwd[1].files;
-        console.log(files);
+        
+        var fileBool = dirSearchFiles(fileName, files);
 
-        if (files.indexOf(fileName["name"]) !== -1) {
+        if (fileBool === true) {
 
             output.innerHTML += outputHTML;
             output.innerHTML += "<p style='color:" + termtheme.text + "'>touch: cannot create file '" + fileName + "': File exists</p>";
@@ -673,11 +669,18 @@ var count = 0;
 var termtheme = terminal.termthemes[terminal.themeDefault];
 
 
-// get a cookie
-function getCookie(cookieName) {
+function dirSearchFiles(file, directory) {
+    for (var i = 0; i < directory.length; i++) {
+        if (file === directory[i]["name"]) {
+            return true;
+        }
+    }
+}
+
+function getCookie(cookieName) { // get a cookie
     var name = cookieName + "=";
     var ca = document.cookie.split(';');
-    for(var i=0; i<ca.length; i++) {
+    for(var i = 0; i < ca.length; i++) {
         var c = ca[i];
         while (c.charAt(0)==' ') c = c.substring(1);
         if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
@@ -697,8 +700,7 @@ terminal.commandLine.innerHTML = "WebTerm:~ " + terminal.user + "$  ";
 
 terminal.lastLogin = new Date();
 
-//set last login cookie
-document.cookie = "lastlogin=" + terminal.lastLogin;
+document.cookie = "lastlogin=" + terminal.lastLogin; // set last login cookie
 
 function addToHistory(command) {
     
@@ -709,13 +711,12 @@ function addToHistory(command) {
     }
 }
 
-//prevent default tab functionality
-function tab(e) {
+function tab(e) { //prevent default tab functionality
     if (e.keyCode === 9) { e.preventDefault(); }
 }
 
 
-function textEditor(e) {
+function textEditor(e) { // control key and x key
     if (e.keyCode === 88 && e.ctrlKey) { terminal.editor.exit(); }
 }
 
