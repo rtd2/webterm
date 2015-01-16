@@ -434,7 +434,7 @@ var terminal = {
         var fileName = commandArgs.slice(1).join(" ");
         var files = pwd[1].files;
 
-        var file = dirGetFile(fileName, files);
+        var file = getFile(fileName, files);
 
         if (file !== null && typeof file === 'object') {
             var index = files.indexOf(file);
@@ -459,24 +459,39 @@ var terminal = {
         var objProps = Object.keys(pwd[1]);
         var files = pwd[1].files;
         var fileBool = dirSearchFiles(filedir, files);
+        var dirObject = pathStringToObject(destination);
         
         for (var Prop in objProps) {
             if (filedir === objProps[Prop]) {
                 var dir = objProps[Prop];
+                var directory = getDirectory(dir);
+                if (dirObject !== null && typeof dirObject === 'object') {
+                    delete pwd[1][dir]; 
+                    dirObject[dir] = directory;
+                    output.innerHTML += outputHTML;
+                } else {
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + filedir + "': Destination directory does not exist</p>";
+                }
             }
         }
         
         if (fileBool === true) {
             var fil = filedir;
-            var file = dirGetFile(fil, files);
-            if (file !== null && typeof file === 'object') {
-                var index = files.indexOf(file);
-                files.splice(index, 1);
+            var file = getFile(fil, files);
+            if (dirObject !== null && typeof dirObject === 'object') {
+                if (file !== null && typeof file === 'object') {
+                    var index = files.indexOf(file);
+                    files.splice(index, 1);
+                }
+                var newFile = new terminal.File(filedir, filedir, " ", " ");
+                dirObject.files.push(newFile);
+                output.innerHTML += outputHTML;
+                
+            } else {
+                output.innerHTML += outputHTML;
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + filedir + "': Destination directory does not exist</p>";
             }
-            var dirObject = pathStringToObject(destination);
-            var newFile = new terminal.File(filedir, filedir, " ", " ");
-            dirObject.files.push(newFile);
-            output.innerHTML += outputHTML;
         }
         
         if (dir == undefined && fil == undefined) {
@@ -669,12 +684,18 @@ function dirSearchFiles(file, directory) {
     }
 }
 
-function dirGetFile(file, directory) {
+function getFile(file, directory) {
     for (var i = 0; i < directory.length; i++) {
         if (file === directory[i]["name"]) {
             return directory[i];
         }
     }
+}
+
+function getDirectory(directory) {
+    var currentDir = pwd[2] + "/" + directory;
+    var dirObject = pathStringToObject(currentDir);
+    return dirObject;
 }
 
 function index(obj,is, value) {
