@@ -280,69 +280,39 @@ var terminal = {
     cd: function() {
         var directory = commandArgs.slice(1).join(" ");
         
-        function index(obj,is, value) {
-            if (typeof is == 'string')
-                return index(obj, is.split('.'), value);
-            else if (is.length == 1 && value !== undefined)
-                return obj[is[0]] = value;
-            else if (is.length == 0)
-                return obj;
-            else
-                return index(obj[is[0]],is.slice(1), value);
-        }
-        
-        function replaceAll(find, replace, str) {
-            return str.replace(new RegExp(find, 'g'), replace);
-        }
-        
         if (directory == "..") {
 
             var current = pwd[2];
             var le = pwd[2].length - 1;
+            
             while(current.charAt(le) !== '/') {
                 current = current.substr(0, current.length - 1);
                 le--;
             }
+            
             current = current.substr(0, current.length - 1);
+            var dirObject = pathStringToObject(current);
             
-            var predir = replaceAll("/", ".", current);
-            
-            while(predir.charAt(0) === '.') {
-                predir = predir.substr(1);
+            if (dirObject != undefined) {
+                pwd = [current, dirObject, current];
+                commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
             }
-            
-            var fspredir = index(terminal.fs, predir);
-            
-            pwd = [current, fspredir, current];
-            commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
             
         } else if (pwd[1].hasOwnProperty(directory)) {
                   
             var reldir = pwd[2] + "/" + directory;
-            var dotreldir = replaceAll("/", ".", reldir);
+            var dirObject = pathStringToObject(reldir);
             
-            while(dotreldir.charAt(0) === '.') {
-                dotreldir = dotreldir.substr(1);
-            }
-            
-            var fsreldir = index(terminal.fs, dotreldir);
-            
-            pwd = [reldir, fsreldir, reldir];
+            pwd = [reldir, dirObject, reldir];
             commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
         
         } else {
 
-            var fsdir = replaceAll("/", ".", directory);
-
-            while(fsdir.charAt(0) === '.') {
-                fsdir = fsdir.substr(1);
-            }
-
-            var termfsdir = index(terminal.fs, fsdir);
+            var dirObject = pathStringToObject(directory);
             
-            if (termfsdir != undefined) {
+            if (dirObject != undefined) {
 
-                pwd = [directory, termfsdir, directory];
+                pwd = [directory, dirObject, directory];
                 commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
                 
             }
@@ -693,6 +663,34 @@ function dirGetFile(file, directory) {
             return directory[i];
         }
     }
+}
+
+function index(obj,is, value) {
+    if (typeof is == 'string')
+        return index(obj, is.split('.'), value);
+    else if (is.length == 1 && value !== undefined)
+        return obj[is[0]] = value;
+    else if (is.length == 0)
+        return obj;
+    else
+        return index(obj[is[0]],is.slice(1), value);
+}
+
+function replaceAll(find, replace, str) {
+    return str.replace(new RegExp(find, 'g'), replace);
+}
+
+function pathStringToObject(dirString) {
+    
+    var dotdir = replaceAll("/", ".", dirString);
+    
+    while(dotdir.charAt(0) === '.') {
+        dotdir = dotdir.substr(1);
+     }
+    
+    var dirObject = index(terminal.fs, dotdir);
+    
+    return dirObject;
 }
 
 function getCookie(cookieName) { // get a cookie
