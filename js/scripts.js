@@ -433,10 +433,10 @@ var terminal = {
         
         var fileName = commandArgs.slice(1).join(" ");
         var files = pwd[1].files;
-
         var file = getFile(fileName, files);
 
         if (file !== null && typeof file === 'object') {
+            
             var index = files.indexOf(file);
             files.splice(index, 1);
             output.innerHTML += outputHTML;
@@ -499,12 +499,6 @@ var terminal = {
             output.innerHTML += outputHTML;
             output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + filedir + "': No such file or directory</p>";
         
-        } else if (dir == undefined && fil == true) {
-            
-        
-        } else if (dir == true && fil == undefined) {
-            var dirObject = pathStringToObject(destination);
-            output.innerHTML += outputHTML;
         }
     },
     
@@ -514,15 +508,30 @@ var terminal = {
     cp: function() {
         
         var file1 = commandArgs[1];
-        var file2 = commandArgs[2];
+        var destination = commandArgs[2];
         var files = pwd[1].files;
         var fileBool = dirSearchFiles(file1, files);
-
+        
         if (fileBool === true) {
             
-            var newFile = new terminal.File(file2, file2, " ", " ");
-            files.push(newFile);
+            var file = getFile(file1, files);
+            var newFile = JSON.parse(JSON.stringify(file));
+            
+            if (destination[0] === "/") {
+                var dirObject = pathStringToObject(destination);
+                dirObject.files.push(newFile);
+                
+            } else {
+                
+                newFile["name"] = destination;
+                newFile["shortname"] = destination;
+                newFile["created"] = new Date();
+                newFile["modified"] = new Date();
+                files.push(newFile);
+                
+            }
             output.innerHTML += outputHTML;
+            
         } else {
             
             output.innerHTML += outputHTML;
