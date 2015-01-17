@@ -665,11 +665,14 @@ var terminal = {
         footer: document.getElementById("editorFooter"),
         footerNav: document.getElementById("footerNav"),
         highlight: document.getElementsByClassName("highlight"),
+        header: document.getElementById("editorHeader"),
         run: function () {
 
             // set editor to theme
             terminal.editor.editor.style.color = termtheme.text;
             terminal.editor.editor.style.background = termtheme.background;
+            terminal.editor.header.style.color = termtheme.background;
+            terminal.editor.header.style.background = termtheme.text;
             terminal.editor.textArea.style.color = termtheme.text;
             terminal.editor.textArea.style.background = termtheme.background;
             terminal.editor.footer.style.borderColor = termtheme.text;
@@ -750,7 +753,7 @@ function getDirectory(directory) {
 
 function index(obj,is, value) {
     if (typeof is == 'string') { return index(obj, is.split('.'), value); }
-    
+
     else if (is.length == 1 && value !== undefined) { return obj[is[0]] = value; }
 
     else if (is.length == 0) { return obj; }

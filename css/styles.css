@@ -50,7 +50,16 @@ textarea:focus, input:focus{ outline: 0; }
     width: 100%;
     border-top: 1.5px solid white;
     bottom: 0;
+    text-align: left;
     position: absolute;
+}
+
+#editorHeader {
+  top: 5px;
+  width: 100%;
+  background: white;
+  color: black;
+  text-align: center;
 }
 
 #editor-text {
