@@ -280,37 +280,38 @@ var terminal = {
     cd: function() {
         var directory = commandArgs.slice(1).join(" ");
         
-        if (directory == "..") {
+        if (directory == "..") { // if the argument is ..
 
-            var current = pwd[2];
-            var le = pwd[2].length - 1;
+            var currentDir = pwd[2]; // currentDir is set to the pwd display string
+            var le = pwd[2].length - 1; // le is set to the last index of currentDir
+            console.log(currentDir[le]);
             
-            while(current.charAt(le) !== '/') {
-                current = current.substr(0, current.length - 1);
-                le--;
+            while(currentDir.charAt(le) !== '/') { // so long as the last index of currentDir isn't a /
+                currentDir = currentDir.substr(0, le); // remove the last index of currentDir
+                le--; // decrement le
             }
             
-            current = current.substr(0, current.length - 1);
-            var dirObject = pathStringToObject(current);
+            currentDir = currentDir.substr(0, le); // remove the /
+            var dirObject = pathStringToObject(currentDir); // convert the string currentDir to the object it represents
             
-            if (dirObject != undefined) {
+            if (dirObject != undefined) { // if pathStringToObject returned an object
                 
                 output.innerHTML += outputHTML;
-                pwd = [current, dirObject, current];
-                commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
+                pwd = [currentDir, dirObject, currentDir]; // set pwd alias, object, and display
+                commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ "; // commandLine set to represent new pwd
                 
             }
             
-        } else if (pwd[1].hasOwnProperty(directory)) {
+        } else if (pwd[1].hasOwnProperty(directory)) { // if the argument is a key of the pwd
                   
-            var reldir = pwd[2] + "/" + directory;
+            var reldir = pwd[2] + "/" + directory; // add the argument to the pwd display string
             var dirObject = pathStringToObject(reldir);
             
             output.innerHTML += outputHTML;
             pwd = [reldir, dirObject, reldir];
             commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
         
-        } else {
+        } else { // if the argument is an absolute path, || not .. / relative
 
             var dirObject = pathStringToObject(directory);
             
@@ -320,7 +321,7 @@ var terminal = {
                 pwd = [directory, dirObject, directory];
                 commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
                 
-            } else {
+            } else { // if the provided argument isn't "..", a key of the pwd, or a recognized absolute path
                 
                 output.innerHTML += outputHTML;
                 output.innerHTML += "<p style='color:" + termtheme.text + "'>cd: No such directory</p>";
@@ -358,13 +359,14 @@ var terminal = {
         }
         
     },
-    
     // -----------------------------------------------------------------------
     // Output the present working directory
     // -----------------------------------------------------------------------
     pwd: function() {
+        
         output.innerHTML += outputHTML;
         output.innerHTML += "<p style='color:" + termtheme.text + "'>" + pwd[2] + "</p>";
+    
     },
     // -----------------------------------------------------------------------
     // List the files and folders of the pwd
@@ -394,11 +396,13 @@ var terminal = {
 
             output.innerHTML += outputHTML;
             output.innerHTML += list;
+            
             if ( list === "" ) { output.innerHTML += "<p style='color:" + termtheme.text + "'>ls: The current directory is empty</p>"; }
         },
 
         l: function() {
             var flag = commandArgs.slice(1).join(" ");
+            
             if (flag === "-l") {
                 
                 var list = "";
@@ -423,14 +427,17 @@ var terminal = {
 
                 output.innerHTML += outputHTML;
                 output.innerHTML += list;
+                
             } else if (flag === "--help" || flag === "-help") {
                 
                 output.innerHTML += outputHTML;
                 output.innerHTML += "<p style='color:" + termtheme.text + "'>Help information..</p>"
                 
             } else {
+                
                 output.innerHTML += outputHTML;
                 output.innerHTML += "<p style='color:" + termtheme.text + "'>ls: invalid option '" + flag + "'</p><p style='color:" + termtheme.text + "'>Try 'ls --help' for more information.</p>"
+            
             }
         }
     },
@@ -441,12 +448,14 @@ var terminal = {
         
         var fileName = commandArgs.slice(1).join(" ");
         var files = pwd[1].files;
-        var file = getFile(fileName, files);
+        var file = getFile(fileName, files); // retrieve file with the provided fileName
 
-        if (file !== null && typeof file === 'object') {
+        if (file !== null && typeof file === 'object') { // if getFile retrieved a file
             
-            var index = files.indexOf(file);
-            files.splice(index, 1);
+            var index = files.indexOf(file); // determine index of that file
+            
+            files.splice(index, 1); // remove it from the files array
+            
             output.innerHTML += outputHTML;
 
         } else {
@@ -456,7 +465,6 @@ var terminal = {
 
         }
     },
-    
     // -----------------------------------------------------------------------
     // Move
     // -----------------------------------------------------------------------
@@ -466,50 +474,65 @@ var terminal = {
         var destination = commandArgs[2];
         var objProps = Object.keys(pwd[1]);
         var files = pwd[1].files;
-        var fileBool = dirSearchFiles(filedir, files);
-        var dirObject = pathStringToObject(destination);
+        var fileBool = dirSearchFiles(filedir, files); // true if arg1 is a file, and it exists
+        var destDirObj = pathStringToObject(destination);
         
-        for (var Prop in objProps) {
-            if (filedir === objProps[Prop]) {
-                var dir = objProps[Prop];
-                var directory = getDirectory(dir);
-                if (dirObject !== null && typeof dirObject === 'object') {
-                    delete pwd[1][dir];
-                    dirObject[dir] = directory;
+        for (var key in objProps) {
+            
+            if (filedir === objProps[key]) { // if filedir is a folder, a key of the pwd object
+                
+                var dir = objProps[key];
+                var directory = getDirectory(dir); // get the object that directory represents in the fs
+                
+                if (destDirObj !== null && typeof destDirObj === 'object') { // if arg2 was a valid place in the fs
+                    
+                    delete pwd[1][dir]; // remove arg1 directory from pwd
+                    destDirObj[dir] = directory; // add the arg1 directory to the destination directory
+                    
                     output.innerHTML += outputHTML;
-                } else {
+                    
+                } else { // if arg2 wasn't a valid place in the fs
+                    
                     output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + filedir + "': Destination directory does not exist</p>";
+                
                 }
+                
             }
+            
         }
         
-        if (fileBool === true) {
+        if (fileBool === true) { // if filedir was a file in the files array
+            
             var fil = filedir;
-            var file = getFile(fil, files);
-            if (dirObject !== null && typeof dirObject === 'object') {
-                if (file !== null && typeof file === 'object') {
-                    var index = files.indexOf(file);
-                    files.splice(index, 1);
-                }
+            var file = getFile(fil, files); // retrieve it
+            
+            if (destDirObj !== null && typeof destDirObj === 'object') { // if arg2 was a valid place in the fs
+                
+                    
+                var index = files.indexOf(file);
                 var newFile = new terminal.File(filedir, filedir, " ", " ");
-                dirObject.files.push(newFile);
+                    
+                files.splice(index, 1);
+                destDirObj.files.push(newFile);
+                
                 output.innerHTML += outputHTML;
                 
-            } else {
+            } else { // if arg2 wasn't a valid place in the fs
+                
                 output.innerHTML += outputHTML;
                 output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + filedir + "': Destination directory does not exist</p>";
+            
             }
         }
         
-        if (dir == undefined && fil == undefined) {
+        if (dir == undefined && fil == undefined) { // if arg1 wasn't a file or folder
             
             output.innerHTML += outputHTML;
             output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + filedir + "': No such file or directory</p>";
         
         }
     },
-    
     // -----------------------------------------------------------------------
     // Copy
     // -----------------------------------------------------------------------
@@ -518,27 +541,42 @@ var terminal = {
         var file1 = commandArgs[1];
         var destination = commandArgs[2];
         var files = pwd[1].files;
-        var fileBool = dirSearchFiles(file1, files);
+        var fileBool = dirSearchFiles(file1, files); // true if the file exists in files array
         
-        if (fileBool === true) {
+        if (fileBool === true) { // if the file exists
             
-            var file = getFile(file1, files);
-            var newFile = JSON.parse(JSON.stringify(file));
+            var file = getFile(file1, files); // retrieve it
+            var newFile = JSON.parse(JSON.stringify(file)); // copy it
             
-            if (destination[0] === "/") {
-                var dirObject = pathStringToObject(destination);
-                dirObject.files.push(newFile);
+            if (destination[0] === "/") { // if the file is being relocated
                 
-            } else {
+                var destDirObj = pathStringToObject(destination); // convert the provided string to the location it represents
+                
+                if (destDirObj !== null && typeof destDirObj === 'object') { // if it is a location in the fs
+                    
+                    destDirObj.files.push(newFile); // add the file copy to the files array of that object/directory
+                    
+                    output.innerHTML += outputHTML;
+                    
+                } else {
+                    
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + file1 + "': The destination folder does not exist</p>";
+                    
+                }
+                
+            } else { // if the file isn't being relocated, rename it
                 
                 newFile["name"] = destination;
                 newFile["shortname"] = destination;
                 newFile["created"] = new Date();
                 newFile["modified"] = new Date();
-                files.push(newFile);
+                
+                files.push(newFile); // and push it the files array
+                
+                output.innerHTML += outputHTML;
                 
             }
-            output.innerHTML += outputHTML;
             
         } else {
             
@@ -554,7 +592,6 @@ var terminal = {
         
         var fileName = commandArgs.slice(1).join(" ");
         var files = pwd[1].files;
-        
         var fileBool = dirSearchFiles(fileName, files);
 
         if (fileBool === true) {
@@ -565,7 +602,9 @@ var terminal = {
         } else {
 
             var newFile = new terminal.File(fileName, fileName, " ", " ");
+            
             files.push(newFile);
+            
             output.innerHTML += outputHTML;
             output.innerHTML += "<p style='color:" + termtheme.text + "'>File called " + fileName + " successfully created.</p>";
 
@@ -575,6 +614,7 @@ var terminal = {
     // Cycle from last index of terminal.hist array
     // -----------------------------------------------------------------------
     up: function() {
+        
         if (count === 0) {
             
             histindex = terminal.hist.length;
@@ -587,12 +627,14 @@ var terminal = {
             input.size = terminal.hist[histindex].length + 1;
             input.value = terminal.hist[histindex];
             count++;
+            
         }
     },
     // -----------------------------------------------------------------------
     // Cycle from last index of terminal.hist array
     // -----------------------------------------------------------------------
     down: function() {
+        
         if (count > 1) {
             
             histindex++;
@@ -611,47 +653,68 @@ var terminal = {
     // Tab completion
     // -----------------------------------------------------------------------
     tabComplete: function() {
-        var command = input.value;
-        var commandArgs = command.split(" ");
-        if (command.length > 0) {
+        
+        var commandInput = input.value;
+        var commandArgs = commandInput.split(" ");
+        
+        if (commandInput.length > 0) {
+            
             var objProps = Object.keys(pwd[1]);
             var commands = ["history", "help", "theme", "mkdir", "clear"]; // some testing values
             var completions = [];
+            
             if (commandArgs.length === 1) {
-                for (var Command in commands) {
-                    (function(Command) {
-                        if (commands[Command].substring(0, command.length) === command) {
-                            completions.push(commands[Command]);
-                        }
-                    })(Command);
+                
+                for (var command in commands) {
+                    
+                    if (commands[command].substring(0, commandInput.length) === commandInput) {
+
+                        completions.push(commands[command]);
+
+                    }
                 }
+                
                 if (completions[0] != undefined && completions[1] === undefined) {
+                    
                     input.value = completions[0];
                     input.size = completions[0].length + 1;
+                    
                 }
+                
             } else if (commandArgs.length === 2) {
-                for (var Prop in objProps) {
-                    (function(Prop) {
-                        if (objProps[Prop].substring(0, commandArgs[1].length) === commandArgs[1]) {
-                            completions.push(objProps[Prop]);
-                        }
-                    })(Prop);
+                
+                for (var key in objProps) {
+                    
+                    if (objProps[key].substring(0, commandArgs[1].length) === commandArgs[1]) {
+
+                        completions.push(objProps[key]);
+
+                    }
                 }
+                
                 if (completions[0] != undefined && completions[1] === undefined) {
+                    
                     input.value = commandArgs[0] + " " + completions[0];
                     input.size = input.value.length + 1;
+                    
                 }
+                
             } else {
-                for (var Prop in objProps) {
-                    (function(Prop) {
-                        if (objProps[Prop].substring(0, commandArgs[2].length) === commandArgs[2]) {
-                            completions.push(objProps[Prop]);
-                        }
-                    })(Prop);
+                
+                for (var key in objProps) {
+                    
+                    if (objProps[key].substring(0, commandArgs[2].length) === commandArgs[2]) {
+
+                        completions.push(objProps[key]);
+
+                    }
                 }
+                
                 if (completions[0] != undefined && completions[1] === undefined) {
+                    
                     input.value = commandArgs[0] + " " + commandArgs[1] + " " + completions[0];
                     input.size = input.value.length + 1;
+                    
                 }
             }
         }
@@ -714,11 +777,7 @@ var terminal = {
     }
 }; // end terminal object
 
-
-
-
 // START VARIABLES AND FUNCTIONS
-
 
 var helpList = ["help", "youtube", "youtube -s [query]", "pwd", "mkdir [folder]", "touch [file]", "ls", "ls -l", "theme white", "theme old", "cd", "clear", "history", "signin [user]", "signout", "version", "rm [file]", "echo [text]", "date", "editor"];
 var pwd = ["~", terminal.fs.home.user, "/home/user"];
