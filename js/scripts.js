@@ -123,17 +123,33 @@ var terminal = {
     // -----------------------------------------------------------------------
     // Display help information, list of commands
     // -----------------------------------------------------------------------
-    help: function() {
-        var displayCommands = "";
+    help: {
+        list: function() {
+            var displayCommands = "";
 
-        for (var i = 0; i < helpList.length; i++) {
+            for (var i = 0; i < commands.length; i++) {
 
-            displayCommands += "<p style='color:" + termtheme.text + "'>" + helpList[i] + "</p>";
+                displayCommands += "<p style='color:" + termtheme.text + "'>" + commands[i] + "</p>";
 
+            }
+
+            output.innerHTML += outputHTML;
+            output.innerHTML += displayCommands;
+        },
+        info: function() {
+            var query = commandArgs[0];
+            if (commands.indexOf(query) != -1) {
+                
+                output.innerHTML += outputHTML;
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>" + helpList[query].info + "</p>";
+                
+            } else {
+                
+                output.innerHTML += outputHTML;
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + query + "' found. Type 'help' for a list of commands.</p>";
+
+            }
         }
-
-        output.innerHTML += outputHTML;
-        output.innerHTML += displayCommands;
     },
     // -----------------------------------------------------------------------
     // Clear the terminal output
@@ -156,54 +172,55 @@ var terminal = {
 
         output.innerHTML += outputHTML;
         output.innerHTML += "<p style='color:" + termtheme.text + "'>" + echo + "</p>";
+            
     },
     // -----------------------------------------------------------------------
     // Change the terminal theme
     // -----------------------------------------------------------------------
     theme: {
         defaultCase: function() {
-        var theme = commandArgs.slice(1).join(" ");
-        var themes = Object.keys(terminal.termthemes);
-        var displayThemes = themes.join(", ");
-        
-        var updateDom = function () {
+            var theme = commandArgs.slice(1).join(" ");
+            var themes = Object.keys(terminal.termthemes);
+            var displayThemes = themes.join(", ");
 
-            document.body.style.background = termtheme.background;
-            input.style.color = termtheme.text;
-            input.style.background = termtheme.background;
-            commandLine.style.color = termtheme.commandLine;
-            
-            var putNodes = output.childNodes;
-            for (var i = 0; i < putNodes.length; i++) {
-                putNodes[i].style.color = termtheme.text;
+            var updateDom = function () {
+
+                document.body.style.background = termtheme.background;
+                input.style.color = termtheme.text;
+                input.style.background = termtheme.background;
+                commandLine.style.color = termtheme.commandLine;
+
+                var putNodes = output.childNodes;
+                for (var i = 0; i < putNodes.length; i++) {
+                    putNodes[i].style.color = termtheme.text;
+                }
+            };
+
+            output.innerHTML += outputHTML;
+
+            switch ( theme ) {
+
+                case "old":
+                    termtheme = terminal.termthemes.old;
+                    updateDom();
+                    break;
+
+                case "black":
+                    termtheme = terminal.termthemes.black;
+                    updateDom();
+                    break;
+
+                case "white":
+                    termtheme = terminal.termthemes.white;
+                    updateDom();
+                    break;
+
+                default:
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>theme: There is no such theme. themes available: " + displayThemes + "</p>";
+
             }
-        };
 
-        output.innerHTML += outputHTML;
-
-        switch ( theme ) {
-
-            case "old":
-                termtheme = terminal.termthemes.old;
-                updateDom();
-                break;
-
-            case "black":
-                termtheme = terminal.termthemes.black;
-                updateDom();
-                break;
-
-            case "white":
-                termtheme = terminal.termthemes.white;
-                updateDom();
-                break;
-
-            default:
-                output.innerHTML += "<p style='color:" + termtheme.text + "'>theme: There is no such theme. themes available: " + displayThemes + "</p>";
-
-        }
-
-    },
+        },
         // THIS IS NOT FUNCTIONAL
         set: function () {
             terminal.themeDefault = commandArgs[2];
@@ -665,8 +682,6 @@ var terminal = {
         
         if (commandInput.length > 0) {
             
-            var objProps = Object.keys(pwd[1]);
-            var commands = ["history", "help", "theme", "mkdir", "clear"]; // some testing values
             var completions = [];
             
             if (commandArgs.length === 1) {
@@ -828,7 +843,30 @@ var terminal = {
 
 // START VARIABLES AND FUNCTIONS
 
-var helpList = ["help", "youtube", "youtube -s [query]", "pwd", "mkdir [folder]", "touch [file]", "ls", "ls -l", "theme white", "theme old", "cd", "clear", "history", "signin [user]", "signout", "version", "rm [file]", "echo [text]", "date", "editor"];
+//var helpList = "help", "youtube", "youtube -s [query]", "pwd", "mkdir [folder]", "touch [file]", "ls", "ls -l", "theme white", "theme old", "cd", "clear", "history", "signin [user]", "signout", "version", "rm [file]", "echo [text]", "date", "editor"];
+var helpList = {
+    "help": {
+        name: "help",
+        info: "information on help command"
+    },
+    "youtube": {
+        name: "youtube",
+        info: "information on youtube command"
+    },
+    "pwd": {
+        name: "pwd",
+        info: "information on pwd command"
+    },
+    "mkdir": {
+        name: "mkdir",
+        info: "information on mkdir command"
+    },
+    "mv": {
+        name: "mv",
+        info: "information on mv command"
+    }
+};
+var commands = Object.keys(helpList);
 var pwd = ["~", terminal.fs.home.user, "/home/user"];
 var input = document.getElementById("input");
 //var editor = document.getElementById("editor");
@@ -953,69 +991,89 @@ function checkCommand(e) {
     if (e.keyCode === 13) { // enter key
         
         if (commandArgs.length === 2) { // if the command entered has one argument
+            if (commandArgs[1] != "-help" && commandArgs[1] != "--help") {
+                switch (commandArgs[0]) {
 
-            switch (commandArgs[0]) {
+                    case "mkdir":
+                        terminal.mkdir();
+                        addToHistory(command);
+                    break;
 
-                case "mkdir":
-                    terminal.mkdir();
+                    case "touch":
+                        terminal.touch();
+                        addToHistory(command);
+                    break;
+
+                    case "signin":
+                        terminal.signin();
+                        addToHistory(command);
+                    break;
+
+                    case "theme":
+                        terminal.theme.defaultCase();
+                        addToHistory(command);
+                    break;
+
+                    case "rm":
+                        terminal.rm();
+                        addToHistory(command);
+                    break;
+
+                    case "echo":
+                        terminal.echo();
+                        addToHistory(command);
+                    break;
+
+                    case "ls":
+                        terminal.ls.l();
+                        addToHistory(command);
+                    break;
+
+                    case "cd":
+                        terminal.cd();
+                        addToHistory(command);
+                    break;
+
+                    default:
+                        if (commands.indexOf(commandArgs[0]) == -1) {
+                            output.innerHTML += outputHTML;
+                            output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + commandArgs[0] + "' found. Type 'help' for a list of commands.</p>";
+                        } else {
+                            output.innerHTML += outputHTML;
+                            output.innerHTML += "<p style='color:" + termtheme.text + "'>Try '" + commandArgs[0] + " -help' for information on proper usage</p>";
+                        }
+                }
+            }
+            
+            switch(commandArgs[1]) {
+                case "--help":
+                    terminal.help.info();
                     addToHistory(command);
                 break;
-                    
-                case "touch":
-                    terminal.touch();
+                case "-help":
+                    terminal.help.info();
                     addToHistory(command);
                 break;
-                    
-                case "signin":
-                    terminal.signin();
-                    addToHistory(command);
-                break;
-                    
-                case "theme":
-                    terminal.theme.defaultCase();
-                    addToHistory(command);
-                break;
-                    
-                case "rm":
-                    terminal.rm();
-                    addToHistory(command);
-                break;
-                    
-                case "echo":
-                    terminal.echo();
-                    addToHistory(command);
-                break;
-                    
-                case "ls":
-                    terminal.ls.l();
-                    addToHistory(command);
-                break;
-                    
-                case "cd":
-                    terminal.cd();
-                    addToHistory(command);
-                break;
-                
-                default:
-                    output.innerHTML += outputHTML;
-                    output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
             }
             
         } else if (commandArgs.length > 2) { // if the command entered has more than one argument
+            if (commandArgs[0] != "mv" && commandArgs[0] != "cp") {
+                switch (commandArgs[0] + " " + commandArgs[1]) {
+                
+                    case "youtube -s":
+                        terminal.youtube.s();
+                        addToHistory(command);
+                    break;
 
-            switch (commandArgs[0] + " " + commandArgs[1]) {
-
-                case "youtube -s":
-                    terminal.youtube.s();
-                    addToHistory(command);
-                break;
-                    
-                default:
-                    if (commandArgs[0] !== "cp" && commandArgs[0] !== "mv") {
-                        output.innerHTML += outputHTML;
-                        output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
-                    }
-
+                    default:
+                        if (commands.indexOf(commandArgs[0]) == -1) {
+                            output.innerHTML += outputHTML;
+                            output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + commandArgs[0] + "' found. Type 'help' for a list of commands.</p>";
+                        } else {
+                            output.innerHTML += outputHTML;
+                            output.innerHTML += "<p style='color:" + termtheme.text + "'>Try '" + commandArgs[0] + " -help' for information on proper usage</p>";
+                        }
+                }
             }
             
             switch (commandArgs[0]) {
@@ -1024,15 +1082,12 @@ function checkCommand(e) {
                     terminal.cp();
                     addToHistory(command);
                 break;
-                    
+
                 case "mv":
                     terminal.mv();
                     addToHistory(command);
                 break;
-                    
-                default:
-                    output.innerHTML += outputHTML;
-                    output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
+
             }
 
         } else { // if the command entered has no arguments
@@ -1040,7 +1095,7 @@ function checkCommand(e) {
             switch (command) {
 
                 case "help":
-                    terminal.help();
+                    terminal.help.list();
                     addToHistory(command);
                 break;
                     
@@ -1090,8 +1145,14 @@ function checkCommand(e) {
                 break;
 
                 default:
-                    output.innerHTML += outputHTML;
-                    output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
+                    if (commands.indexOf(command) == -1) {
+                        output.innerHTML += outputHTML;
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
+            
+                    } else {
+                        output.innerHTML += outputHTML;
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>Try '" + command + " -help' for information on proper usage</p>";
+                    }
             }
         }
 
