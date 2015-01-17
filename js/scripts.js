@@ -2,22 +2,73 @@ var terminal = {
 // -----------------------------------------------------------------------
 // VIRTUAL FILESYSTEM
 // -----------------------------------------------------------------------
-    fs: {
-        home: {
-            user: {
-                desktop: {
-                    files: ["abc.txt", "urmum.txt"]
+    "fs": {
+        "home": {
+            "user": {
+                "desktop": {
+                    "files": [
+                        {
+                            "name": "abc.txt",
+                            "shortname": "abc",
+                            "content": "I am content",
+                            "extension": ".txt",
+                            "created": "",
+                            "modified": ""
+                        },
+                        {
+                            "name": "urmum.txt",
+                            "shortname": "urmum",
+                            "content": "I have content",
+                            "extension": ".txt",
+                            "created": "",
+                            "modified": ""
+                        }
+                    ]
                 },
-                downloads: {
-                    files: ["example.txt", "document.txt", "another.txt"]
+                "downloads": {
+                    "files": [
+                        {
+                            "name": "example.txt",
+                            "shortname": "example",
+                            "content": "I am content",
+                            "extension": ".txt",
+                            "created": "",
+                            "modified": ""
+                        },
+                        {
+                            "name": "document.txt",
+                            "shortname": "document",
+                            "content": "I am content",
+                            "extension": ".txt",
+                            "created": "",
+                            "modified": ""
+                        },
+                        {
+                            "name": "another.txt",
+                            "shortname": "another",
+                            "content": "I am content",
+                            "extension": ".txt",
+                            "created": "",
+                            "modified": ""
+                        }
+                    ]
                 },
-                documents: {
-                    files: []
+                "documents": {
+                    "files": []
                 },
-                files: ["readme.txt"]
+                "files": [
+                    {
+                        "name": "readme.txt",
+                        "shortname": "readme",
+                        "content": "I am content",
+                        "extension": ".md",
+                        "created": "",
+                        "modified": ""
+                    }
+                ]
             }
         },
-        bin: {}
+        "bin": {}
     },
 // -----------------------------------------------------------------------
 // MORE TERMINAL PROPERTIES
@@ -51,6 +102,20 @@ var terminal = {
     },
     themeDefault: "old",
     commandLine: document.getElementById("commandLine"),
+
+    // -----------------------------------------------------------------------
+    // New file constructor
+    // -----------------------------------------------------------------------
+    File: function (name, shortname, content, extension) {
+
+        this.name = name;
+        this.shortname = shortname;
+        this.content = content;
+        this.extension = extension;
+        this.created = new Date();
+        this.modified = new Date();
+
+    },
     
 // -----------------------------------------------------------------------
 // TERMINAL METHODS
@@ -81,7 +146,7 @@ var terminal = {
     // -----------------------------------------------------------------------
     date: function() {
         output.innerHTML += outputHTML;
-        output.innerHTML += "<p style='color:" + termtheme.text + "'>" + Date() + "</p>";
+        output.innerHTML += "<p style='color:" + termtheme.text + "'>" + new Date() + "</p>";
     },
     // -----------------------------------------------------------------------
     // Output argument as a string
@@ -215,76 +280,53 @@ var terminal = {
     cd: function() {
         var directory = commandArgs.slice(1).join(" ");
         
-        function index(obj,is, value) {
-            if (typeof is == 'string')
-                return index(obj, is.split('.'), value);
-            else if (is.length == 1 && value !== undefined)
-                return obj[is[0]] = value;
-            else if (is.length == 0)
-                return obj;
-            else
-                return index(obj[is[0]],is.slice(1), value);
-        }
-        
-        function replaceAll(find, replace, str) {
-            return str.replace(new RegExp(find, 'g'), replace);
-        }
-        
         if (directory == "..") {
 
             var current = pwd[2];
             var le = pwd[2].length - 1;
+            
             while(current.charAt(le) !== '/') {
                 current = current.substr(0, current.length - 1);
                 le--;
             }
+            
             current = current.substr(0, current.length - 1);
+            var dirObject = pathStringToObject(current);
             
-            var predir = replaceAll("/", ".", current);
-            
-            while(predir.charAt(0) === '.') {
-                predir = predir.substr(1);
+            if (dirObject != undefined) {
+                
+                output.innerHTML += outputHTML;
+                pwd = [current, dirObject, current];
+                commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
+                
             }
-            
-            var fspredir = index(terminal.fs, predir);
-            
-            pwd = [current, fspredir, current];
-            commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
             
         } else if (pwd[1].hasOwnProperty(directory)) {
                   
             var reldir = pwd[2] + "/" + directory;
-            var dotreldir = replaceAll("/", ".", reldir);
+            var dirObject = pathStringToObject(reldir);
             
-            while(dotreldir.charAt(0) === '.') {
-                dotreldir = dotreldir.substr(1);
-            }
-            
-            var fsreldir = index(terminal.fs, dotreldir);
-            
-            pwd = [reldir, fsreldir, reldir];
+            output.innerHTML += outputHTML;
+            pwd = [reldir, dirObject, reldir];
             commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
         
         } else {
 
-            var fsdir = replaceAll("/", ".", directory);
-
-            while(fsdir.charAt(0) === '.') {
-                fsdir = fsdir.substr(1);
-            }
-
-            var termfsdir = index(terminal.fs, fsdir);
-            console.log(termfsdir);
+            var dirObject = pathStringToObject(directory);
             
-            if (termfsdir != undefined) {
-
-                pwd = [directory, termfsdir, directory];
+            if (dirObject != undefined) {
+                
+                output.innerHTML += outputHTML;
+                pwd = [directory, dirObject, directory];
                 commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
+                
+            } else {
+                
+                output.innerHTML += outputHTML;
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>cd: No such directory</p>";
                 
             }
         }
-        
-        output.innerHTML += outputHTML;
     },
     // -----------------------------------------------------------------------
     // Open Youtube in a new tab
@@ -346,7 +388,7 @@ var terminal = {
 
             for (var file in files) {
 
-                list += "<p class='file' style='color:" + termtheme.file + "'>" + files[file] + "</p>";
+                list += "<p class='file' style='color:" + termtheme.file + "'>" + files[file]["name"] + "</p>";
 
             }
 
@@ -375,7 +417,7 @@ var terminal = {
 
                 for (var file in files) {
 
-                    list += "<p class='file' style='display: block; color:" + termtheme.file + "'>" + files[file] + "</p>";
+                    list += "<p class='file' style='display: block; color:" + termtheme.file + "'>" + files[file]["name"] + "</p>";
 
                 }
 
@@ -399,10 +441,12 @@ var terminal = {
         
         var fileName = commandArgs.slice(1).join(" ");
         var files = pwd[1].files;
+        var file = getFile(fileName, files);
 
-        if (files.indexOf(fileName) !== -1) {
-
-            files.pop(fileName);
+        if (file !== null && typeof file === 'object') {
+            
+            var index = files.indexOf(file);
+            files.splice(index, 1);
             output.innerHTML += outputHTML;
 
         } else {
@@ -417,32 +461,52 @@ var terminal = {
     // Move
     // -----------------------------------------------------------------------
     mv: function() {
-        console.log("move");
         
         var filedir = commandArgs[1];
         var destination = commandArgs[2];
         var objProps = Object.keys(pwd[1]);
-        var objFiles = pwd[1].files;
+        var files = pwd[1].files;
+        var fileBool = dirSearchFiles(filedir, files);
+        var dirObject = pathStringToObject(destination);
         
         for (var Prop in objProps) {
             if (filedir === objProps[Prop]) {
-                console.log("success - dir");
                 var dir = objProps[Prop];
+                var directory = getDirectory(dir);
+                if (dirObject !== null && typeof dirObject === 'object') {
+                    delete pwd[1][dir];
+                    dirObject[dir] = directory;
+                    output.innerHTML += outputHTML;
+                } else {
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + filedir + "': Destination directory does not exist</p>";
+                }
             }
         }
         
-        for (var File in objFiles) {
-            if (filedir === objFiles[File]) {
-                console.log("success - file");
-                var fil = objFiles[File];
+        if (fileBool === true) {
+            var fil = filedir;
+            var file = getFile(fil, files);
+            if (dirObject !== null && typeof dirObject === 'object') {
+                if (file !== null && typeof file === 'object') {
+                    var index = files.indexOf(file);
+                    files.splice(index, 1);
+                }
+                var newFile = new terminal.File(filedir, filedir, " ", " ");
+                dirObject.files.push(newFile);
+                output.innerHTML += outputHTML;
+                
+            } else {
+                output.innerHTML += outputHTML;
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + filedir + "': Destination directory does not exist</p>";
             }
         }
         
         if (dir == undefined && fil == undefined) {
+            
             output.innerHTML += outputHTML;
             output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + filedir + "': No such file or directory</p>";
-        } else {
-            console.log("success");
+        
         }
     },
     
@@ -450,15 +514,37 @@ var terminal = {
     // Copy
     // -----------------------------------------------------------------------
     cp: function() {
-        console.log("copy");
         
         var file1 = commandArgs[1];
-        var file2 = commandArgs[2];
-        var objFiles = pwd[1].files;
-        for (var file in objFiles) {
-            if (file1 === objFiles[file]) {
-                objFiles.push(file2);
+        var destination = commandArgs[2];
+        var files = pwd[1].files;
+        var fileBool = dirSearchFiles(file1, files);
+        
+        if (fileBool === true) {
+            
+            var file = getFile(file1, files);
+            var newFile = JSON.parse(JSON.stringify(file));
+            
+            if (destination[0] === "/") {
+                var dirObject = pathStringToObject(destination);
+                dirObject.files.push(newFile);
+                
+            } else {
+                
+                newFile["name"] = destination;
+                newFile["shortname"] = destination;
+                newFile["created"] = new Date();
+                newFile["modified"] = new Date();
+                files.push(newFile);
+                
             }
+            output.innerHTML += outputHTML;
+            
+        } else {
+            
+            output.innerHTML += outputHTML;
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + file1 + "': No such file</p>";
+        
         }
     },
     // -----------------------------------------------------------------------
@@ -468,15 +554,18 @@ var terminal = {
         
         var fileName = commandArgs.slice(1).join(" ");
         var files = pwd[1].files;
+        
+        var fileBool = dirSearchFiles(fileName, files);
 
-        if (files.indexOf(fileName) !== -1) {
+        if (fileBool === true) {
 
             output.innerHTML += outputHTML;
             output.innerHTML += "<p style='color:" + termtheme.text + "'>touch: cannot create file '" + fileName + "': File exists</p>";
 
         } else {
 
-            files.push(fileName);
+            var newFile = new terminal.File(fileName, fileName, " ", " ");
+            files.push(newFile);
             output.innerHTML += outputHTML;
             output.innerHTML += "<p style='color:" + termtheme.text + "'>File called " + fileName + " successfully created.</p>";
 
@@ -523,13 +612,46 @@ var terminal = {
     // -----------------------------------------------------------------------
     tabComplete: function() {
         var command = input.value;
+        var commandArgs = command.split(" ");
         if (command.length > 0) {
             var objProps = Object.keys(pwd[1]);
-            console.log(objProps);
-            for (var Prop in objProps) {
-                if (objProps[Prop].substring(0, command.length) === command) {
-                    input.value = objProps[Prop];
-                    input.size = objProps[Prop].length + 1;
+            var commands = ["history", "help", "theme", "mkdir", "clear"]; // some testing values
+            var completions = [];
+            if (commandArgs.length === 1) {
+                for (var Command in commands) {
+                    (function(Command) {
+                        if (commands[Command].substring(0, command.length) === command) {
+                            completions.push(commands[Command]);
+                        }
+                    })(Command);
+                }
+                if (completions[0] != undefined && completions[1] === undefined) {
+                    input.value = completions[0];
+                    input.size = completions[0].length + 1;
+                }
+            } else if (commandArgs.length === 2) {
+                for (var Prop in objProps) {
+                    (function(Prop) {
+                        if (objProps[Prop].substring(0, commandArgs[1].length) === commandArgs[1]) {
+                            completions.push(objProps[Prop]);
+                        }
+                    })(Prop);
+                }
+                if (completions[0] != undefined && completions[1] === undefined) {
+                    input.value = commandArgs[0] + " " + completions[0];
+                    input.size = input.value.length + 1;
+                }
+            } else {
+                for (var Prop in objProps) {
+                    (function(Prop) {
+                        if (objProps[Prop].substring(0, commandArgs[2].length) === commandArgs[2]) {
+                            completions.push(objProps[Prop]);
+                        }
+                    })(Prop);
+                }
+                if (completions[0] != undefined && completions[1] === undefined) {
+                    input.value = commandArgs[0] + " " + commandArgs[1] + " " + completions[0];
+                    input.size = input.value.length + 1;
                 }
             }
         }
@@ -566,21 +688,22 @@ var terminal = {
             terminal.editor.editor.style.display = "inline";
             terminal.editor.textArea.focus();
 
-            var newFile = {};
-            newFile.contents = "";
-            terminal.fs.home.user.documents.files.push(newFile);
+            var file = new terminal.File("stuff.txt","stuff", " ", "txt");
+            console.log(file);
+            terminal.fs.home.user.documents.files.push(file); // seth save to pwd files array
 
             // autosave every 3 seconds. ideally we would be prompting to save
             setInterval(function(){ 
-                newFile.contents = terminal.editor.textArea.value;
-                console.log(newFile.contents);
-                console.log(terminal.fs.home.user.documents.files);
+                file.content = terminal.editor.textArea.value;
+                file.modified = new Date();
+                console.log(file.content);
+                console.log(terminal.fs.home.user.documents.files); // seth save to pwd files array
             }, 3000);
 
         },
         exit: function () {
             console.log("I have been called.");
-            // stop auto save (setInterval function)
+            // stop auto save (setInterval function)...does not work
             clearInterval();
             // hide overlay and prompt to save
             terminal.editor.editor.style.display = "none";
@@ -588,7 +711,13 @@ var terminal = {
     }
 }; // end terminal object
 
-var helpList = ["help", "youtube", "youtube -s [query]", "pwd", "mkdir [folder]", "touch [file]", "ls", "ls -l", "theme white", "theme old", "cd", "clear", "history", "signin [user]", "signout", "version", "rm [file]", "echo [text]", "date"];
+
+
+
+// START VARIABLES AND FUNCTIONS
+
+
+var helpList = ["help", "youtube", "youtube -s [query]", "pwd", "mkdir [folder]", "touch [file]", "ls", "ls -l", "theme white", "theme old", "cd", "clear", "history", "signin [user]", "signout", "version", "rm [file]", "echo [text]", "date", "editor"];
 var pwd = ["~", terminal.fs.home.user, "/home/user"];
 var input = document.getElementById("input");
 //var editor = document.getElementById("editor");
@@ -597,11 +726,60 @@ var count = 0;
 var termtheme = terminal.termthemes[terminal.themeDefault];
 
 
-// get a cookie
-function getCookie(cookieName) {
+function dirSearchFiles(file, directory) {
+    for (var i = 0; i < directory.length; i++) {
+        if (file === directory[i]["name"]) {
+            return true;
+        }
+    }
+}
+
+function getFile(file, directory) {
+    for (var i = 0; i < directory.length; i++) {
+        if (file === directory[i]["name"]) {
+            return directory[i];
+        }
+    }
+}
+
+function getDirectory(directory) {
+    var currentDir = pwd[2] + "/" + directory;
+    var dirObject = pathStringToObject(currentDir);
+    return dirObject;
+}
+
+function index(obj,is, value) {
+    if (typeof is == 'string')
+        return index(obj, is.split('.'), value);
+    else if (is.length == 1 && value !== undefined)
+        return obj[is[0]] = value;
+    else if (is.length == 0)
+        return obj;
+    else
+        return index(obj[is[0]],is.slice(1), value);
+}
+
+function replaceAll(find, replace, str) {
+    return str.replace(new RegExp(find, 'g'), replace);
+}
+
+function pathStringToObject(dirString) {
+    
+    var dotdir = replaceAll("/", ".", dirString);
+    
+    while(dotdir.charAt(0) === '.') {
+        dotdir = dotdir.substr(1);
+     }
+    
+    var dirObject = index(terminal.fs, dotdir);
+    
+    return dirObject;
+}
+
+function getCookie(cookieName) { // get a cookie
     var name = cookieName + "=";
     var ca = document.cookie.split(';');
-    for(var i=0; i<ca.length; i++) {
+    for(var i = 0; i < ca.length; i++) {
         var c = ca[i];
         while (c.charAt(0)==' ') c = c.substring(1);
         if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
@@ -621,8 +799,7 @@ terminal.commandLine.innerHTML = "WebTerm:~ " + terminal.user + "$  ";
 
 terminal.lastLogin = new Date();
 
-//set last login cookie
-document.cookie = "lastlogin=" + terminal.lastLogin;
+document.cookie = "lastlogin=" + terminal.lastLogin; // set last login cookie
 
 function addToHistory(command) {
     
@@ -633,14 +810,13 @@ function addToHistory(command) {
     }
 }
 
-//prevent default tab functionality
-function tab(e) {
-    if ( e.keyCode === 9 ) { e.preventDefault(); }
+function tab(e) { //prevent default tab functionality
+    if (e.keyCode === 9) { e.preventDefault(); }
 }
 
 
-function textEditor(e) {
-    if ( e.keycode === 27 ) { terminal.editor.exit(); } // escape key
+function textEditor(e) { // control key and x key
+    if (e.keyCode === 88 && e.ctrlKey) { terminal.editor.exit(); }
 }
 
 

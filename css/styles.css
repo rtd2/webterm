@@ -3,6 +3,7 @@
     src: url('../fonts/clacon.ttf');
 }
 
+html { cursor: text; }
 body { background: #2E312C; }
 p { color: #9DCE91; font-size: 30px; font-family: 'oldconsole'; margin: 0px;}
 textarea, input {
@@ -14,7 +15,6 @@ textarea, input {
     background-image: url(../images/block.png);
     background-repeat: no-repeat;
     background-position: 100% 0%;
-    cursor: none;
 }
 textarea:focus, input:focus{ outline: 0; }
 #commandLine { display: inline; }
@@ -68,9 +68,23 @@ textarea:focus, input:focus{ outline: 0; }
     margin: 1px;
     padding: 1px;
   }
+<<<<<<< HEAD
 
 .highlight {
   padding: 0 2px;
+=======
+
+.highlight {
+  padding: 0 2px;
+}
+
+.hide {
+  display: none;
+}
+
+.show {
+  display: inline;
+>>>>>>> refactor
 }
 
 .hide {
