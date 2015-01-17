@@ -284,7 +284,6 @@ var terminal = {
 
             var currentDir = pwd[2]; // currentDir is set to the pwd display string
             var le = pwd[2].length - 1; // le is set to the last index of currentDir
-            console.log(currentDir[le]);
             
             while(currentDir.charAt(le) !== '/') { // so long as the last index of currentDir isn't a /
                 currentDir = currentDir.substr(0, le); // remove the last index of currentDir
@@ -509,12 +508,11 @@ var terminal = {
             
             if (destDirObj !== null && typeof destDirObj === 'object') { // if arg2 was a valid place in the fs
                 
+                var index = files.indexOf(file); // get the index of arg1 file
+                var newFile = JSON.parse(JSON.stringify(file)); // copy it
                     
-                var index = files.indexOf(file);
-                var newFile = new terminal.File(filedir, filedir, " ", " ");
-                    
-                files.splice(index, 1);
-                destDirObj.files.push(newFile);
+                files.splice(index, 1); // remove arg1 file from pwd files
+                destDirObj.files.push(newFile); // add it to the destination folder's files
                 
                 output.innerHTML += outputHTML;
                 
@@ -549,7 +547,7 @@ var terminal = {
             var newFile = JSON.parse(JSON.stringify(file)); // copy it
             
             if (destination[0] === "/") { // if the file is being relocated
-                
+//problematic if destination directory is the pwd, new file of same name in same directory                
                 var destDirObj = pathStringToObject(destination); // convert the provided string to the location it represents
                 
                 if (destDirObj !== null && typeof destDirObj === 'object') { // if it is a location in the fs
@@ -567,15 +565,23 @@ var terminal = {
                 
             } else { // if the file isn't being relocated, rename it
                 
-                newFile["name"] = destination;
-                newFile["shortname"] = destination;
-                newFile["created"] = new Date();
-                newFile["modified"] = new Date();
+                if (file1 != destination) {
+                    
+                    newFile["name"] = destination;
+                    newFile["shortname"] = destination;
+                    newFile["created"] = new Date();
+                    newFile["modified"] = new Date();
+                    
+                    files.push(newFile); // and push it the files array
+                    
+                    output.innerHTML += outputHTML;
+                    
+                } else {
                 
-                files.push(newFile); // and push it the files array
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + file1 + "': New file must have a different name</p>";
                 
-                output.innerHTML += outputHTML;
-                
+                }
             }
             
         } else {
@@ -683,38 +689,81 @@ var terminal = {
                 
             } else if (commandArgs.length === 2) {
                 
-                for (var key in objProps) {
-                    
-                    if (objProps[key].substring(0, commandArgs[1].length) === commandArgs[1]) {
+                if (commandArgs[1][0] === "/") {
+                    var full = commandArgs[1];
+                    var part2 = "";
+                    var length = full.length - 1;
 
-                        completions.push(objProps[key]);
+                    while(full.charAt(length) !== '/') {
+                        part2 = full.charAt(length) + part2;
+                        full = full.substr(0, length);
+                        length--;
+                    }
+
+                    var part1 = full;
+                    full = full.substr(0, length);
+                    var dirObject = pathStringToObject(full);
+                    
+                    if (dirObject !== null && typeof dirObject === 'object') {
+                        
+                        var keys = Object.keys(dirObject);
+                        
+                    }
+
+                    for (var key in keys) {
+
+                        if (keys[key].substring(0, part2.length) === part2) {
+
+                            completions.push(keys[key]);
+
+                        }
+                    }
+
+                    if (completions[0] != undefined && completions[0] != "files" && completions[1] === undefined) {
+
+                        input.value = commandArgs[0] + " " + part1 + completions[0];
+                        input.size = input.value.length + 1;
 
                     }
-                }
-                
-                if (completions[0] != undefined && completions[1] === undefined) {
-                    
-                    input.value = commandArgs[0] + " " + completions[0];
-                    input.size = input.value.length + 1;
-                    
                 }
                 
             } else {
-                
-                for (var key in objProps) {
-                    
-                    if (objProps[key].substring(0, commandArgs[2].length) === commandArgs[2]) {
+                if (commandArgs[2][0] === "/") {
+                    var full = commandArgs[2];
+                    var part2 = "";
+                    var length = full.length - 1;
 
-                        completions.push(objProps[key]);
+                    while(full.charAt(length) !== '/') { // until the last character of full is a /
+                        part2 = full.charAt(length) + part2; // add the last character of full to part2 string
+                        full = full.substr(0, length); // remove the last character from full
+                        length--; // decrement length
+                    }
+
+                    var part1 = full; // part1 is full, minus everything after the /
+                    full = full.substr(0, length); // remove the last character from full, a /
+                    var dirObject = pathStringToObject(full); // retrieve the object that full now represents
+                    
+                    if (dirObject !== null && typeof dirObject === 'object') {
+                        
+                        var keys = Object.keys(dirObject);
+                        
+                    }
+
+                    for (var key in keys) {
+
+                        if (keys[key].substring(0, part2.length) === part2) {
+
+                            completions.push(keys[key]);
+
+                        }
+                    }
+
+                    if (completions[0] != undefined && completions[0] != "files" && completions[1] === undefined) {
+
+                        input.value = commandArgs[0] + " " + commandArgs[1] + " " + part1 + completions[0];
+                        input.size = input.value.length + 1;
 
                     }
-                }
-                
-                if (completions[0] != undefined && completions[1] === undefined) {
-                    
-                    input.value = commandArgs[0] + " " + commandArgs[1] + " " + completions[0];
-                    input.size = input.value.length + 1;
-                    
                 }
             }
         }
