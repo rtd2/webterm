@@ -481,25 +481,44 @@ var terminal = {
     // -----------------------------------------------------------------------
     // If file exists in pwd, delete it
     // -----------------------------------------------------------------------
-    rm: function() {
+    rm: {
+        defaultCase: function() {
+            
+            var fileName = commandArgs[1];
+            var files = pwd[1].files;
+            var file = getFile(fileName, files); // retrieve file with the provided fileName
+
+            if (file !== null && typeof file === 'object') { // if getFile retrieved a file
+
+                var index = files.indexOf(file); // determine index of that file
+
+                files.splice(index, 1); // remove it from the files array
+
+                output.innerHTML += outputHTML;
+
+            } else {
+
+                output.innerHTML += outputHTML;
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot remove '" + fileName + "': No such file</p>";
+
+            }
+        },
+        R: function() {
+            var folderName = commandArgs[2];
+            var dirKeys = Object.keys(pwd[1]);
+            
+            if(dirKeys.indexOf(folderName) != -1) {
+            
+                delete pwd[1][folderName];
+                
+                output.innerHTML += outputHTML;
+                
+            } else {
+
+                output.innerHTML += outputHTML;
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot remove '" + folderName + "': No such directory</p>";
         
-        var fileName = commandArgs.slice(1).join(" ");
-        var files = pwd[1].files;
-        var file = getFile(fileName, files); // retrieve file with the provided fileName
-
-        if (file !== null && typeof file === 'object') { // if getFile retrieved a file
-            
-            var index = files.indexOf(file); // determine index of that file
-            
-            files.splice(index, 1); // remove it from the files array
-            
-            output.innerHTML += outputHTML;
-
-        } else {
-
-            output.innerHTML += outputHTML;
-            output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot remove '" + fileName + "': No such file or directory</p>";
-
+            }
         }
     },
     // -----------------------------------------------------------------------
@@ -947,7 +966,7 @@ var helpList = {
     },
     "rm": {
         name: "rm",
-        info: "Remove the provided file<br>rm [file]<br>ex. rm readme.txt"
+        info: "Remove the provided file<br>rm [file]<br>ex. rm readme.txt<br>Remove the provided folder<br>rm -r [folder]<br>ex. rm -r documents"
     },
     "history": {
         name: "history",
@@ -1167,7 +1186,7 @@ function checkCommand(e) {
                     break;
 
                     case "rm":
-                        terminal.rm();
+                        terminal.rm.defaultCase();
                         addToHistory(command);
                     break;
 
@@ -1218,6 +1237,10 @@ function checkCommand(e) {
                 
                     case "youtube -s":
                         terminal.youtube.s();
+                        addToHistory(command);
+                    break;
+                    case "rm -r":
+                        terminal.rm.R();
                         addToHistory(command);
                     break;
 
