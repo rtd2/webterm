@@ -13,12 +13,13 @@
             <div id="output"></div>
 			<p id="commandLine">WebTerm:~ user$  </p><input id="input" size="1" autofocus="autofocus">
 			<div id="editor">
-				<div id="editorHeader">New Buffer<div>
-				<textarea id="editor-text"></textarea>
+				<div id="editorHeader"></div>
+				<textarea id="editorText"></textarea>
 				<div id="editorFooter">
+					<div id="savePrompt">Save modified buffer (ANSWERING "No" WILL DESTROY CHANGES) ?</div>
 					<ul id="footerNav">
-						<li><span class="highlight">ctr+x :</span> Save</li>
-						<li><span class="highlight">ctr+x :</span> Exit</li>
+						<li><span class="highlight">^O :</span> Save</li>
+						<li><span class="highlight">^X :</span> Exit</li>
 					</ul>
 				</div>
 			</div>

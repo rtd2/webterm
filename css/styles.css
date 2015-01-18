@@ -44,15 +44,6 @@ textarea:focus, input:focus{ outline: 0; }
   background: rgba(0,0,0,0.8);
 }
 
-#editorFooter {
-    padding: 1em;
-    height: 15%;
-    width: 100%;
-    border-top: 1.5px solid white;
-    bottom: 0;
-    text-align: left;
-    position: absolute;
-}
 
 #editorHeader {
   top: 5px;
@@ -62,10 +53,20 @@ textarea:focus, input:focus{ outline: 0; }
   text-align: center;
 }
 
-#editor-text {
+#editorText {
     width: 100%;
-    height: 85%;
+    height: 80%;
     top: 0;
+}
+
+#editorFooter {
+    padding: 1em;
+    height: 10%;
+    width: 100%;
+    border-top: 1.5px solid white;
+    bottom: 0;
+    text-align: left;
+    position: absolute;
 }
 
 #footerNav {
@@ -73,33 +74,21 @@ textarea:focus, input:focus{ outline: 0; }
     list-style-type: none;
 }
 
+  #savePrompt,
   #footerNav li {
     margin: 1px;
     padding: 1px;
   }
-<<<<<<< HEAD
+
+  #footerNav li {
+    display: inline;
+  }
+
+  #savePrompt {
+    display: none;
+  }
 
 .highlight {
   padding: 0 2px;
-=======
-
-.highlight {
-  padding: 0 2px;
 }
 
-.hide {
-  display: none;
-}
-
-.show {
-  display: inline;
->>>>>>> refactor
-}
-
-.hide {
-  display: none;
-}
-
-.show {
-  display: inline;
-}

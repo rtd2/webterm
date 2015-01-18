@@ -788,12 +788,18 @@ var terminal = {
     // -----------------------------------------------------------------------
     editor: {
         editor: document.getElementById("editor"),
-        textArea: document.getElementById("editor-text"),
+        textArea: document.getElementById("editorText"),
         footer: document.getElementById("editorFooter"),
         footerNav: document.getElementById("footerNav"),
         highlight: document.getElementsByClassName("highlight"),
         header: document.getElementById("editorHeader"),
-        run: function () {
+        savePrompt: document.getElementById("savePrompt"),
+        prompting: false,
+        run: function (file) { // startup editor passing in optional file name
+
+            if ( file ) { terminal.editor.header.innerHTML = file; }
+        
+            if ( ! file ) { terminal.editor.header.innerHTML = "new buffer"; }
 
             // set editor to theme
             terminal.editor.editor.style.color = termtheme.text;
@@ -804,6 +810,8 @@ var terminal = {
             terminal.editor.textArea.style.background = termtheme.background;
             terminal.editor.footer.style.borderColor = termtheme.text;
             terminal.editor.footerNav.style.color = termtheme.text;
+            terminal.editor.savePrompt.style.color = termtheme.background;
+            terminal.editor.savePrompt.style.background = termtheme.text;
 
             // style footer list items. iterate over items with class of highlight and apply styles.
             for ( var i = 0; i < terminal.editor.highlight.length; i++ ) {
@@ -818,25 +826,58 @@ var terminal = {
             terminal.editor.editor.style.display = "inline";
             terminal.editor.textArea.focus();
 
-            var file = new terminal.File("stuff.txt","stuff", " ", "txt");
-            console.log(file);
-            terminal.fs.home.user.documents.files.push(file); // seth save to pwd files array
+        },
+        save: function (fileName) { // save file passing in file name
 
-            // autosave every 3 seconds. ideally we would be prompting to save
-            setInterval(function(){ 
-                file.content = terminal.editor.textArea.value;
-                file.modified = new Date();
-                console.log(file.content);
-                console.log(terminal.fs.home.user.documents.files); // seth save to pwd files array
-            }, 3000);
+            var shortname = fileName.slice(0, -4);
+            var extension = fileName.slice(-4, fileName.length);
+            var content = terminal.editor.textArea.value;
+            terminal.fs.home.user.files.push(""); // add empty array item
+            terminal.fs.home.user.files[terminal.fs.home.user.files.length - 1] = new terminal.File(fileName, shortname, content, extension); // save file to empty array item
 
         },
-        exit: function () {
-            console.log("I have been called.");
-            // stop auto save (setInterval function)...does not work
-            clearInterval();
-            // hide overlay and prompt to save
-            terminal.editor.editor.style.display = "none";
+        changePrompt: function () { // change to file name prompot
+            terminal.editor.savePrompt.innerHTML = "File Name to Write: new buffer";
+        },
+        hidePrompt: function () { 
+            terminal.editor.savePrompt.style.display = "none";
+            terminal.editor.prompting = false;
+        },
+        showPrompt: function () { // show save prompt
+
+            terminal.editor.prompting = true;
+
+            terminal.editor.savePrompt.style.display = "inline";
+            terminal.editor.footerNav.innerHTML = "<li><span class='highlight'>Y :</span> Yes</li><li><span class='highlight'>N :</span> No</li><li><span class='highlight'>^C :</span> Cancel</li>";
+            
+            // style footer list items. iterate over items with class of highlight and apply styles.
+            for ( var i = 0; i < terminal.editor.highlight.length; i++ ) {
+
+                item = terminal.editor.highlight[i];
+                item.style.color = termtheme.background;
+                item.style.background = termtheme.text;
+
+            }
+
+        },
+        resetEditor: function() { // reset editor settings to blank
+            terminal.editor.editor.style.display = "none"; // hide editor overlay 
+            terminal.editor.savePrompt.style.display = "none"; // hide save prompt
+            terminal.editor.textArea.value = ""; // reset text area
+            terminal.editor.footerNav.innerHTML = "<li><span class='highlight'>^O :</span> Save</li><li><span class='highlight'>^X :</span> Exit</li>";
+            terminal.editor.prompting = false;
+            terminal.commandLine.focus();
+        },
+        exit: function (save) { // exit editor and call save if true
+
+            var fileName = terminal.editor.header.innerHTML;
+
+            if ( fileName = "new buffer" ) { terminal.editor.changePrompt(); }
+
+            if ( save ) { terminal.editor.save(fileName); terminal.editor.resetEditor(); }
+
+            if ( ! save ) { terminal.editor.resetEditor(); }
+
         }
     }
 }; // end terminal object
@@ -964,7 +1005,11 @@ function tab(e) { //prevent default tab functionality
 
 
 function textEditor(e) { // control key and x key
-    if (e.keyCode === 88 && e.ctrlKey) { terminal.editor.exit(); }
+    if (e.keyCode === 88 && e.ctrlKey && terminal.editor.prompting === false) { terminal.editor.showPrompt(); } // x key
+    //if (e.keyCode === 79 && e.ctrlKey && terminal.editor.save === true) { terminal.editor.exit(); } // o key
+    if (e.keyCode === 89 && e.ctrlKey && terminal.editor.prompting === true) { terminal.editor.exit(true); } // y key
+    if (e.keyCode === 78 && e.ctrlKey && terminal.editor.prompting === true) { terminal.editor.exit(); } // n key
+    if (e.keyCode === 67 && e.ctrlKey && terminal.editor.prompting === true) { terminal.editor.hidePrompt(); } // c key
 }
 
 
@@ -1034,6 +1079,10 @@ function checkCommand(e) {
                         addToHistory(command);
                     break;
 
+                    case "editor":
+                        terminal.editor.run(commandArgs[1]);
+                        addToHistory(command);
+                    break;
                     default:
                         if (commands.indexOf(commandArgs[0]) == -1) {
                             output.innerHTML += outputHTML;
