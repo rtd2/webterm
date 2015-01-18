@@ -318,6 +318,10 @@ var terminal = {
                 
             }
             
+        } else if ( directory == "cd" ) {
+
+            pwd = ["~", terminal.fs.home.user, "/home/user"];
+
         } else if (pwd[1].hasOwnProperty(directory)) { // if the argument is a key of the pwd
                   
             var reldir = pwd[2] + "/" + directory; // add the argument to the pwd display string
@@ -879,7 +883,11 @@ var terminal = {
             if ( ! save ) { terminal.editor.resetEditor(); }
 
         }
+    },
+    getfs: function () { // bug where an ls shows old fs until directory change
+        terminal.fs = getItemFromLocalStorage('fs');
     }
+
 }; // end terminal object
 
 // START VARIABLES AND FUNCTIONS
@@ -1010,6 +1018,31 @@ function textEditor(e) { // control key and x key
     if (e.keyCode === 89 && e.ctrlKey && terminal.editor.prompting === true) { terminal.editor.exit(true); } // y key
     if (e.keyCode === 78 && e.ctrlKey && terminal.editor.prompting === true) { terminal.editor.exit(); } // n key
     if (e.keyCode === 67 && e.ctrlKey && terminal.editor.prompting === true) { terminal.editor.hidePrompt(); } // c key
+}
+
+function saveItemToLocalStorage (item, keyname) {
+    
+    localStorage.setItem( keyname, JSON.stringify(item) ); //create new key values and store in localStorage. convert object to string.
+
+}
+
+function getItemFromLocalStorage (keyname) {
+
+        var key,
+            keystring;
+
+        if ( localStorage.getItem(keyname) ) {  //if note exists in localStorage get it and parse from string to object. set fs to saved fs.
+
+            keyString = localStorage.getItem(keyname);
+            key = JSON.parse(keyString);
+
+        }
+
+        return key;
+    }
+
+function removeItemFromLocalStorage (keyname) {
+    localStorage.removeItem(keyname);
 }
 
 
@@ -1168,6 +1201,13 @@ function checkCommand(e) {
                     addToHistory(command);
                 break;
 
+                case "cd":
+                    output.innerHTML += outputHTML;
+                    pwd = ["~", terminal.fs.home.user, "/home/user"];
+                    commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
+                    addToHistory(command);
+                break;
+
                 case "ls":
                     terminal.ls.defaultCase();
                     addToHistory(command);
@@ -1190,6 +1230,21 @@ function checkCommand(e) {
 
                 case "editor":
                     terminal.editor.run();
+                    addToHistory(command);
+                break;
+                
+                case "savefs":
+                    saveItemToLocalStorage(terminal.fs, 'fs');
+                    addToHistory(command);
+                break;
+                
+                case "getfs":
+                    terminal.getfs();
+                    addToHistory(command);
+                break;
+
+                case "deletefs":
+                    removeItemFromLocalStorage('fs');
                     addToHistory(command);
                 break;
 
