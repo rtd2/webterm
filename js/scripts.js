@@ -894,79 +894,79 @@ var terminal = {
 var helpList = {
     "touch": {
         name: "touch",
-        info: "touch [file]"
+        info: "Create a new file in the present working directory<br>touch [file]<br>ex. touch mydocument.txt"
     },
     "clear": {
         name: "clear",
-        info: "clear"
+        info: "Clear the terminal output<br>clear"
     },
     "editor": {
         name: "editor",
-        info: "editor<br>editor [file]"
+        info: "Open the built in text editor<br>editor<br>Open the provided file in the text editor<br>editor [file]<br>ex. editor readme.txt"
     },
     "signin": {
         name: "signin",
-        info: "signin [userName]"
+        info: "Sign in the provided user<br>signin [userName]<br>ex. signin rt"
     },
     "signout": {
         name: "signout",
-        info: "signout"
+        info: "Signout the currently signed in user<br>signout"
     },
     "version": {
         name: "version",
-        info: "version"
+        info: "Output the version of the Web Terminal<br>version"
     },
     "echo": {
         name: "echo",
-        info: "echo [string]"
+        info: "Output the provided string<br>echo [string]<br>ex. echo Hello"
     },
     "date": {
         name: "date",
-        info: "date"
+        info: "Output the current date, time, and timezone<br>date"
     },
     "rm": {
         name: "rm",
-        info: "rm [file]"
+        info: "Remove the provided file<br>rm [file]<br>ex. rm readme.txt"
     },
     "history": {
         name: "history",
-        info: "history"
+        info: "Output a list of previously entered commands<br>history"
     },
     "cd": {
         name: "cd",
-        info: "cd<br>cd [directory]<br>cd .."
+        info: "Changes the present working directory<br>cd<br>cd ..<br>cd [directory]<br>ex. cd Documents<br>ex. cd /home/user/Documents"
     },
     "ls": {
         name: "ls",
-        info: "ls<br>ls -l"
+        info: "Output a list of the files and folders in the present working directory<br>ls<br>Output in long format<br>ls -l"
     },
     "theme": {
         name: "theme",
-        info: "theme [theme]"
+        info: "Change the color scheme of the Web Terminal<br>theme [theme]<br>ex. theme white<br>Output a list of available themes<br>theme -l"
     },
     "help": {
         name: "help",
-        info: "help"
+        info: "Provides a list of available commands, and information on the Web Terminal<br>help"
     },
     "youtube": {
         name: "youtube",
-        info: "youtube<br>youtube -s [query]"
+        info: "Open a new tab in your browser to youtube.com<br>youtube<br>Search youtube.com with the provided search query<br>youtube -s [query]<br>ex. youtube -s funny cats"
     },
     "pwd": {
         name: "pwd",
-        info: "pwd"
+        info: "Output the present working directory<br>pwd"
     },
     "mkdir": {
         name: "mkdir",
-        info: "mkdir [folder]"
+        info: "Create a new folder in the present working directory<br>mkdir [folder]<br>ex. mkdir Pictures"
     },
     "cp": {
         name: "cp",
-        info: "cp [file] [destination]<br>cp [file] [newName]"
+        info: "Copy a file<br>cp [file] [destination]<br>ex. cp readme.txt /home/user/desktop<br>cp [file] [newName]<br>ex. cp readme.txt readme2.txt"
     },
     "mv": {
         name: "mv",
-        info: "mv [file] [destination]<br>mv [folder] [destination]"
+        info: "Move (cut and paste) a file or folder<br>mv [file] [destination]<br>ex. mv readme.txt /home/user/desktop<br>mv [folder] [destination]<br>ex. mv Documents /home/user/Desktop"
     }
 };
 var commands = Object.keys(helpList);
