@@ -317,7 +317,7 @@ var terminal = {
                 commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ "; // commandLine set to represent new pwd
                 
             }
-            
+
         } else if (pwd[1].hasOwnProperty(directory)) { // if the argument is a key of the pwd
                   
             var reldir = pwd[2] + "/" + directory; // add the argument to the pwd display string
@@ -564,7 +564,7 @@ var terminal = {
             var newFile = JSON.parse(JSON.stringify(file)); // copy it
             
             if (destination[0] === "/") { // if the file is being relocated
-//problematic if destination directory is the pwd, new file of same name in same directory                
+                //problematic if destination directory is the pwd, new file of same name in same directory                
                 var destDirObj = pathStringToObject(destination); // convert the provided string to the location it represents
                 
                 if (destDirObj !== null && typeof destDirObj === 'object') { // if it is a location in the fs
@@ -879,7 +879,14 @@ var terminal = {
             if ( ! save ) { terminal.editor.resetEditor(); }
 
         }
+    },
+    // -----------------------------------------------------------------------
+    // Get File System from Local Storage
+    // -----------------------------------------------------------------------
+    getfs: function () { // bug where an ls shows old fs until directory change
+        terminal.fs = getItemFromLocalStorage('fs');
     }
+
 }; // end terminal object
 
 // START VARIABLES AND FUNCTIONS
@@ -965,7 +972,6 @@ var helpList = {
 var commands = Object.keys(helpList);
 var pwd = ["~", terminal.fs.home.user, "/home/user"];
 var input = document.getElementById("input");
-//var editor = document.getElementById("editor");
 var histindex = 0;
 var count = 0;
 var termtheme = terminal.termthemes[terminal.themeDefault];
@@ -1059,12 +1065,37 @@ function tab(e) { //prevent default tab functionality
 }
 
 
-function textEditor(e) { // control key and x key
+function textEditor(e) { // for handling saving and exiting cases
     if (e.keyCode === 88 && e.ctrlKey && terminal.editor.prompting === false) { terminal.editor.showPrompt(); } // x key
     //if (e.keyCode === 79 && e.ctrlKey && terminal.editor.save === true) { terminal.editor.exit(); } // o key
     if (e.keyCode === 89 && e.ctrlKey && terminal.editor.prompting === true) { terminal.editor.exit(true); } // y key
     if (e.keyCode === 78 && e.ctrlKey && terminal.editor.prompting === true) { terminal.editor.exit(); } // n key
     if (e.keyCode === 67 && e.ctrlKey && terminal.editor.prompting === true) { terminal.editor.hidePrompt(); } // c key
+}
+
+function saveItemToLocalStorage (item, keyname) {
+    
+    localStorage.setItem( keyname, JSON.stringify(item) ); //create new key values and store in localStorage. convert object to string.
+
+}
+
+function getItemFromLocalStorage (keyname) {
+
+        var key,
+            keystring;
+
+        if ( localStorage.getItem(keyname) ) {  //if note exists in localStorage get it and parse from string to object. set fs to saved fs.
+
+            keyString = localStorage.getItem(keyname);
+            key = JSON.parse(keyString);
+
+        }
+
+        return key;
+    }
+
+function removeItemFromLocalStorage (keyname) {
+    localStorage.removeItem(keyname);
 }
 
 
@@ -1223,6 +1254,13 @@ function checkCommand(e) {
                     addToHistory(command);
                 break;
 
+                case "cd":
+                    output.innerHTML += outputHTML;
+                    pwd = ["~", terminal.fs.home.user, "/home/user"];
+                    commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
+                    addToHistory(command);
+                break;
+
                 case "ls":
                     terminal.ls.defaultCase();
                     addToHistory(command);
@@ -1245,6 +1283,21 @@ function checkCommand(e) {
 
                 case "editor":
                     terminal.editor.run();
+                    addToHistory(command);
+                break;
+                
+                case "savefs":
+                    saveItemToLocalStorage(terminal.fs, 'fs');
+                    addToHistory(command);
+                break;
+                
+                case "getfs":
+                    terminal.getfs();
+                    addToHistory(command);
+                break;
+
+                case "deletefs":
+                    removeItemFromLocalStorage('fs');
                     addToHistory(command);
                 break;
 
