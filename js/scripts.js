@@ -317,10 +317,6 @@ var terminal = {
                 commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ "; // commandLine set to represent new pwd
                 
             }
-            
-        } else if ( directory == "cd" ) {
-
-            pwd = ["~", terminal.fs.home.user, "/home/user"];
 
         } else if (pwd[1].hasOwnProperty(directory)) { // if the argument is a key of the pwd
                   
@@ -568,7 +564,7 @@ var terminal = {
             var newFile = JSON.parse(JSON.stringify(file)); // copy it
             
             if (destination[0] === "/") { // if the file is being relocated
-//problematic if destination directory is the pwd, new file of same name in same directory                
+                //problematic if destination directory is the pwd, new file of same name in same directory                
                 var destDirObj = pathStringToObject(destination); // convert the provided string to the location it represents
                 
                 if (destDirObj !== null && typeof destDirObj === 'object') { // if it is a location in the fs
@@ -884,6 +880,9 @@ var terminal = {
 
         }
     },
+    // -----------------------------------------------------------------------
+    // Get File System from Local Storage
+    // -----------------------------------------------------------------------
     getfs: function () { // bug where an ls shows old fs until directory change
         terminal.fs = getItemFromLocalStorage('fs');
     }
@@ -918,7 +917,6 @@ var helpList = {
 var commands = Object.keys(helpList);
 var pwd = ["~", terminal.fs.home.user, "/home/user"];
 var input = document.getElementById("input");
-//var editor = document.getElementById("editor");
 var histindex = 0;
 var count = 0;
 var termtheme = terminal.termthemes[terminal.themeDefault];
@@ -1012,7 +1010,7 @@ function tab(e) { //prevent default tab functionality
 }
 
 
-function textEditor(e) { // control key and x key
+function textEditor(e) { // for handling saving and exiting cases
     if (e.keyCode === 88 && e.ctrlKey && terminal.editor.prompting === false) { terminal.editor.showPrompt(); } // x key
     //if (e.keyCode === 79 && e.ctrlKey && terminal.editor.save === true) { terminal.editor.exit(); } // o key
     if (e.keyCode === 89 && e.ctrlKey && terminal.editor.prompting === true) { terminal.editor.exit(true); } // y key
