@@ -182,48 +182,63 @@ var terminal = {
             var theme = commandArgs.slice(1).join(" ");
             var themes = Object.keys(terminal.termthemes);
             var displayThemes = themes.join(", ");
+            
+            if (theme != "-l") {
 
-            var updateDom = function () {
+                var updateDom = function () {
 
-                document.body.style.background = termtheme.background;
-                input.style.color = termtheme.text;
-                input.style.background = termtheme.background;
-                commandLine.style.color = termtheme.commandLine;
+                    document.body.style.background = termtheme.background;
+                    input.style.color = termtheme.text;
+                    input.style.background = termtheme.background;
+                    commandLine.style.color = termtheme.commandLine;
 
-                var putNodes = output.childNodes;
-                for (var i = 0; i < putNodes.length; i++) {
-                    putNodes[i].style.color = termtheme.text;
+                    var putNodes = output.childNodes;
+                    for (var i = 0; i < putNodes.length; i++) {
+                        putNodes[i].style.color = termtheme.text;
+                    }
+
+                    var spans = document.querySelectorAll("#output > p > span");
+                    for (var t = 0; t < spans.length; t++) {
+                        spans[t].style.color = termtheme.commandLine;
+                    }
+
+                };
+
+                output.innerHTML += outputHTML;
+
+                switch ( theme ) {
+
+                    case "old":
+                        termtheme = terminal.termthemes.old;
+                        updateDom();
+                        break;
+
+                    case "black":
+                        termtheme = terminal.termthemes.black;
+                        updateDom();
+                        break;
+
+                    case "white":
+                        termtheme = terminal.termthemes.white;
+                        updateDom();
+                        break;
+
+                    default:
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>theme: There is no such theme. themes available: " + displayThemes + "</p>";
+
                 }
-                
-                var spans = document.querySelectorAll("#output > p > span");
-                for (var t = 0; t < spans.length; t++) {
-                    spans[t].style.color = termtheme.commandLine;
+            } else {
+                var themeList = "";
+
+                output.innerHTML += outputHTML;
+
+                for (theme in themes) {
+                    themeList += "<p style='color:" + termtheme.text + "'>";
+                    themeList += themes[theme];
+                    themeList += "</p>";
                 }
-                
-            };
 
-            output.innerHTML += outputHTML;
-
-            switch ( theme ) {
-
-                case "old":
-                    termtheme = terminal.termthemes.old;
-                    updateDom();
-                    break;
-
-                case "black":
-                    termtheme = terminal.termthemes.black;
-                    updateDom();
-                    break;
-
-                case "white":
-                    termtheme = terminal.termthemes.white;
-                    updateDom();
-                    break;
-
-                default:
-                    output.innerHTML += "<p style='color:" + termtheme.text + "'>theme: There is no such theme. themes available: " + displayThemes + "</p>";
-
+                output.innerHTML += themeList;
             }
 
         },
