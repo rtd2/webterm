@@ -884,27 +884,82 @@ var terminal = {
 
 // START VARIABLES AND FUNCTIONS
 
-//var helpList = "help", "youtube", "youtube -s [query]", "pwd", "mkdir [folder]", "touch [file]", "ls", "ls -l", "theme white", "theme old", "cd", "clear", "history", "signin [user]", "signout", "version", "rm [file]", "echo [text]", "date", "editor"];
 var helpList = {
+    "touch": {
+        name: "touch",
+        info: "touch [file]"
+    },
+    "clear": {
+        name: "clear",
+        info: "clear"
+    },
+    "editor": {
+        name: "editor",
+        info: "editor<br>editor [file]"
+    },
+    "signin": {
+        name: "signin",
+        info: "signin [userName]"
+    },
+    "signout": {
+        name: "signout",
+        info: "signout"
+    },
+    "version": {
+        name: "version",
+        info: "version"
+    },
+    "echo": {
+        name: "echo",
+        info: "echo [string]"
+    },
+    "date": {
+        name: "date",
+        info: "date"
+    },
+    "rm": {
+        name: "rm",
+        info: "rm [file]"
+    },
+    "history": {
+        name: "history",
+        info: "history"
+    },
+    "cd": {
+        name: "cd",
+        info: "cd<br>cd [directory]<br>cd .."
+    },
+    "ls": {
+        name: "ls",
+        info: "ls<br>ls -l"
+    },
+    "theme": {
+        name: "theme",
+        info: "theme [theme]"
+    },
     "help": {
         name: "help",
-        info: "information on help command"
+        info: "help"
     },
     "youtube": {
         name: "youtube",
-        info: "information on youtube command"
+        info: "youtube<br>youtube -s [query]"
     },
     "pwd": {
         name: "pwd",
-        info: "information on pwd command"
+        info: "pwd"
     },
     "mkdir": {
         name: "mkdir",
-        info: "information on mkdir command"
+        info: "mkdir [folder]"
+    },
+    "cp": {
+        name: "cp",
+        info: "cp [file] [destination]<br>cp [file] [newName]"
     },
     "mv": {
         name: "mv",
-        info: "information on mv command"
+        info: "mv [file] [destination]<br>mv [folder] [destination]"
     }
 };
 var commands = Object.keys(helpList);
