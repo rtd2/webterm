@@ -83,7 +83,7 @@ var terminal = {
             text: "#9DCE91",
             file: "#FFF",
             folder: "SlateBlue",
-            commandLine: "#9DCE91"
+            commandLine: "#FFF"
         },
         white: {
             background: "#FFF",
@@ -194,6 +194,12 @@ var terminal = {
                 for (var i = 0; i < putNodes.length; i++) {
                     putNodes[i].style.color = termtheme.text;
                 }
+                
+                var spans = document.querySelectorAll("#output > p > span");
+                for (var t = 0; t < spans.length; t++) {
+                    spans[t].style.color = termtheme.commandLine;
+                }
+                
             };
 
             output.innerHTML += outputHTML;
@@ -934,7 +940,7 @@ var helpList = {
     },
     "cd": {
         name: "cd",
-        info: "Changes the present working directory<br>cd<br>cd ..<br>cd [directory]<br>ex. cd Documents<br>ex. cd /home/user/Documents"
+        info: "Change the present working directory<br>cd<br>cd ..<br>cd [directory]<br>ex. cd Documents<br>ex. cd /home/user/Documents"
     },
     "ls": {
         name: "ls",

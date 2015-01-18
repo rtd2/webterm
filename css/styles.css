@@ -17,7 +17,7 @@ textarea, input {
     background-position: 100% 0%;
 }
 textarea:focus, input:focus{ outline: 0; }
-#commandLine { display: inline; }
+#commandLine { display: inline; color: white; }
 
 .file {
     display: inline;
