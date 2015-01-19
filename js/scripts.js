@@ -303,21 +303,21 @@ var terminal = {
             
             var dirObject = getPreDirectory(folderName); // returns an array, destination object, folderName, destination object's string
             
-            if (dirObject[0] !== null && typeof dirObject[0] === 'object') {
+            if (dirObject[0] !== null && typeof dirObject[0] === 'object') { // if the getPreDirectory retrieved a directory
                 
-                if (dirObject[0].hasOwnProperty(dirObject[1])) {
+                if (dirObject[0].hasOwnProperty(dirObject[1])) { // if the desired folder name already exists in destination
                     
                     output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>mkdir: cannot create '" + dirObject[1] + "': Directory already exists in '" + dirObject[2] + "'</p>";
                     
-                } else {
+                } else { // if it doesn't, create it
                     
                     dirObject[0][dirObject[1]] = {files: []};
                     output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>Directory called '" + dirObject[1] + "' successfully created.</p>";
                 }
                     
-            } else {
+            } else { // if the provided location for the folder's creation was not a place in the fs
                
                 output.innerHTML += outputHTML;
                 output.innerHTML += "<p style='color:" + termtheme.text + "'>mkdir: cannot create '" + dirObject[1] + "': Destination directory '" + dirObject[2] + "' does not exist</p>";
