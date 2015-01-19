@@ -81,7 +81,7 @@ var terminal = {
         old: {
             background: "#2E312C",
             text: "#9DCE91",
-            file: "#FFF",
+            file: "Gray",
             folder: "SlateBlue",
             commandLine: "#FFF"
         },
@@ -297,18 +297,43 @@ var terminal = {
     // If the folder doesn't exist in pwd, create it
     // -----------------------------------------------------------------------
     mkdir: function() {
-        var folderName = commandArgs.slice(1).join(" ");
+        var folderName = commandArgs[1];
+        
+        if (folderName[0] === "/") { // if the intended destination for this folder is elsewhere in the filesystem
+            
+            var dirObject = getPreDirectory(folderName); // returns an array, destination object, folderName, destination object's string
+            
+            if (dirObject[0] !== null && typeof dirObject[0] === 'object') {
+                
+                if (dirObject[0].hasOwnProperty(dirObject[1])) {
+                    
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>mkdir: cannot create '" + dirObject[1] + "': Directory already exists in '" + dirObject[2] + "'</p>";
+                    
+                } else {
+                    
+                    dirObject[0][dirObject[1]] = {files: []};
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>Directory called '" + dirObject[1] + "' successfully created.</p>";
+                }
+                    
+            } else {
+               
+                output.innerHTML += outputHTML;
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>mkdir: cannot create '" + dirObject[1] + "': Destination directory '" + dirObject[2] + "' does not exist</p>";
 
-        if (pwd[1].hasOwnProperty(folderName)) {
+            }
+            
+        } else if (pwd[1].hasOwnProperty(folderName)) { // if a folder by this name exists in the pwd
 
             output.innerHTML += outputHTML;
-            output.innerHTML += "<p style='color:" + termtheme.text + "'>mkdir: cannot create directory '" + folderName + "': File exists</p>";
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>mkdir: cannot create '" + folderName + "': Directory already exists</p>";
 
         } else {
 
             pwd[1][folderName] = {files: []};
             output.innerHTML += outputHTML;
-            output.innerHTML += "<p style='color:" + termtheme.text + "'>Folder called " + folderName + " successfully created.</p>";
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>Directory called " + folderName + " successfully created.</p>";
 
         }
     },
@@ -966,7 +991,7 @@ var helpList = {
     },
     "rm": {
         name: "rm",
-        info: "Remove the provided file<br>rm [file]<br>ex. rm readme.txt<br>Remove the provided folder<br>rm -r [folder]<br>ex. rm -r documents"
+        info: "Remove the provided file<br>rm [file]<br>ex. rm readme.txt<br>Remove the provided directory<br>rm -r [directory]<br>ex. rm -r documents"
     },
     "history": {
         name: "history",
@@ -978,7 +1003,7 @@ var helpList = {
     },
     "ls": {
         name: "ls",
-        info: "Output a list of the files and folders in the present working directory<br>ls<br>Output in long format<br>ls -l"
+        info: "Output a list of the files and directories in the present working directory<br>ls<br>Output in long format<br>ls -l"
     },
     "theme": {
         name: "theme",
@@ -998,7 +1023,7 @@ var helpList = {
     },
     "mkdir": {
         name: "mkdir",
-        info: "Create a new folder in the present working directory<br>mkdir [folder]<br>ex. mkdir Pictures"
+        info: "Create a new directory in the present working directory<br>mkdir [directory]<br>ex. mkdir Pictures"
     },
     "cp": {
         name: "cp",
@@ -1006,7 +1031,7 @@ var helpList = {
     },
     "mv": {
         name: "mv",
-        info: "Move (cut and paste) a file or folder<br>mv [file] [destination]<br>ex. mv readme.txt /home/user/desktop<br>mv [folder] [destination]<br>ex. mv Documents /home/user/Desktop"
+        info: "Move (cut and paste) a file or directory<br>mv [file] [destination]<br>ex. mv readme.txt /home/user/desktop<br>mv [directory] [destination]<br>ex. mv Documents /home/user/Desktop"
     }
 };
 var commands = Object.keys(helpList);
@@ -1031,6 +1056,26 @@ function getFile(file, directory) {
             return directory[i];
         }
     }
+}
+
+function getPreDirectory(directory) {
+    
+    var full = directory;
+    var part2 = "";
+    var length = full.length - 1;
+
+    while(full.charAt(length) !== '/') {
+        part2 = full.charAt(length) + part2;
+        full = full.substr(0, length);
+        length--;
+    }
+
+    var part1 = full;
+    full = full.substr(0, length);
+    var dirObject = pathStringToObject(full);
+    
+    return [dirObject, part2, part1];
+    
 }
 
 function getDirectory(directory) {
