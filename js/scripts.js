@@ -528,7 +528,7 @@ var terminal = {
 
             }
         },
-        R: function() {
+        r: function() {
             var folderName = commandArgs[2];
             var dirKeys = Object.keys(pwd[1]);
             
@@ -616,61 +616,108 @@ var terminal = {
     // -----------------------------------------------------------------------
     // Copy
     // -----------------------------------------------------------------------
-    cp: function() {
+    cp: {
+        defaultCase: function() {
         
-        var file1 = commandArgs[1];
-        var destination = commandArgs[2];
-        var files = pwd[1].files;
-        var fileBool = dirSearchFiles(file1, files); // true if the file exists in files array
-        
-        if (fileBool === true) { // if the file exists
-            
-            var file = getFile(file1, files); // retrieve it
-            var newFile = JSON.parse(JSON.stringify(file)); // copy it
-            
-            if (destination[0] === "/") { // if the file is being relocated
-                //problematic if destination directory is the pwd, new file of same name in same directory                
-                var destDirObj = pathStringToObject(destination); // convert the provided string to the location it represents
-                
-                if (destDirObj !== null && typeof destDirObj === 'object') { // if it is a location in the fs
-                    
-                    destDirObj.files.push(newFile); // add the file copy to the files array of that object/directory
-                    
-                    output.innerHTML += outputHTML;
-                    
-                } else {
-                    
-                    output.innerHTML += outputHTML;
-                    output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + file1 + "': The destination folder does not exist</p>";
-                    
+            var file1 = commandArgs[1];
+            var destination = commandArgs[2];
+            var files = pwd[1].files;
+            var fileBool = dirSearchFiles(file1, files); // true if the file exists in files array
+
+            if (fileBool === true) { // if the file exists
+
+                var file = getFile(file1, files); // retrieve it
+                var newFile = JSON.parse(JSON.stringify(file)); // copy it
+
+                if (destination[0] === "/") { // if the file is being relocated
+                    //problematic if destination directory is the pwd, new file of same name in same directory                
+                    var destDirObj = pathStringToObject(destination); // convert the provided string to the location it represents
+
+                    if (destDirObj !== null && typeof destDirObj === 'object') { // if it is a location in the fs
+
+                        destDirObj.files.push(newFile); // add the file copy to the files array of that object/directory
+
+                        output.innerHTML += outputHTML;
+
+                    } else {
+
+                        output.innerHTML += outputHTML;
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + file1 + "': The destination folder does not exist</p>";
+
+                    }
+
+                } else { // if the file isn't being relocated, rename it
+
+                    if (file1 != destination) {
+
+                        newFile["name"] = destination;
+                        newFile["shortname"] = destination;
+                        newFile["created"] = new Date();
+                        newFile["modified"] = new Date();
+
+                        files.push(newFile); // and push it the files array
+
+                        output.innerHTML += outputHTML;
+
+                    } else {
+
+                        output.innerHTML += outputHTML;
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + file1 + "': New file must have a different name</p>";
+
+                    }
                 }
+
+            } else {
+
+                output.innerHTML += outputHTML;
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + file1 + "': No such file</p>";
+
+            }
+        },
+        r: function() {
+            
+            var folder1 = commandArgs[2];
+            var destination = commandArgs[3];
+            
+            if (pwd[1].hasOwnProperty(folder1)) { // if the folder to be copied exists
+            
+                var dirObject = pwd[1][folder1];
+                var newFolder = JSON.parse(JSON.stringify(dirObject));
                 
-            } else { // if the file isn't being relocated, rename it
-                
-                if (file1 != destination) {
+                if (destination[0] === "/") { // if the folder is being relocated
                     
-                    newFile["name"] = destination;
-                    newFile["shortname"] = destination;
-                    newFile["created"] = new Date();
-                    newFile["modified"] = new Date();
+                    var destDirObj = pathStringToObject(destination);
                     
-                    files.push(newFile); // and push it the files array
-                    
-                    output.innerHTML += outputHTML;
-                    
-                } else {
-                
-                    output.innerHTML += outputHTML;
-                    output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + file1 + "': New file must have a different name</p>";
-                
+                    if (destDirObj !== null && typeof destDirObj === 'object') { // if it is a location in the fs
+
+                        destDirObj[folder1] = newFolder;
+
+                        output.innerHTML += outputHTML;
+
+                    } else {
+
+                        output.innerHTML += outputHTML;
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + folder1 + "': The destination folder does not exist</p>";
+
+                    }
+
+                } else { // if the folder isn't being relocated
+
+                    if (pwd[1].hasOwnProperty(destination)) { // if the destination folder exists, add the source folder to it
+                        
+                        pwd[1][destination][folder1] = newFolder;
+                        
+                        output.innerHTML += outputHTML;
+
+                    } else { // if the destination folder doesn't exist, create it
+
+                        pwd[1][destination] = newFolder;
+                        
+                        output.innerHTML += outputHTML;
+                        
+                    }
                 }
             }
-            
-        } else {
-            
-            output.innerHTML += outputHTML;
-            output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + file1 + "': No such file</p>";
-        
         }
     },
     // -----------------------------------------------------------------------
@@ -1027,7 +1074,7 @@ var helpList = {
     },
     "cp": {
         name: "cp",
-        info: "Copy a file<br>cp [file] [destination]<br>ex. cp readme.txt /home/user/desktop<br>cp [file] [newName]<br>ex. cp readme.txt readme2.txt"
+        info: "Copy a file<br>cp [file] [destination]<br>ex. cp readme.txt /home/user/desktop<br>cp [file] [newName]<br>ex. cp readme.txt readme2.txt<br>Copy a directory<br>cp -r [directory] [destination]<br>ex. cp -r downloads desktop"
     },
     "mv": {
         name: "mv",
@@ -1254,6 +1301,7 @@ function checkCommand(e) {
                         terminal.editor.run(commandArgs[1]);
                         addToHistory(command);
                     break;
+                        
                     default:
                         if (commands.indexOf(commandArgs[0]) == -1) {
                             output.innerHTML += outputHTML;
@@ -1270,6 +1318,7 @@ function checkCommand(e) {
                     terminal.help.info();
                     addToHistory(command);
                 break;
+                    
                 case "-help":
                     terminal.help.info();
                     addToHistory(command);
@@ -1284,8 +1333,9 @@ function checkCommand(e) {
                         terminal.youtube.s();
                         addToHistory(command);
                     break;
+                        
                     case "rm -r":
-                        terminal.rm.R();
+                        terminal.rm.r();
                         addToHistory(command);
                     break;
 
@@ -1300,20 +1350,22 @@ function checkCommand(e) {
                 }
             }
             
-            switch (commandArgs[0]) {
-
-                case "cp":
-                    terminal.cp();
-                    addToHistory(command);
-                break;
-
-                case "mv":
-                    terminal.mv();
-                    addToHistory(command);
-                break;
-
+            if (commandArgs[0] === "mv") {
+                terminal.mv();
+                addToHistory(command);
             }
-
+            
+            if (commandArgs[0] + " " + commandArgs[1] === "cp -r") {
+                
+                terminal.cp.r();
+                addToHistory(command);
+                
+            } else if (commandArgs[0] === "cp") {
+                
+                terminal.cp.defaultCase();
+                addToHistory(command);
+            }
+            
         } else { // if the command entered has no arguments
 
             switch (command) {
