@@ -4,7 +4,7 @@ var terminal = {
 // -----------------------------------------------------------------------
     "fs": {
         "home": {
-            "user": {
+            "user": { // should be users...
                 "desktop": {
                     "files": [
                         {
@@ -73,10 +73,17 @@ var terminal = {
 // -----------------------------------------------------------------------
 // MORE TERMINAL PROPERTIES
 // -----------------------------------------------------------------------
+    "userSettings": {
+        "hist": [],
+        "user": "user",
+        "lastLogin": "",
+        "themeDefault": "old"
+    },
     hist: [],
-    ver: "0.1",
     user: "user",
     lastLogin: "",
+    themeDefault: "old",
+    ver: "0.1",
     termthemes: {
         old: {
             background: "#2E312C",
@@ -100,9 +107,29 @@ var terminal = {
             commandLine: "#FF69B4",
         }
     },
-    themeDefault: "old",
     commandLine: document.getElementById("commandLine"),
+    // -----------------------------------------------------------------------
+    // load and apply user settings and fs
+    // -----------------------------------------------------------------------
+    init: function () {
 
+        var date = new Date();
+        var oldDate;
+
+        terminal.fs = getItemFromLocalStorage('fs'); //load and apply user fs
+        terminal.userSettings = getItemFromLocalStorage('settings'); // load settings: history, user, last login, theme
+        oldDate = terminal.userSettings.lastLogin; // show loaded date before updated to current date/time
+        terminal.userSettings.lastLogin = date;
+        terminal.lastLogin = date;
+
+        // user welcome message
+        if ( terminal.userSettings.user != "user" ) {
+            output.innerHTML = "<p style='color:" + termtheme.text + " '>Welcome back " + terminal.userSettings.user + ". Last login " + terminal.userSettings.lastLogin + ".";
+        } else if ( terminal.userSettings.lastLogin != "" ) { 
+            output.innerHTML = "<p style='color:" + termtheme.text + " '>Last login " + terminal.userSettings.lastLogin + ".";
+        }
+
+    },
     // -----------------------------------------------------------------------
     // New file constructor
     // -----------------------------------------------------------------------
@@ -120,6 +147,7 @@ var terminal = {
 // -----------------------------------------------------------------------
 // TERMINAL METHODS
 // -----------------------------------------------------------------------
+    
     // -----------------------------------------------------------------------
     // Display help information, list of commands
     // -----------------------------------------------------------------------
@@ -242,9 +270,8 @@ var terminal = {
             }
 
         },
-        // THIS IS NOT FUNCTIONAL
-        set: function () {
-            terminal.themeDefault = commandArgs[2];
+        set: function (theme) {
+            terminal.themeDefault = theme;
         }
     },
     // -----------------------------------------------------------------------
@@ -254,6 +281,7 @@ var terminal = {
         var user = commandArgs.slice(1).join(" ");
 
         terminal.user = user;
+        terminal.userSettings.user = user;
         commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
         output.innerHTML += outputHTML;
 
@@ -907,7 +935,7 @@ var terminal = {
         header: document.getElementById("editorHeader"),
         savePrompt: document.getElementById("savePrompt"),
         prompting: false,
-        run: function (file) { // startup editor passing in optional file name
+        run: function (file) { // startup editor passing in optional file name ... NEED TO ADD ACTUAL FILE LOAD
 
             if ( file ) { terminal.editor.header.innerHTML = file; }
         
@@ -991,12 +1019,6 @@ var terminal = {
             if ( ! save ) { terminal.editor.resetEditor(); }
 
         }
-    },
-    // -----------------------------------------------------------------------
-    // Get File System from Local Storage
-    // -----------------------------------------------------------------------
-    getfs: function () { // bug where an ls shows old fs until directory change
-        terminal.fs = getItemFromLocalStorage('fs');
     }
 
 }; // end terminal object
@@ -1216,7 +1238,7 @@ function getItemFromLocalStorage (keyname) {
         var key,
             keystring;
 
-        if ( localStorage.getItem(keyname) ) {  //if note exists in localStorage get it and parse from string to object. set fs to saved fs.
+        if ( localStorage.getItem(keyname) ) {  //if note exists in localStorage get it and parse from string to object.
 
             keyString = localStorage.getItem(keyname);
             key = JSON.parse(keyString);
@@ -1301,6 +1323,11 @@ function checkCommand(e) {
                         terminal.editor.run(commandArgs[1]);
                         addToHistory(command);
                     break;
+
+                    case "delete":
+                        removeItemFromLocalStorage(commandArgs[1]);
+                        addToHistory(command);
+                    break;
                         
                     default:
                         if (commands.indexOf(commandArgs[0]) == -1) {
@@ -1336,6 +1363,11 @@ function checkCommand(e) {
                         
                     case "rm -r":
                         terminal.rm.r();
+                        addToHistory(command);
+                    break;
+
+                    case "theme -set":
+                        terminal.theme.set(commandArgs[2]);
                         addToHistory(command);
                     break;
 
@@ -1427,18 +1459,14 @@ function checkCommand(e) {
                     addToHistory(command);
                 break;
                 
-                case "savefs":
+                case "save":
                     saveItemToLocalStorage(terminal.fs, 'fs');
+                    saveItemToLocalStorage(terminal.userSettings, 'settings');
                     addToHistory(command);
                 break;
                 
-                case "getfs":
-                    terminal.getfs();
-                    addToHistory(command);
-                break;
-
-                case "deletefs":
-                    removeItemFromLocalStorage('fs');
+                case "load":
+                    terminal.init();
                     addToHistory(command);
                 break;
 
@@ -1464,3 +1492,6 @@ function checkCommand(e) {
 input.addEventListener("keyup", checkCommand, false);
 input.addEventListener("keydown", tab, false);
 terminal.editor.textArea.addEventListener("keyup", textEditor, false);
+
+// load user fs and settings
+terminal.init();
