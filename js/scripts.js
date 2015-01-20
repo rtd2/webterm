@@ -935,11 +935,22 @@ var terminal = {
         header: document.getElementById("editorHeader"),
         savePrompt: document.getElementById("savePrompt"),
         prompting: false,
+        currentFile: undefined,
         run: function (file) { // startup editor passing in optional file name ... NEED TO ADD ACTUAL FILE LOAD
+            var fileName,
+                files,
+                fileData;
 
-            if ( file ) { terminal.editor.header.innerHTML = file; }
-        
-            if ( ! file ) { terminal.editor.header.innerHTML = "new buffer"; }
+            if ( file ) { 
+
+                terminal.editor.header.innerHTML = file;                    
+                fileName = file;
+                files = pwd[1].files;
+                fileData = getFile(fileName, files); // retrieve file with the provided fileName
+                terminal.editor.currentFile = fileData;
+                terminal.editor.textArea.value = fileData.content;
+
+            } else { terminal.editor.header.innerHTML = "new buffer"; }
 
             // set editor to theme
             terminal.editor.editor.style.color = termtheme.text;
@@ -969,11 +980,21 @@ var terminal = {
         },
         save: function (fileName) { // save file passing in file name
 
-            var shortname = fileName.slice(0, -4);
-            var extension = fileName.slice(-4, fileName.length);
-            var content = terminal.editor.textArea.value;
-            terminal.fs.home.user.files.push(""); // add empty array item
-            terminal.fs.home.user.files[terminal.fs.home.user.files.length - 1] = new terminal.File(fileName, shortname, content, extension); // save file to empty array item
+            var file = terminal.editor.currentFile;
+            var newContent = terminal.editor.textArea.value;
+
+            if ( file ) { file.content = newContent; } // if working with existing file save updated version
+            
+
+            // else { // THIS IS SLOPPY ... create and save new file
+
+            //     var shortname = fileName.slice(0, -4);
+            //     var extension = fileName.slice(-4, fileName.length);
+            //     var content = terminal.editor.textArea.value;
+            //     terminal.fs.home.user.files.push(""); // add empty array item
+            //     terminal.fs.home.user.files[terminal.fs.home.user.files.length - 1] = new terminal.File(fileName, shortname, content, extension); // save file to empty array item
+            
+            // }
 
         },
         changePrompt: function () { // change to file name prompot
@@ -1006,6 +1027,7 @@ var terminal = {
             terminal.editor.textArea.value = ""; // reset text area
             terminal.editor.footerNav.innerHTML = "<li><span class='highlight'>^O :</span> Save</li><li><span class='highlight'>^X :</span> Exit</li>";
             terminal.editor.prompting = false;
+            terminal.editor.currentFile = undefined;
             terminal.commandLine.focus();
         },
         exit: function (save) { // exit editor and call save if true
@@ -1017,6 +1039,8 @@ var terminal = {
             if ( save ) { terminal.editor.save(fileName); terminal.editor.resetEditor(); }
 
             if ( ! save ) { terminal.editor.resetEditor(); }
+
+            input.focus();
 
         }
     }
