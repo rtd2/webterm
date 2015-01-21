@@ -4,7 +4,7 @@ var terminal = {
 // -----------------------------------------------------------------------
     "fs": {
         "home": {
-            "user": { // should be users...
+            "user": {
                 "desktop": {
                     "files": [
                         {
@@ -116,8 +116,15 @@ var terminal = {
         var date = new Date();
         var oldDate;
 
-        terminal.fs = getItemFromLocalStorage('fs'); //load and apply user fs
-        terminal.userSettings = getItemFromLocalStorage('settings'); // load settings: history, user, last login, theme
+        if ( getItemFromLocalStorage('fs') ) {
+            terminal.fs = getItemFromLocalStorage('fs'); //load and apply user fs
+        }
+
+        if ( getItemFromLocalStorage('settings') ) {
+            terminal.userSettings = getItemFromLocalStorage('settings'); // load settings: history, user, last login, theme
+        }
+
+        // NOT WORKING...SHOWING CURRENT DATE/TIME
         oldDate = terminal.userSettings.lastLogin; // show loaded date before updated to current date/time
         terminal.userSettings.lastLogin = date;
         terminal.lastLogin = date;
@@ -126,8 +133,13 @@ var terminal = {
         if ( terminal.userSettings.user != "user" ) {
             output.innerHTML = "<p style='color:" + termtheme.text + " '>Welcome back " + terminal.userSettings.user + ". Last login " + terminal.userSettings.lastLogin + ".";
         } else if ( terminal.userSettings.lastLogin != "" ) { 
-            output.innerHTML = "<p style='color:" + termtheme.text + " '>Last login " + terminal.userSettings.lastLogin + ".";
+            output.innerHTML = "<p style='color:" + termtheme.text + " '>Last login " + oldDate + ".";
         }
+
+        // ADD THEME UPDATE
+
+
+        
 
     },
     // -----------------------------------------------------------------------
