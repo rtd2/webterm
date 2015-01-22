@@ -124,6 +124,11 @@ var terminal = {
             terminal.userSettings = getItemFromLocalStorage('settings'); // load settings: history, user, last login, theme
         }
 
+
+        // ADD THEME UPDATE
+        termtheme = terminal.termthemes[terminal.userSettings.themeDefault];
+        terminal.theme.updateDom();
+
         // NOT WORKING...SHOWING CURRENT DATE/TIME
         oldDate = terminal.userSettings.lastLogin; // show loaded date before updated to current date/time
         terminal.userSettings.lastLogin = date;
@@ -135,12 +140,7 @@ var terminal = {
         } else if ( terminal.userSettings.lastLogin != "" ) { 
             output.innerHTML = "<p style='color:" + termtheme.text + " '>Last login " + oldDate + ".";
         }
-
-        // ADD THEME UPDATE
-
-
         
-
     },
     // -----------------------------------------------------------------------
     // New file constructor
@@ -225,42 +225,23 @@ var terminal = {
             
             if (theme != "-l") {
 
-                var updateDom = function () {
-
-                    document.body.style.background = termtheme.background;
-                    input.style.color = termtheme.text;
-                    input.style.background = termtheme.background;
-                    commandLine.style.color = termtheme.commandLine;
-
-                    var putNodes = output.childNodes;
-                    for (var i = 0; i < putNodes.length; i++) {
-                        putNodes[i].style.color = termtheme.text;
-                    }
-
-                    var spans = document.querySelectorAll("#output > p > span");
-                    for (var t = 0; t < spans.length; t++) {
-                        spans[t].style.color = termtheme.commandLine;
-                    }
-
-                };
-
                 output.innerHTML += outputHTML;
 
                 switch ( theme ) {
 
                     case "old":
                         termtheme = terminal.termthemes.old;
-                        updateDom();
+                        terminal.theme.updateDom();
                         break;
 
                     case "black":
                         termtheme = terminal.termthemes.black;
-                        updateDom();
+                        terminal.theme.updateDom();
                         break;
 
                     case "white":
                         termtheme = terminal.termthemes.white;
-                        updateDom();
+                        terminal.theme.updateDom();
                         break;
 
                     default:
@@ -282,8 +263,27 @@ var terminal = {
             }
 
         },
+        updateDom: function () {
+
+            document.body.style.background = termtheme.background;
+            input.style.color = termtheme.text;
+            input.style.background = termtheme.background;
+            commandLine.style.color = termtheme.commandLine;
+
+            var putNodes = output.childNodes;
+            for (var i = 0; i < putNodes.length; i++) {
+                putNodes[i].style.color = termtheme.text;
+            }
+
+            var spans = document.querySelectorAll("#output > p > span");
+            for (var t = 0; t < spans.length; t++) {
+                spans[t].style.color = termtheme.commandLine;
+            }
+
+        },
         set: function (theme) {
             terminal.themeDefault = theme;
+            terminal.userSettings.themeDefault = theme;
         }
     },
     // -----------------------------------------------------------------------
