@@ -294,6 +294,8 @@ var terminal = {
             terminal.themeDefault = theme;
             terminal.userSettings.themeDefault = theme;
             termtheme = terminal.termthemes[theme];
+            output.innerHTML += outputHTML;
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>Default theme set to " + theme + ".</p>";
             terminal.theme.updateDom();
             terminal.save.settings();
         }
