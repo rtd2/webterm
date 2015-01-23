@@ -79,10 +79,18 @@ var terminal = {
         "lastLogin": "",
         "themeDefault": "old"
     },
+    "defaultSettings": { // will switch to this
+        "hist": [],
+        "user": "user",
+        "lastLogin": "",
+        "themeDefault": "old",
+    },
+    // need to remove below and switch to above to make saving and updating easier
     hist: [],
     user: "user",
     lastLogin: "",
     themeDefault: "old",
+    //////////////////////////////
     ver: "0.1",
     termthemes: {
         old: {
@@ -113,34 +121,35 @@ var terminal = {
     // -----------------------------------------------------------------------
     init: function () {
 
-        var date = new Date();
+        var d = new Date();
+        var date = d.toString();
         var oldDate;
 
-        if ( getItemFromLocalStorage('fs') ) {
-            terminal.fs = getItemFromLocalStorage('fs'); //load and apply user fs
-        }
+        if ( getItemFromLocalStorage('fs') ) { terminal.fs = getItemFromLocalStorage('fs'); } //load and apply user fs
 
         if ( getItemFromLocalStorage('settings') ) {
+
             terminal.userSettings = getItemFromLocalStorage('settings'); // load settings: history, user, last login, theme
+            termtheme = terminal.termthemes[terminal.userSettings.themeDefault];
+            terminal.theme.updateDom();
+            terminal.hist = terminal.userSettings.hist;
+            oldDate = terminal.userSettings.lastLogin;
+            terminal.userSettings.lastLogin = date;
+
         }
 
 
-        // ADD THEME UPDATE
-        termtheme = terminal.termthemes[terminal.userSettings.themeDefault];
-        terminal.theme.updateDom();
+        // USER WELCOME MESSAGE
+        if ( terminal.userSettings.user === "user" ) { 
+            output.innerHTML = "<p style='color:" + termtheme.text + " '>Welcome to the terminal on the web. Type help for a list of commands.";
+        } else {
+            output.innerHTML = "<p style='color:" + termtheme.text + " '>Welcome back " + terminal.userSettings.user + ". Last login " + oldDate + ".";
+        }
 
-        // NOT WORKING...SHOWING CURRENT DATE/TIME
-        oldDate = terminal.userSettings.lastLogin; // show loaded date before updated to current date/time
-        terminal.userSettings.lastLogin = date;
         terminal.lastLogin = date;
-
-        // user welcome message
-        if ( terminal.userSettings.user != "user" ) {
-            output.innerHTML = "<p style='color:" + termtheme.text + " '>Welcome back " + terminal.userSettings.user + ". Last login " + terminal.userSettings.lastLogin + ".";
-        } else if ( terminal.userSettings.lastLogin != "" ) { 
-            output.innerHTML = "<p style='color:" + termtheme.text + " '>Last login " + oldDate + ".";
-        }
         
+        terminal.save.settings();
+
     },
     // -----------------------------------------------------------------------
     // New file constructor
@@ -161,7 +170,7 @@ var terminal = {
 // -----------------------------------------------------------------------
     
     // -----------------------------------------------------------------------
-    // Display help information, list of commands
+    // Display help information, list of commands. Methods: list, info
     // -----------------------------------------------------------------------
     help: {
         list: function() {
@@ -215,7 +224,7 @@ var terminal = {
             
     },
     // -----------------------------------------------------------------------
-    // Change the terminal theme
+    // Change the terminal theme. Methods: defaultCase, updateDom, set
     // -----------------------------------------------------------------------
     theme: {
         defaultCase: function() {
@@ -299,6 +308,7 @@ var terminal = {
         terminal.userSettings.user = user;
         commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
         output.innerHTML += outputHTML;
+        terminal.settings.save();
     },
     // -----------------------------------------------------------------------
     // Change the terminal's user back to default
@@ -307,8 +317,8 @@ var terminal = {
 
         terminal.user = "user";
         commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
-
         output.innerHTML += outputHTML;
+
     },
     // -----------------------------------------------------------------------
     // Output the terminal history array
@@ -426,7 +436,7 @@ var terminal = {
         }
     },
     // -----------------------------------------------------------------------
-    // Open Youtube in a new tab
+    // Open Youtube in a new tab. Methods: defaultCase, s
     // -----------------------------------------------------------------------
     youtube: {
         defaultCase: function() {
@@ -465,7 +475,7 @@ var terminal = {
     
     },
     // -----------------------------------------------------------------------
-    // List the files and folders of the pwd
+    // List the files and folders of the pwd. Methods: defaultCase, l
     // -----------------------------------------------------------------------
     ls: {
         defaultCase: function() {
@@ -538,7 +548,7 @@ var terminal = {
         }
     },
     // -----------------------------------------------------------------------
-    // If file exists in pwd, delete it
+    // If file exists in pwd, delete it. Methods: defaultCase, r
     // -----------------------------------------------------------------------
     rm: {
         defaultCase: function() {
@@ -648,7 +658,7 @@ var terminal = {
         }
     },
     // -----------------------------------------------------------------------
-    // Copy
+    // Copy. Methods: defaultCase, r
     // -----------------------------------------------------------------------
     cp: {
         defaultCase: function() {
@@ -929,9 +939,9 @@ var terminal = {
             }
         }
     },
-    // -----------------------------------------------------------------------
-    // Text Editor
-    // -----------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------
+    // Text Editor. Methods: run, save, changePrompt, hidePrompt, showPrompt, resetEditor, exit
+    // -----------------------------------------------------------------------------------------
     editor: {
         editor: document.getElementById("editor"),
         textArea: document.getElementById("editorText"),
@@ -1050,6 +1060,9 @@ var terminal = {
 
         }
     },
+    // -----------------------------------------------------------------------
+    // Save. Methods: settings, fs
+    // -----------------------------------------------------------------------
     save: {
         settings: function () {
             saveItemToLocalStorage(terminal.userSettings, 'settings');
@@ -1147,6 +1160,8 @@ var input = document.getElementById("input");
 var histindex = 0;
 var count = 0;
 var termtheme = terminal.termthemes[terminal.themeDefault];
+var commandArgs;
+var outputHTML;
 
 
 function dirSearchFiles(file, directory) {
@@ -1223,6 +1238,8 @@ function addToHistory(command) {
     if (terminal.hist.slice(-1) != command) {
         
         terminal.hist.push(command);
+        terminal.userSettings.hist = terminal.hist;
+        terminal.save.settings();
         
     }
 }
