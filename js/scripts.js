@@ -299,20 +299,11 @@ var terminal = {
         terminal.userSettings.user = user;
         commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
         output.innerHTML += outputHTML;
-
-        // create username cookie and set username to terminal.user. cookie will expire in 30 days after creation
-        var now = new Date();
-        var expiry = new Date(now);
-        var expiryNum = expiry.setDate(expiry.getDate() + 30);
-        document.cookie = "username=" + terminal.user; + "expires=" + expiry;
     },
     // -----------------------------------------------------------------------
     // Change the terminal's user back to default
     // -----------------------------------------------------------------------
     signout: function() {
-
-        var now = new Date();
-        document.cookie = "username=" + terminal.user; + "expires=" + now;
 
         terminal.user = "user";
         commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
@@ -1227,31 +1218,6 @@ function pathStringToObject(dirString) {
     return dirObject;
 }
 
-function getCookie(cookieName) { // get a cookie
-    var name = cookieName + "=";
-    var ca = document.cookie.split(';');
-    for(var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1);
-        if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
-    }
-    return "";
-}
-
-var username = getCookie("username");
-var lastLogin = getCookie("lastlogin");
-if ( username !== "" && username !== "user") {
-    output = document.getElementById("output");
-    output.innerHTML = "<p style='color:" + termtheme.text + "'>Welcome back " + username + ". Last login: " + lastLogin + "</p>";
-}
-terminal.user = username;
-terminal.commandLine.innerHTML = "WebTerm:~ " + terminal.user + "$  ";
-"WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
-
-terminal.lastLogin = new Date();
-
-document.cookie = "lastlogin=" + terminal.lastLogin; // set last login cookie
-
 function addToHistory(command) {
     
     if (terminal.hist.slice(-1) != command) {
@@ -1368,11 +1334,6 @@ function checkCommand(e) {
 
                     case "editor":
                         terminal.editor.run(commandArgs[1]);
-                        addToHistory(command);
-                    break;
-
-                    case "delete":
-                        removeItemFromLocalStorage(commandArgs[1]);
                         addToHistory(command);
                     break;
                         
@@ -1503,17 +1464,6 @@ function checkCommand(e) {
 
                 case "editor":
                     terminal.editor.run();
-                    addToHistory(command);
-                break;
-                
-                case "save":
-                    saveItemToLocalStorage(terminal.fs, 'fs');
-                    saveItemToLocalStorage(terminal.userSettings, 'settings');
-                    addToHistory(command);
-                break;
-                
-                case "load":
-                    terminal.init();
                     addToHistory(command);
                 break;
 
