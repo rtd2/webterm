@@ -284,6 +284,9 @@ var terminal = {
         set: function (theme) {
             terminal.themeDefault = theme;
             terminal.userSettings.themeDefault = theme;
+            termtheme = terminal.termthemes[theme];
+            terminal.theme.updateDom();
+            terminal.save.settings();
         }
     },
     // -----------------------------------------------------------------------
@@ -1054,6 +1057,14 @@ var terminal = {
 
             input.focus();
 
+        }
+    },
+    save: {
+        settings: function () {
+            saveItemToLocalStorage(terminal.userSettings, 'settings');
+        },
+        fs: function () {
+            saveItemToLocalStorage(terminal.fs, 'fs');
         }
     }
 
