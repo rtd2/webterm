@@ -359,6 +359,7 @@ var terminal = {
                     dirObject[0][dirObject[1]] = {files: []};
                     output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>Directory called '" + dirObject[1] + "' successfully created.</p>";
+                    terminal.save.fs();
                 }
                     
             } else { // if the provided location for the folder's creation was not a place in the fs
@@ -378,6 +379,7 @@ var terminal = {
             pwd[1][folderName] = {files: []};
             output.innerHTML += outputHTML;
             output.innerHTML += "<p style='color:" + termtheme.text + "'>Directory called " + folderName + " successfully created.</p>";
+            terminal.save.fs();
 
         }
     },
@@ -565,6 +567,8 @@ var terminal = {
 
                 output.innerHTML += outputHTML;
 
+                terminal.save.fs();
+
             } else {
 
                 output.innerHTML += outputHTML;
@@ -581,6 +585,8 @@ var terminal = {
                 delete pwd[1][folderName];
                 
                 output.innerHTML += outputHTML;
+
+                terminal.save.fs();
                 
             } else {
 
@@ -615,6 +621,8 @@ var terminal = {
                     destDirObj[dir] = directory; // add the arg1 directory to the destination directory
                     
                     output.innerHTML += outputHTML;
+
+                    terminal.save.fs();
                     
                 } else { // if arg2 wasn't a valid place in the fs
                     
@@ -642,6 +650,8 @@ var terminal = {
                 
                 output.innerHTML += outputHTML;
                 
+                terminal.save.fs();
+
             } else { // if arg2 wasn't a valid place in the fs
                 
                 output.innerHTML += outputHTML;
@@ -683,6 +693,8 @@ var terminal = {
 
                         output.innerHTML += outputHTML;
 
+                        terminal.save.fs();
+
                     } else {
 
                         output.innerHTML += outputHTML;
@@ -702,6 +714,8 @@ var terminal = {
                         files.push(newFile); // and push it the files array
 
                         output.innerHTML += outputHTML;
+
+                        terminal.save.fs();
 
                     } else {
 
@@ -786,6 +800,8 @@ var terminal = {
             
             output.innerHTML += outputHTML;
             output.innerHTML += "<p style='color:" + termtheme.text + "'>File called " + fileName + " successfully created.</p>";
+
+            terminal.save.fs();
 
         }
     },
