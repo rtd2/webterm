@@ -125,7 +125,12 @@ var terminal = {
         var date = d.toString();
         var oldDate;
 
-        if ( getItemFromLocalStorage('fs') ) { terminal.fs = getItemFromLocalStorage('fs'); } //load and apply user fs
+        if ( getItemFromLocalStorage('fs') ) { //load and apply user fs
+
+            terminal.fs = getItemFromLocalStorage('fs');
+            pwd[1] = terminal.fs.home.user;
+
+        }
 
         if ( getItemFromLocalStorage('settings') ) {
 
