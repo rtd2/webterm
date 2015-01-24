@@ -389,6 +389,7 @@ var terminal = {
     // Change directory
     // -----------------------------------------------------------------------
     cd: function() {
+        var dirObject;
         var directory = commandArgs.slice(1).join(" ");
         
         if (directory == "..") { // if the argument is ..
@@ -402,9 +403,9 @@ var terminal = {
             }
             
             currentDir = currentDir.substr(0, le); // remove the /
-            var dirObject = pathStringToObject(currentDir); // convert the string currentDir to the object it represents
+            dirObject = pathStringToObject(currentDir); // convert the string currentDir to the object it represents
             
-            if (dirObject != undefined) { // if pathStringToObject returned an object
+            if (dirObject !== undefined) { // if pathStringToObject returned an object
                 
                 output.innerHTML += outputHTML;
                 pwd = [currentDir, dirObject, currentDir]; // set pwd alias, object, and display
@@ -415,7 +416,7 @@ var terminal = {
         } else if (pwd[1].hasOwnProperty(directory)) { // if the argument is a key of the pwd
                   
             var reldir = pwd[2] + "/" + directory; // add the argument to the pwd display string
-            var dirObject = pathStringToObject(reldir);
+            dirObject = pathStringToObject(reldir);
             
             output.innerHTML += outputHTML;
             pwd = [reldir, dirObject, reldir];
@@ -423,9 +424,9 @@ var terminal = {
         
         } else { // if the argument is an absolute path, || not .. / relative
 
-            var dirObject = pathStringToObject(directory);
+            dirObject = pathStringToObject(directory);
             
-            if (dirObject != undefined) {
+            if (dirObject !== undefined) {
                 
                 output.innerHTML += outputHTML;
                 pwd = [directory, dirObject, directory];
@@ -541,12 +542,12 @@ var terminal = {
             } else if (flag === "--help" || flag === "-help") {
                 
                 output.innerHTML += outputHTML;
-                output.innerHTML += "<p style='color:" + termtheme.text + "'>Help information..</p>"
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>Help information..</p>";
                 
             } else {
                 
                 output.innerHTML += outputHTML;
-                output.innerHTML += "<p style='color:" + termtheme.text + "'>ls: invalid option '" + flag + "'</p><p style='color:" + termtheme.text + "'>Try 'ls --help' for more information.</p>"
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>ls: invalid option '" + flag + "'</p><p style='color:" + termtheme.text + "'>Try 'ls --help' for more information.</p>";
             
             }
         }
@@ -662,7 +663,7 @@ var terminal = {
             }
         }
         
-        if (dir == undefined && fil == undefined) { // if arg1 wasn't a file or folder
+        if (dir === undefined && fil === undefined) { // if arg1 wasn't a file or folder
             
             output.innerHTML += outputHTML;
             output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + filedir + "': No such file or directory</p>";
@@ -706,12 +707,12 @@ var terminal = {
 
                 } else { // if the file isn't being relocated, rename it
 
-                    if (file1 != destination) {
+                    if (file1 !== destination) {
 
-                        newFile["name"] = destination;
-                        newFile["shortname"] = destination;
-                        newFile["created"] = new Date();
-                        newFile["modified"] = new Date();
+                        newFile.name = destination;
+                        newFile.shortname = destination;
+                        newFile.created = new Date();
+                        newFile.modified = new Date();
 
                         files.push(newFile); // and push it the files array
 
@@ -850,7 +851,13 @@ var terminal = {
     // Tab completion
     // -----------------------------------------------------------------------
     tabComplete: function() {
-        
+      
+        var full,
+            length,
+            part1,
+            part2,
+            dirObject,
+            keys;
         var commandInput = input.value;
         var commandArgs = commandInput.split(" ");
         
@@ -869,7 +876,7 @@ var terminal = {
                     }
                 }
                 
-                if (completions[0] != undefined && completions[1] === undefined) {
+                if (completions[0] !== undefined && completions[1] === undefined) {
                     
                     input.value = completions[0];
                     input.size = completions[0].length + 1;
@@ -879,9 +886,9 @@ var terminal = {
             } else if (commandArgs.length === 2) {
                 
                 if (commandArgs[1][0] === "/") {
-                    var full = commandArgs[1];
-                    var part2 = "";
-                    var length = full.length - 1;
+                    full = commandArgs[1];
+                    part2 = "";
+                    length = full.length - 1;
 
                     while(full.charAt(length) !== '/') {
                         part2 = full.charAt(length) + part2;
@@ -889,13 +896,13 @@ var terminal = {
                         length--;
                     }
 
-                    var part1 = full;
+                    part1 = full;
                     full = full.substr(0, length);
-                    var dirObject = pathStringToObject(full);
+                    dirObject = pathStringToObject(full);
                     
                     if (dirObject !== null && typeof dirObject === 'object') {
                         
-                        var keys = Object.keys(dirObject);
+                        keys = Object.keys(dirObject);
                         
                     }
 
@@ -908,7 +915,7 @@ var terminal = {
                         }
                     }
 
-                    if (completions[0] != undefined && completions[0] != "files" && completions[1] === undefined) {
+                    if (completions[0] !== undefined && completions[0] !== "files" && completions[1] === undefined) {
 
                         input.value = commandArgs[0] + " " + part1 + completions[0];
                         input.size = input.value.length + 1;
@@ -918,9 +925,9 @@ var terminal = {
                 
             } else {
                 if (commandArgs[2][0] === "/") {
-                    var full = commandArgs[2];
-                    var part2 = "";
-                    var length = full.length - 1;
+                    full = commandArgs[2];
+                    part2 = "";
+                    length = full.length - 1;
 
                     while(full.charAt(length) !== '/') { // until the last character of full is a /
                         part2 = full.charAt(length) + part2; // add the last character of full to part2 string
@@ -928,13 +935,13 @@ var terminal = {
                         length--; // decrement length
                     }
 
-                    var part1 = full; // part1 is full, minus everything after the /
+                    part1 = full; // part1 is full, minus everything after the /
                     full = full.substr(0, length); // remove the last character from full, a /
-                    var dirObject = pathStringToObject(full); // retrieve the object that full now represents
+                    dirObject = pathStringToObject(full); // retrieve the object that full now represents
                     
                     if (dirObject !== null && typeof dirObject === 'object') {
                         
-                        var keys = Object.keys(dirObject);
+                        keys = Object.keys(dirObject);
                         
                     }
 
@@ -947,7 +954,7 @@ var terminal = {
                         }
                     }
 
-                    if (completions[0] != undefined && completions[0] != "files" && completions[1] === undefined) {
+                    if (completions[0] !== undefined && completions[0] !== "files" && completions[1] === undefined) {
 
                         input.value = commandArgs[0] + " " + commandArgs[1] + " " + part1 + completions[0];
                         input.size = input.value.length + 1;
@@ -1227,9 +1234,9 @@ function getDirectory(directory) {
 function index(obj,is, value) {
     if (typeof is == 'string') { return index(obj, is.split('.'), value); }
 
-    else if (is.length == 1 && value !== undefined) { return obj[is[0]] = value; }
+    else if (is.length === 1 && value !== undefined) { return obj[is[0]] = value; }
 
-    else if (is.length == 0) { return obj; }
+    else if (is.length === 0) { return obj; }
 
     else { return index(obj[is[0]],is.slice(1), value); }
 }
@@ -1284,7 +1291,7 @@ function saveItemToLocalStorage (item, keyname) {
 function getItemFromLocalStorage (keyname) {
 
         var key,
-            keystring;
+            keyString;
 
         if ( localStorage.getItem(keyname) ) {  //if note exists in localStorage get it and parse from string to object.
 
