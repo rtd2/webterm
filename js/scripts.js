@@ -857,13 +857,13 @@ var terminal = {
             part1,
             part2,
             dirObject,
-            keys;
+            keys,
+            files,
+            completions = [];
         var commandInput = input.value;
         var commandArgs = commandInput.split(" ");
         
         if (commandInput.length > 0) {
-            
-            var completions = [];
             
             if (commandArgs.length === 1) {
                 
@@ -884,8 +884,6 @@ var terminal = {
                 }
                 
             } else if (commandArgs.length === 2) {
-                
-                var files = pwd[1].files;
                 
                 if (commandArgs[1][0] === "/") {
                     full = commandArgs[1];
@@ -917,6 +915,8 @@ var terminal = {
                         }
                     }
                     
+                    files = pwd[1].files;
+                    
                     for (var file in files) {
                         
                         if (files[file]["name"].substring(0, part2.length) === part2) {
@@ -930,6 +930,37 @@ var terminal = {
                     if (completions[0] !== undefined && completions[0] !== "files" && completions[1] === undefined) {
 
                         input.value = commandArgs[0] + " " + part1 + completions[0];
+                        input.size = input.value.length + 1;
+
+                    }
+                } else { // try to complete relative paths to files or folders
+                    
+                    full = commandArgs[1];
+                    keys = Object.keys(pwd[1]);
+                    files = pwd[1].files;
+                    
+                    for (var key in keys) {
+
+                        if (keys[key].substring(0, full.length) === full) {
+
+                            completions.push(keys[key]);
+
+                        }
+                    }
+                    
+                    for (var file in files) {
+                        
+                        if (files[file]["name"].substring(0, full.length) === full) {
+
+                            completions.push(files[file]["name"]);
+
+                        }
+                        
+                    }
+                    
+                    if (completions[0] !== undefined && completions[0] !== "files" && completions[1] === undefined) {
+
+                        input.value = commandArgs[0] + " " + completions[0];
                         input.size = input.value.length + 1;
 
                     }
@@ -982,6 +1013,37 @@ var terminal = {
                         input.size = input.value.length + 1;
 
                     }
+                } else { // try to complete relative paths to files or folders
+                    
+                    full = commandArgs[2];
+                    keys = Object.keys(pwd[1]);
+                    files = pwd[1].files;
+                    
+                    for (var key in keys) {
+
+                        if (keys[key].substring(0, full.length) === full) {
+
+                            completions.push(keys[key]);
+
+                        }
+                    }
+                    
+                    for (var file in files) {
+                        
+                        if (files[file]["name"].substring(0, full.length) === full) {
+
+                            completions.push(files[file]["name"]);
+
+                        }
+                        
+                    }
+                    
+                    if (completions[0] !== undefined && completions[0] !== "files" && completions[1] === undefined) {
+
+                        input.value = commandArgs[0] + " " + commandArgs[1] + " " + completions[0];
+                        input.size = input.value.length + 1;
+
+                    }
                 }
             } else {
                 if (commandArgs[3][0] === "/") {
@@ -1027,6 +1089,37 @@ var terminal = {
                     if (completions[0] !== undefined && completions[0] !== "files" && completions[1] === undefined) {
 
                         input.value = commandArgs[0] + " " + commandArgs[1] + " " + commandArgs[2] + " " + part1 + completions[0];
+                        input.size = input.value.length + 1;
+
+                    }
+                } else { // try to complete relative paths to files or folders
+                    
+                    full = commandArgs[3];
+                    keys = Object.keys(pwd[1]);
+                    files = pwd[1].files;
+                    
+                    for (var key in keys) {
+
+                        if (keys[key].substring(0, full.length) === full) {
+
+                            completions.push(keys[key]);
+
+                        }
+                    }
+                    
+                    for (var file in files) {
+                        
+                        if (files[file]["name"].substring(0, full.length) === full) {
+
+                            completions.push(files[file]["name"]);
+
+                        }
+                        
+                    }
+                    
+                    if (completions[0] !== undefined && completions[0] !== "files" && completions[1] === undefined) {
+
+                        input.value = commandArgs[0] + " " + commandArgs[1] + " " + commandArgs[2] + " " + completions[0];
                         input.size = input.value.length + 1;
 
                     }
