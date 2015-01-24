@@ -885,6 +885,8 @@ var terminal = {
                 
             } else if (commandArgs.length === 2) {
                 
+                var files = pwd[1].files;
+                
                 if (commandArgs[1][0] === "/") {
                     full = commandArgs[1];
                     part2 = "";
@@ -914,6 +916,16 @@ var terminal = {
 
                         }
                     }
+                    
+                    for (var file in files) {
+                        
+                        if (files[file]["name"].substring(0, part2.length) === part2) {
+
+                            completions.push(files[file]["name"]);
+
+                        }
+                        
+                    }
 
                     if (completions[0] !== undefined && completions[0] !== "files" && completions[1] === undefined) {
 
@@ -923,7 +935,7 @@ var terminal = {
                     }
                 }
                 
-            } else {
+            } else if (commandArgs.length === 3) {
                 if (commandArgs[2][0] === "/") {
                     full = commandArgs[2];
                     part2 = "";
@@ -953,10 +965,68 @@ var terminal = {
 
                         }
                     }
+                    
+                    for (var file in files) {
+                        
+                        if (files[file]["name"].substring(0, part2.length) === part2) {
+
+                            completions.push(files[file]["name"]);
+
+                        }
+                        
+                    }
 
                     if (completions[0] !== undefined && completions[0] !== "files" && completions[1] === undefined) {
 
                         input.value = commandArgs[0] + " " + commandArgs[1] + " " + part1 + completions[0];
+                        input.size = input.value.length + 1;
+
+                    }
+                }
+            } else {
+                if (commandArgs[3][0] === "/") {
+                    full = commandArgs[3];
+                    part2 = "";
+                    length = full.length - 1;
+
+                    while(full.charAt(length) !== '/') { // until the last character of full is a /
+                        part2 = full.charAt(length) + part2; // add the last character of full to part2 string
+                        full = full.substr(0, length); // remove the last character from full
+                        length--; // decrement length
+                    }
+
+                    part1 = full; // part1 is full, minus everything after the /
+                    full = full.substr(0, length); // remove the last character from full, a /
+                    dirObject = pathStringToObject(full); // retrieve the object that full now represents
+                    
+                    if (dirObject !== null && typeof dirObject === 'object') {
+                        
+                        keys = Object.keys(dirObject);
+                        
+                    }
+
+                    for (var key in keys) {
+
+                        if (keys[key].substring(0, part2.length) === part2) {
+
+                            completions.push(keys[key]);
+
+                        }
+                    }
+                    
+                    for (var file in files) {
+                        
+                        if (files[file]["name"].substring(0, part2.length) === part2) {
+
+                            completions.push(files[file]["name"]);
+
+                        }
+                        
+                    }
+
+                    if (completions[0] !== undefined && completions[0] !== "files" && completions[1] === undefined) {
+
+                        input.value = commandArgs[0] + " " + commandArgs[1] + " " + commandArgs[2] + " " + part1 + completions[0];
                         input.size = input.value.length + 1;
 
                     }
