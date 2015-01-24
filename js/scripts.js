@@ -852,14 +852,9 @@ var terminal = {
     // -----------------------------------------------------------------------
     tabComplete: function() {
       
-        var full,
-            length,
-            part1,
-            part2,
-            dirObject,
-            keys,
-            files,
-            completions = [];
+        var part1,
+            returns;
+        var completions = [];
         var commandInput = input.value;
         var commandArgs = commandInput.split(" ");
         
@@ -886,47 +881,11 @@ var terminal = {
             } else if (commandArgs.length === 2) {
                 
                 if (commandArgs[1][0] === "/") {
-                    full = commandArgs[1];
-                    part2 = "";
-                    length = full.length - 1;
-
-                    while(full.charAt(length) !== '/') {
-                        part2 = full.charAt(length) + part2;
-                        full = full.substr(0, length);
-                        length--;
-                    }
-
-                    part1 = full;
-                    full = full.substr(0, length);
-                    dirObject = pathStringToObject(full);
                     
-                    if (dirObject !== null && typeof dirObject === 'object') {
-                        
-                        keys = Object.keys(dirObject);
-                        
-                    }
-
-                    for (var key in keys) {
-
-                        if (keys[key].substring(0, part2.length) === part2) {
-
-                            completions.push(keys[key]);
-
-                        }
-                    }
+                    returns = tabFull(commandArgs[1]);
+                    completions = returns[0];
+                    part1 = returns[1];
                     
-                    files = pwd[1].files;
-                    
-                    for (var file in files) {
-                        
-                        if (files[file]["name"].substring(0, part2.length) === part2) {
-
-                            completions.push(files[file]["name"]);
-
-                        }
-                        
-                    }
-
                     if (completions[0] !== undefined && completions[0] !== "files" && completions[1] === undefined) {
 
                         input.value = commandArgs[0] + " " + part1 + completions[0];
@@ -935,28 +894,7 @@ var terminal = {
                     }
                 } else { // try to complete relative paths to files or folders
                     
-                    full = commandArgs[1];
-                    keys = Object.keys(pwd[1]);
-                    files = pwd[1].files;
-                    
-                    for (var key in keys) {
-
-                        if (keys[key].substring(0, full.length) === full) {
-
-                            completions.push(keys[key]);
-
-                        }
-                    }
-                    
-                    for (var file in files) {
-                        
-                        if (files[file]["name"].substring(0, full.length) === full) {
-
-                            completions.push(files[file]["name"]);
-
-                        }
-                        
-                    }
+                    completions = tabRelative(commandArgs[1]);
                     
                     if (completions[0] !== undefined && completions[0] !== "files" && completions[1] === undefined) {
 
@@ -968,44 +906,10 @@ var terminal = {
                 
             } else if (commandArgs.length === 3) {
                 if (commandArgs[2][0] === "/") {
-                    full = commandArgs[2];
-                    part2 = "";
-                    length = full.length - 1;
-
-                    while(full.charAt(length) !== '/') { // until the last character of full is a /
-                        part2 = full.charAt(length) + part2; // add the last character of full to part2 string
-                        full = full.substr(0, length); // remove the last character from full
-                        length--; // decrement length
-                    }
-
-                    part1 = full; // part1 is full, minus everything after the /
-                    full = full.substr(0, length); // remove the last character from full, a /
-                    dirObject = pathStringToObject(full); // retrieve the object that full now represents
                     
-                    if (dirObject !== null && typeof dirObject === 'object') {
-                        
-                        keys = Object.keys(dirObject);
-                        
-                    }
-
-                    for (var key in keys) {
-
-                        if (keys[key].substring(0, part2.length) === part2) {
-
-                            completions.push(keys[key]);
-
-                        }
-                    }
-                    
-                    for (var file in files) {
-                        
-                        if (files[file]["name"].substring(0, part2.length) === part2) {
-
-                            completions.push(files[file]["name"]);
-
-                        }
-                        
-                    }
+                    returns = tabFull(commandArgs[2]);
+                    completions = returns[0];
+                    part1 = returns[1];
 
                     if (completions[0] !== undefined && completions[0] !== "files" && completions[1] === undefined) {
 
@@ -1013,30 +917,9 @@ var terminal = {
                         input.size = input.value.length + 1;
 
                     }
-                } else { // try to complete relative paths to files or folders
+                } else {
                     
-                    full = commandArgs[2];
-                    keys = Object.keys(pwd[1]);
-                    files = pwd[1].files;
-                    
-                    for (var key in keys) {
-
-                        if (keys[key].substring(0, full.length) === full) {
-
-                            completions.push(keys[key]);
-
-                        }
-                    }
-                    
-                    for (var file in files) {
-                        
-                        if (files[file]["name"].substring(0, full.length) === full) {
-
-                            completions.push(files[file]["name"]);
-
-                        }
-                        
-                    }
+                    completions = tabRelative(commandArgs[2]);
                     
                     if (completions[0] !== undefined && completions[0] !== "files" && completions[1] === undefined) {
 
@@ -1047,44 +930,10 @@ var terminal = {
                 }
             } else {
                 if (commandArgs[3][0] === "/") {
-                    full = commandArgs[3];
-                    part2 = "";
-                    length = full.length - 1;
-
-                    while(full.charAt(length) !== '/') { // until the last character of full is a /
-                        part2 = full.charAt(length) + part2; // add the last character of full to part2 string
-                        full = full.substr(0, length); // remove the last character from full
-                        length--; // decrement length
-                    }
-
-                    part1 = full; // part1 is full, minus everything after the /
-                    full = full.substr(0, length); // remove the last character from full, a /
-                    dirObject = pathStringToObject(full); // retrieve the object that full now represents
                     
-                    if (dirObject !== null && typeof dirObject === 'object') {
-                        
-                        keys = Object.keys(dirObject);
-                        
-                    }
-
-                    for (var key in keys) {
-
-                        if (keys[key].substring(0, part2.length) === part2) {
-
-                            completions.push(keys[key]);
-
-                        }
-                    }
-                    
-                    for (var file in files) {
-                        
-                        if (files[file]["name"].substring(0, part2.length) === part2) {
-
-                            completions.push(files[file]["name"]);
-
-                        }
-                        
-                    }
+                    returns = tabFull(commandArgs[3]);
+                    completions = returns[0];
+                    part1 = returns[1];
 
                     if (completions[0] !== undefined && completions[0] !== "files" && completions[1] === undefined) {
 
@@ -1092,30 +941,9 @@ var terminal = {
                         input.size = input.value.length + 1;
 
                     }
-                } else { // try to complete relative paths to files or folders
+                } else {
                     
-                    full = commandArgs[3];
-                    keys = Object.keys(pwd[1]);
-                    files = pwd[1].files;
-                    
-                    for (var key in keys) {
-
-                        if (keys[key].substring(0, full.length) === full) {
-
-                            completions.push(keys[key]);
-
-                        }
-                    }
-                    
-                    for (var file in files) {
-                        
-                        if (files[file]["name"].substring(0, full.length) === full) {
-
-                            completions.push(files[file]["name"]);
-
-                        }
-                        
-                    }
+                    completions = tabRelative(commandArgs[3]);
                     
                     if (completions[0] !== undefined && completions[0] !== "files" && completions[1] === undefined) {
 
@@ -1366,6 +1194,71 @@ function getFile(file, directory) {
             return directory[i];
         }
     }
+}
+
+function tabFull(full) {
+    var part1,
+        dirObject,
+        files,
+        keys;
+    var completions = [];
+    var part2 = "";
+    var length = full.length - 1;
+    
+    while(full.charAt(length) !== '/') { // until the last character of full is a /
+        part2 = full.charAt(length) + part2; // add the last character of full to part2 string
+        full = full.substr(0, length); // remove the last character from full
+        length--; // decrement length
+    }
+    var part1 = full; // part1 is full, minus everything after the /
+    full = full.substr(0, length); // remove the last character from full, a /
+    var dirObject = pathStringToObject(full); // retrieve the object that full now represents
+
+    if (dirObject !== null && typeof dirObject === 'object') {
+        keys = Object.keys(dirObject);
+    }
+
+    for (var key in keys) {
+        if (keys[key].substring(0, part2.length) === part2) {
+            completions.push(keys[key]);
+        }
+    }
+    
+    files = dirObject.files;
+
+    for (var file in files) {
+        if (files[file]["name"].substring(0, part2.length) === part2) {
+            completions.push(files[file]["name"]);
+        }
+    }
+    return [completions, part1];
+}
+
+function tabRelative(full) {
+    var completions = [];
+    var keys = Object.keys(pwd[1]);
+    var files = pwd[1].files;
+
+    for (var key in keys) {
+
+        if (keys[key].substring(0, full.length) === full) {
+
+            completions.push(keys[key]);
+
+        }
+    }
+
+    for (var file in files) {
+
+        if (files[file]["name"].substring(0, full.length) === full) {
+
+            completions.push(files[file]["name"]);
+
+        }
+
+    }
+    
+    return completions;
 }
 
 function getPreDirectory(directory) {
