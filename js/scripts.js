@@ -120,14 +120,16 @@ var terminal = {
         var date = d.toString();
         var oldDate;
 
-        if ( getItemFromLocalStorage('fs') ) { //load and apply user fs
+        if ( getItemFromLocalStorage('signin') ) {
 
-            terminal.fs = getItemFromLocalStorage('fs');
-            pwd[1] = terminal.fs.home.user;
+            if ( getItemFromLocalStorage('fs') ) { //load and apply user fs
 
-        }
+                terminal.fs = getItemFromLocalStorage('fs');
+                pwd[1] = terminal.fs.home.user;
 
-        if ( getItemFromLocalStorage('settings') ) {
+            }
+
+            if ( getItemFromLocalStorage('settings') ) {
 
             terminal.userSettings = getItemFromLocalStorage('settings'); // load settings: history, user, last login, theme
             termtheme = terminal.termthemes[terminal.userSettings.themeDefault];
@@ -136,20 +138,16 @@ var terminal = {
             oldDate = terminal.userSettings.lastLogin;
             terminal.userSettings.lastLogin = date;
 
-        }
+            }
 
-
-        // USER WELCOME MESSAGE
-        if ( terminal.userSettings.user === "user" ) { 
-            output.innerHTML = "<p style='color:" + termtheme.text + " '>Welcome to the terminal on the web. Type help for a list of commands.";
-        } else {
             output.innerHTML = "<p style='color:" + termtheme.text + " '>Welcome back " + terminal.userSettings.user + ". Last login " + oldDate + ".";
+            terminal.save.settings();
+
+        } else { 
+            output.innerHTML = "<p style='color:" + termtheme.text + " '>Welcome to the terminal on the web. Type help for a list of commands.";
+            terminal.settings.lastLogin = date;
         }
-
-        terminal.settings.lastLogin = date;
         
-        terminal.save.settings();
-
     },
     // -----------------------------------------------------------------------
     // New file constructor
@@ -313,7 +311,9 @@ var terminal = {
         terminal.userSettings.user = user;
         commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.settings.user + "$ ";
         output.innerHTML += outputHTML;
-        terminal.settings.save();
+        terminal.save.settings();
+        saveItemToLocalStorage(user, 'signin'); //create signin key
+
     },
     // -----------------------------------------------------------------------
     // Change the terminal's user back to default
@@ -323,6 +323,8 @@ var terminal = {
         terminal.settings.user = "user";
         commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.settings.user + "$ ";
         output.innerHTML += outputHTML;
+        removeItemFromLocalStorage('signin');//delete signin key
+        //terminal.fs.home.user = defaultFs; // reset fs to original state
 
     },
     // -----------------------------------------------------------------------
@@ -1828,6 +1830,71 @@ function checkCommand(e) {
 input.addEventListener("keyup", checkCommand, false);
 input.addEventListener("keydown", tab, false);
 terminal.editor.textArea.addEventListener("keyup", textEditor, false);
+
+
+// var defaultFs = 
+//     "desktop": {
+//         "files": [
+//             {
+//                 "name": "abc.txt",
+//                 "shortname": "abc",
+//                 "content": "I am content",
+//                 "extension": ".txt",
+//                 "created": "",
+//                 "modified": ""
+//             },
+//             {
+//                 "name": "urmum.txt",
+//                 "shortname": "urmum",
+//                 "content": "I have content",
+//                 "extension": ".txt",
+//                 "created": "",
+//                 "modified": ""
+//             }
+//         ]
+//     },
+//     "downloads": {
+//         "files": [
+//             {
+//                 "name": "example.txt",
+//                 "shortname": "example",
+//                 "content": "I am content",
+//                 "extension": ".txt",
+//                 "created": "",
+//                 "modified": ""
+//             },
+//             {
+//                 "name": "document.txt",
+//                 "shortname": "document",
+//                 "content": "I am content",
+//                 "extension": ".txt",
+//                 "created": "",
+//                 "modified": ""
+//             },
+//             {
+//                 "name": "another.txt",
+//                 "shortname": "another",
+//                 "content": "I am content",
+//                 "extension": ".txt",
+//                 "created": "",
+//                 "modified": ""
+//             }
+//         ]
+//     },
+//     "documents": {
+//         "files": []
+//     },
+//     "files": [
+//         {
+//             "name": "readme.txt",
+//             "shortname": "readme",
+//             "content": "I am content",
+//             "extension": ".md",
+//             "created": "",
+//             "modified": ""
+//         }
+//     ];
+
 
 // load user fs and settings
 terminal.init();
