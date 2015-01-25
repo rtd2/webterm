@@ -79,18 +79,12 @@ var terminal = {
         "lastLogin": "",
         "themeDefault": "old"
     },
-    "defaultSettings": { // will switch to this
+    "settings": {
         "hist": [],
         "user": "user",
         "lastLogin": "",
-        "themeDefault": "old",
+        "themeDefault": "old"
     },
-    // need to remove below and switch to above to make saving and updating easier
-    hist: [],
-    user: "user",
-    lastLogin: "",
-    themeDefault: "old",
-    //////////////////////////////
     ver: "0.1",
     termthemes: {
         old: {
@@ -105,14 +99,15 @@ var terminal = {
             text: "#000",
             file: "#999",
             folder: "Green",
-            commandLine: "#000080",
+            commandLine: "#000080"
         },
         black: {
             background: "#111",
             text: "#FFF",
             file: "#FFF",
             folder: "limegreen",
-            commandLine: "#FF69B4",
+            commandLine: "#FF69B4"
+            //font: "'Lucida Console', Monaco, monospace"
         }
     },
     commandLine: document.getElementById("commandLine"),
@@ -137,7 +132,7 @@ var terminal = {
             terminal.userSettings = getItemFromLocalStorage('settings'); // load settings: history, user, last login, theme
             termtheme = terminal.termthemes[terminal.userSettings.themeDefault];
             terminal.theme.updateDom();
-            terminal.hist = terminal.userSettings.hist;
+            terminal.settings.hist = terminal.userSettings.hist;
             oldDate = terminal.userSettings.lastLogin;
             terminal.userSettings.lastLogin = date;
 
@@ -151,7 +146,7 @@ var terminal = {
             output.innerHTML = "<p style='color:" + termtheme.text + " '>Welcome back " + terminal.userSettings.user + ". Last login " + oldDate + ".";
         }
 
-        terminal.lastLogin = date;
+        terminal.settings.lastLogin = date;
         
         terminal.save.settings();
 
@@ -296,7 +291,7 @@ var terminal = {
 
         },
         set: function (theme) {
-            terminal.themeDefault = theme;
+            terminal.settings.themeDefault = theme;
             terminal.userSettings.themeDefault = theme;
             termtheme = terminal.termthemes[theme];
             output.innerHTML += outputHTML;
@@ -311,9 +306,9 @@ var terminal = {
     signin: function() {
         var user = commandArgs.slice(1).join(" ");
 
-        terminal.user = user;
+        terminal.settings.user = user;
         terminal.userSettings.user = user;
-        commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
+        commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.settings.user + "$ ";
         output.innerHTML += outputHTML;
         terminal.settings.save();
     },
@@ -322,8 +317,8 @@ var terminal = {
     // -----------------------------------------------------------------------
     signout: function() {
 
-        terminal.user = "user";
-        commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
+        terminal.settings.user = "user";
+        commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.settings.user + "$ ";
         output.innerHTML += outputHTML;
 
     },
@@ -332,9 +327,9 @@ var terminal = {
     // -----------------------------------------------------------------------
     history: function() {
         output.innerHTML += outputHTML;
-        for (var key in terminal.hist) {
+        for (var key in terminal.settings.hist) {
 
-            output.innerHTML += "<p style='color:" + termtheme.text + "'>" + terminal.hist[key] + "</p>";
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>" + terminal.settings.hist[key] + "</p>";
         }
     },
     // -----------------------------------------------------------------------
@@ -421,7 +416,7 @@ var terminal = {
                 
                 output.innerHTML += outputHTML;
                 pwd = [currentDir, dirObject, currentDir]; // set pwd alias, object, and display
-                commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ "; // commandLine set to represent new pwd
+                commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.settings.user + "$ "; // commandLine set to represent new pwd
                 
             }
 
@@ -432,7 +427,7 @@ var terminal = {
             
             output.innerHTML += outputHTML;
             pwd = [reldir, dirObject, reldir];
-            commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
+            commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.settings.user + "$ ";
         
         } else { // if the argument is an absolute path, || not .. / relative
 
@@ -442,7 +437,7 @@ var terminal = {
                 
                 output.innerHTML += outputHTML;
                 pwd = [directory, dirObject, directory];
-                commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
+                commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.settings.user + "$ ";
                 
             } else { // if the provided argument isn't "..", a key of the pwd, or a recognized absolute path
                 
@@ -956,15 +951,15 @@ var terminal = {
         
         if (count === 0) {
             
-            histindex = terminal.hist.length;
+            histindex = terminal.settings.hist.length;
             
         }
 
-        if (count <= terminal.hist.length - 1) {
+        if (count <= terminal.settings.hist.length - 1) {
 
             histindex--;
-            input.size = terminal.hist[histindex].length + 1;
-            input.value = terminal.hist[histindex];
+            input.size = terminal.settings.hist[histindex].length + 1;
+            input.value = terminal.settings.hist[histindex];
             count++;
             
         }
@@ -977,8 +972,8 @@ var terminal = {
         if (count > 1) {
             
             histindex++;
-            input.size = terminal.hist[histindex].length + 1;
-            input.value = terminal.hist[histindex];
+            input.size = terminal.settings.hist[histindex].length + 1;
+            input.value = terminal.settings.hist[histindex];
             count--;
 
         } else {
@@ -1109,7 +1104,7 @@ var terminal = {
         savePrompt: document.getElementById("savePrompt"),
         prompting: false,
         currentFile: undefined,
-        run: function (file) { // startup editor passing in optional file name ... NEED TO ADD ACTUAL FILE LOAD
+        run: function (file) { // startup editor passing in optional file name
             var fileName,
                 files,
                 fileData;
@@ -1156,7 +1151,10 @@ var terminal = {
             var file = terminal.editor.currentFile;
             var newContent = terminal.editor.textArea.value;
 
-            if ( file ) { file.content = newContent; } // if working with existing file save updated version
+            if ( file ) { // if working with existing file save updated version
+                file.content = newContent; 
+                terminal.save.fs();
+            } 
             
 
             // else { // THIS IS SLOPPY ... create and save new file
@@ -1182,7 +1180,7 @@ var terminal = {
             terminal.editor.prompting = true;
 
             terminal.editor.savePrompt.style.display = "inline";
-            terminal.editor.footerNav.innerHTML = "<li><span class='highlight'>Y :</span> Yes</li><li><span class='highlight'>N :</span> No</li><li><span class='highlight'>^C :</span> Cancel</li>";
+            terminal.editor.footerNav.innerHTML = "<li><span class='highlight'>^Y :</span> Yes</li><li><span class='highlight'>^N :</span> No</li><li><span class='highlight'>^C :</span> Cancel</li>";
             
             // style footer list items. iterate over items with class of highlight and apply styles.
             for ( var i = 0; i < terminal.editor.highlight.length; i++ ) {
@@ -1198,7 +1196,7 @@ var terminal = {
             terminal.editor.editor.style.display = "none"; // hide editor overlay 
             terminal.editor.savePrompt.style.display = "none"; // hide save prompt
             terminal.editor.textArea.value = ""; // reset text area
-            terminal.editor.footerNav.innerHTML = "<li><span class='highlight'>^O :</span> Save</li><li><span class='highlight'>^X :</span> Exit</li>";
+            terminal.editor.footerNav.innerHTML = "<li><span class='highlight'>^X :</span> Save / Exit</li>";
             terminal.editor.prompting = false;
             terminal.editor.currentFile = undefined;
             terminal.commandLine.focus();
@@ -1316,7 +1314,7 @@ var pwd = ["~", terminal.fs.home.user, "/home/user"];
 var input = document.getElementById("input");
 var histindex = 0;
 var count = 0;
-var termtheme = terminal.termthemes[terminal.themeDefault];
+var termtheme = terminal.termthemes[terminal.settings.themeDefault];
 var commandArgs;
 var outputHTML;
 
@@ -1457,10 +1455,10 @@ function pathStringToObject(dirString) {
 
 function addToHistory(command) {
     
-    if (terminal.hist.slice(-1) != command) {
+    if (terminal.settings.hist.slice(-1) != command) {
         
-        terminal.hist.push(command);
-        terminal.userSettings.hist = terminal.hist;
+        terminal.settings.hist.push(command);
+        terminal.userSettings.hist = terminal.settings.hist;
         terminal.save.settings();
         
     }
@@ -1473,7 +1471,6 @@ function tab(e) { //prevent default tab functionality
 
 function textEditor(e) { // for handling saving and exiting cases
     if (e.keyCode === 88 && e.ctrlKey && terminal.editor.prompting === false) { terminal.editor.showPrompt(); } // x key
-    //if (e.keyCode === 79 && e.ctrlKey && terminal.editor.save === true) { terminal.editor.exit(); } // o key
     if (e.keyCode === 89 && e.ctrlKey && terminal.editor.prompting === true) { terminal.editor.exit(true); } // y key
     if (e.keyCode === 78 && e.ctrlKey && terminal.editor.prompting === true) { terminal.editor.exit(); } // n key
     if (e.keyCode === 67 && e.ctrlKey && terminal.editor.prompting === true) { terminal.editor.hidePrompt(); } // c key
@@ -1511,7 +1508,7 @@ function checkCommand(e) {
     var len = command.length;
     var output = document.getElementById("output");
     commandArgs = command.split(" ");
-    outputHTML = "<p style='color:" + termtheme.text + "'><span style='color:" + termtheme.commandLine + "'>WebTerm:" + pwd[0] + " " + terminal.user + "$ </span>" + command + "</p>";
+    outputHTML = "<p style='color:" + termtheme.text + "'><span style='color:" + termtheme.commandLine + "'>WebTerm:" + pwd[0] + " " + terminal.settings.user + "$ </span>" + command + "</p>";
 
     if (len > 0) { // adjust the caret
         input.size = len + 1;
@@ -1677,7 +1674,7 @@ function checkCommand(e) {
                 case "cd":
                     output.innerHTML += outputHTML;
                     pwd = ["~", terminal.fs.home.user, "/home/user"];
-                    commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.user + "$ ";
+                    commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.settings.user + "$ ";
                     addToHistory(command);
                 break;
 
