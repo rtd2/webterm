@@ -385,7 +385,7 @@ var terminal = {
 
             pwd[1][folderName] = {files: []};
             output.innerHTML += outputHTML;
-            output.innerHTML += "<p style='color:" + termtheme.text + "'>Directory called " + folderName + " successfully created.</p>";
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>Directory called '" + folderName + "' successfully created.</p>";
             terminal.save.fs();
 
         }
@@ -563,44 +563,113 @@ var terminal = {
     rm: {
         defaultCase: function() {
             
+            var fileBool,
+                length,
+                part1,
+                part2,
+                dirObject,
+                file,
+                files,
+                index;
             var fileName = commandArgs[1];
-            var files = pwd[1].files;
-            var file = getFile(fileName, files); // retrieve file with the provided fileName
+            
+            if (fileName[0] === "/") { // if the file is located elsewhere in the fs
+            
+                dirObject = getPreDirectory(fileName);
 
-            if (file !== null && typeof file === 'object') { // if getFile retrieved a file
+                if (dirObject[0] !== null && typeof dirObject[0] === 'object') {
+                    
+                    files = dirObject[0].files;
+                    fileBool = dirSearchFiles(dirObject[1], files);
 
-                var index = files.indexOf(file); // determine index of that file
+                    if (fileBool) {
+                        
+                        file = getFile(dirObject[1], dirObject[0]);
+                        index = files.indexOf(file);
+                        files.splice(index, 1);
+                        output.innerHTML += outputHTML;
+                        terminal.save.fs();
 
-                files.splice(index, 1); // remove it from the files array
+                    } else {
 
-                output.innerHTML += outputHTML;
+                        output.innerHTML += outputHTML;
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot delete '" + dirObject[1] + "': File does not exist</p>";
+                        
+                    }
+                    
+                } else { // if the provided location for the folder's creation was not a place in the fs
 
-                terminal.save.fs();
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot delete '" + dirObject[1] + "': Directory '" + dirObject[2] + "' does not exist</p>";
 
+                }
             } else {
+            
+                var files = pwd[1].files;
+                var file = getFile(fileName, files); // retrieve file with the provided fileName
 
-                output.innerHTML += outputHTML;
-                output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot remove '" + fileName + "': No such file</p>";
+                if (file !== null && typeof file === 'object') { // if getFile retrieved a file
 
+                    var index = files.indexOf(file); // determine index of that file
+
+                    files.splice(index, 1); // remove it from the files array
+
+                    output.innerHTML += outputHTML;
+
+                    terminal.save.fs();
+
+                } else {
+
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot remove '" + fileName + "': No such file</p>";
+
+                }
             }
         },
         r: function() {
+            var keys,
+                dirObject,
+                dirKeys;
             var folderName = commandArgs[2];
-            var dirKeys = Object.keys(pwd[1]);
             
-            if(dirKeys.indexOf(folderName) != -1) {
-            
-                delete pwd[1][folderName];
+            if (folderName[0] === "/") { // if the folder is located elsewhere in the fs
                 
-                output.innerHTML += outputHTML;
+                dirObject = getPreDirectory(folderName);
 
-                terminal.save.fs();
-                
+                if (dirObject[0] !== null && typeof dirObject[0] === 'object') {
+                    keys = Object.keys(dirObject[0]);
+
+                    if (dirObject[0].hasOwnProperty(dirObject[1])) {
+                        
+                        delete dirObject[0][dirObject[1]];
+                        output.innerHTML += outputHTML;
+                        terminal.save.fs();
+
+                    } else {
+
+                        output.innerHTML += outputHTML;
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot remove '" + dirObject[1] + "': No such directory</p>";
+                        
+                    }
+                }
             } else {
+                
+                dirKeys = Object.keys(pwd[1]);
 
-                output.innerHTML += outputHTML;
-                output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot remove '" + folderName + "': No such directory</p>";
-        
+                if(dirKeys.indexOf(folderName) != -1) {
+
+                    delete pwd[1][folderName];
+
+                    output.innerHTML += outputHTML;
+
+                    terminal.save.fs();
+
+                } else {
+
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot remove '" + folderName + "': No such directory</p>";
+
+                }
             }
         }
     },
@@ -807,7 +876,7 @@ var terminal = {
             files.push(newFile);
             
             output.innerHTML += outputHTML;
-            output.innerHTML += "<p style='color:" + termtheme.text + "'>File called " + fileName + " successfully created.</p>";
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>File called '" + fileName + "' successfully created.</p>";
 
             terminal.save.fs();
 
@@ -878,7 +947,7 @@ var terminal = {
                 
                 if (completions[0] !== undefined && completions[1] === undefined) {
                     
-                    input.value = completions[0];
+                    input.value = completions[0] + " ";
                     input.size = completions[0].length + 1;
                     
                 }
