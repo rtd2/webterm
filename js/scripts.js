@@ -348,31 +348,38 @@ var terminal = {
     // If the folder doesn't exist in pwd, create it
     // -----------------------------------------------------------------------
     mkdir: function() {
+        var returns,
+            folder,
+            path,
+            dirObject;
         var folderName = commandArgs[1];
         
         if (folderName[0] === "/") { // if the intended destination for this folder is elsewhere in the filesystem
             
-            var dirObject = getPreDirectory(folderName); // returns an array, destination object, folderName, destination object's string
+            returns = getPreDirectory(folderName); // returns an array, destination object, folderName, destination object's string
+            dirObject = returns[0];
+            folder = returns[1];
+            path = returns[2];
             
-            if (dirObject[0] !== null && typeof dirObject[0] === 'object') { // if the getPreDirectory retrieved a directory
+            if (dirObject !== null && typeof dirObject === 'object') { // if the getPreDirectory retrieved a directory
                 
-                if (dirObject[0].hasOwnProperty(dirObject[1])) { // if the desired folder name already exists in destination
+                if (dirObject.hasOwnProperty(folder)) { // if the desired folder name already exists in destination
                     
                     output.innerHTML += outputHTML;
-                    output.innerHTML += "<p style='color:" + termtheme.text + "'>mkdir: cannot create '" + dirObject[1] + "': Directory already exists in '" + dirObject[2] + "'</p>";
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>mkdir: cannot create '" + folder + "': Directory already exists in '" + path + "'</p>";
                     
                 } else { // if it doesn't, create it
                     
-                    dirObject[0][dirObject[1]] = {files: []};
+                    dirObject[folder] = {files: []};
                     output.innerHTML += outputHTML;
-                    output.innerHTML += "<p style='color:" + termtheme.text + "'>Directory called '" + dirObject[1] + "' successfully created.</p>";
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>Directory called '" + folder + "' successfully created.</p>";
                     terminal.save.fs();
                 }
                     
             } else { // if the provided location for the folder's creation was not a place in the fs
                
                 output.innerHTML += outputHTML;
-                output.innerHTML += "<p style='color:" + termtheme.text + "'>mkdir: cannot create '" + dirObject[1] + "': Destination directory '" + dirObject[2] + "' does not exist</p>";
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>mkdir: cannot create '" + folder + "': Destination directory '" + path + "' does not exist</p>";
 
             }
             
@@ -564,28 +571,30 @@ var terminal = {
         defaultCase: function() {
             
             var fileBool,
-                length,
-                part1,
-                part2,
                 dirObject,
                 file,
+                path,
+                fileObject,
                 files,
                 index;
             var fileName = commandArgs[1];
             
             if (fileName[0] === "/") { // if the file is located elsewhere in the fs
             
-                dirObject = getPreDirectory(fileName);
+                returns = getPreDirectory(fileName);
+                dirObject = returns[0];
+                file = returns[1];
+                path = returns[2];
 
-                if (dirObject[0] !== null && typeof dirObject[0] === 'object') {
+                if (dirObject !== null && typeof dirObject === 'object') {
                     
-                    files = dirObject[0].files;
-                    fileBool = dirSearchFiles(dirObject[1], files);
+                    files = dirObject.files;
+                    fileBool = dirSearchFiles(dirObject, files);
 
                     if (fileBool) {
                         
-                        file = getFile(dirObject[1], dirObject[0]);
-                        index = files.indexOf(file);
+                        fileObject = getFile(file, dirObject);
+                        index = files.indexOf(fileObject);
                         files.splice(index, 1);
                         output.innerHTML += outputHTML;
                         terminal.save.fs();
@@ -593,14 +602,14 @@ var terminal = {
                     } else {
 
                         output.innerHTML += outputHTML;
-                        output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot delete '" + dirObject[1] + "': File does not exist</p>";
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot delete '" + file + "': File does not exist</p>";
                         
                     }
                     
                 } else { // if the provided location for the folder's creation was not a place in the fs
 
                     output.innerHTML += outputHTML;
-                    output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot delete '" + dirObject[1] + "': Directory '" + dirObject[2] + "' does not exist</p>";
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot delete '" + file + "': Directory '" + path + "' does not exist</p>";
 
                 }
             } else {
@@ -621,7 +630,7 @@ var terminal = {
                 } else {
 
                     output.innerHTML += outputHTML;
-                    output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot remove '" + fileName + "': No such file</p>";
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot remove '" + fileName + "': File does not exist</p>";
 
                 }
             }
@@ -629,28 +638,39 @@ var terminal = {
         r: function() {
             var keys,
                 dirObject,
+                folder,
+                path,
+                returns,
                 dirKeys;
             var folderName = commandArgs[2];
             
             if (folderName[0] === "/") { // if the folder is located elsewhere in the fs
                 
-                dirObject = getPreDirectory(folderName);
+                returns = getPreDirectory(folderName);
+                dirObject = returns[0];
+                folder = returns[1];
+                path = returns[2];
 
-                if (dirObject[0] !== null && typeof dirObject[0] === 'object') {
-                    keys = Object.keys(dirObject[0]);
+                if (dirObject !== null && typeof dirObject === 'object') {
+                    keys = Object.keys(dirObject);
 
-                    if (dirObject[0].hasOwnProperty(dirObject[1])) {
+                    if (dirObject.hasOwnProperty(folder)) {
                         
-                        delete dirObject[0][dirObject[1]];
+                        delete dirObject[folder];
                         output.innerHTML += outputHTML;
                         terminal.save.fs();
 
                     } else {
 
                         output.innerHTML += outputHTML;
-                        output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot remove '" + dirObject[1] + "': No such directory</p>";
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot remove '" + folder + "': No such directory</p>";
                         
                     }
+                } else {
+                    
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot delete '" + folder + "': Directory '" + path + "' does not exist</p>";
+
                 }
             } else {
                 
@@ -775,7 +795,7 @@ var terminal = {
                     } else {
 
                         output.innerHTML += outputHTML;
-                        output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + file1 + "': The destination folder does not exist</p>";
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + file1 + "': The destination directory does not exist</p>";
 
                     }
 
@@ -860,26 +880,73 @@ var terminal = {
     // -----------------------------------------------------------------------
     touch: function() {
         
+        var files,
+            fileBool,
+            returns,
+            dirObject,
+            file,
+            path,
+            newFile;
         var fileName = commandArgs.slice(1).join(" ");
-        var files = pwd[1].files;
-        var fileBool = dirSearchFiles(fileName, files);
+        
+        
+        if (fileName[0] === "/") { // if the destination folder is located elsewhere in the fs
+            
+            returns = getPreDirectory(fileName);
+            dirObject = returns[0];
+            file = returns[1];
+            path = returns[2];
+            
+            if (dirObject !== null && typeof dirObject === 'object') { // if it is a location in the fs
+                files = dirObject.files;
+                fileBool = dirSearchFiles(file, files);
+            
+                if (fileBool) { // if the folder to be copied exists
+            
+                    output.innerHTML += outputHTML;                
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>touch: cannot create file '" + file + "': File already exists in '" + path + "'</p>";
+                    
+                } else {
+                
+                    newFile = new terminal.File(file, file, " ", " ");
 
-        if (fileBool === true) {
+                    files.push(newFile);
 
-            output.innerHTML += outputHTML;
-            output.innerHTML += "<p style='color:" + termtheme.text + "'>touch: cannot create file '" + fileName + "': File exists</p>";
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>File called '" + file + "' successfully created in '" + path + "'</p>";
 
+                    terminal.save.fs();
+
+                }
+            } else {
+
+                output.innerHTML += outputHTML;
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>touch: cannot create file '" + file + "': Destination directory '" + path + "' does not exist</p>";
+
+            }
+            
         } else {
-
-            var newFile = new terminal.File(fileName, fileName, " ", " ");
             
-            files.push(newFile);
+            files = pwd[1].files;
+            fileBool = dirSearchFiles(fileName, files);
             
-            output.innerHTML += outputHTML;
-            output.innerHTML += "<p style='color:" + termtheme.text + "'>File called '" + fileName + "' successfully created.</p>";
+            if (fileBool === true) {
 
-            terminal.save.fs();
+                output.innerHTML += outputHTML;
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>touch: cannot create file '" + fileName + "': File already exists</p>";
 
+            } else {
+
+                newFile = new terminal.File(fileName, fileName, " ", " ");
+
+                files.push(newFile);
+
+                output.innerHTML += outputHTML;
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>File called '" + fileName + "' successfully created.</p>";
+
+                terminal.save.fs();
+
+            }
         }
     },
     // -----------------------------------------------------------------------
