@@ -230,6 +230,7 @@ var terminal = {
         defaultCase: function() {
             var theme = commandArgs.slice(1).join(" ");
             var themes = Object.keys(terminal.termthemes);
+            var themeList;
             var displayThemes = themes.join(", ");
             
             if (theme != "-l") {
@@ -258,8 +259,8 @@ var terminal = {
 
                 }
             } else {
-                var themeList = "";
-
+                
+                themeList = "";
                 output.innerHTML += outputHTML;
 
                 for (theme in themes) {
@@ -273,18 +274,20 @@ var terminal = {
 
         },
         updateDom: function () {
+            var spans,
+                putNodes;
 
             document.body.style.background = termtheme.background;
             input.style.color = termtheme.text;
             input.style.background = termtheme.background;
             commandLine.style.color = termtheme.commandLine;
 
-            var putNodes = output.childNodes;
+            putNodes = output.childNodes;
             for (var i = 0; i < putNodes.length; i++) {
                 putNodes[i].style.color = termtheme.text;
             }
 
-            var spans = document.querySelectorAll("#output > p > span");
+            spans = document.querySelectorAll("#output > p > span");
             for (var t = 0; t < spans.length; t++) {
                 spans[t].style.color = termtheme.commandLine;
             }
@@ -396,13 +399,16 @@ var terminal = {
     // Change directory
     // -----------------------------------------------------------------------
     cd: function() {
-        var dirObject;
+        var dirObject,
+            currentDir,
+            reldir,
+            le;
         var directory = commandArgs.slice(1).join(" ");
         
         if (directory == "..") { // if the argument is ..
 
-            var currentDir = pwd[2]; // currentDir is set to the pwd display string
-            var le = pwd[2].length - 1; // le is set to the last index of currentDir
+            currentDir = pwd[2]; // currentDir is set to the pwd display string
+            le = pwd[2].length - 1; // le is set to the last index of currentDir
             
             while(currentDir.charAt(le) !== '/') { // so long as the last index of currentDir isn't a /
                 currentDir = currentDir.substr(0, le); // remove the last index of currentDir
@@ -422,7 +428,7 @@ var terminal = {
 
         } else if (pwd[1].hasOwnProperty(directory)) { // if the argument is a key of the pwd
                   
-            var reldir = pwd[2] + "/" + directory; // add the argument to the pwd display string
+            reldir = pwd[2] + "/" + directory; // add the argument to the pwd display string
             dirObject = pathStringToObject(reldir);
             
             output.innerHTML += outputHTML;
@@ -458,6 +464,7 @@ var terminal = {
         s: function() {
             var base = "https://www.youtube.com/results?search_query=";
             var term = "";
+            var url;
             output.innerHTML += outputHTML;
 
             for (var i = 2; i < commandArgs.length; i++) {
@@ -470,7 +477,7 @@ var terminal = {
 
             if (term !== "") {
 
-                var url = base + term;
+                url = base + term;
                 window.open(url, '_blank');
 
             }
@@ -491,12 +498,14 @@ var terminal = {
     // -----------------------------------------------------------------------
     ls: {
         defaultCase: function() {
-        
+            var key,
+                file;
             var list = "";
             var keys = Object.keys(pwd[1]);
             var files = pwd[1].files;
 
-            for (var key in keys) {
+
+            for (key in keys) {
 
                 if (keys[key] !== "files") {
 
@@ -506,7 +515,7 @@ var terminal = {
 
             }
 
-            for (var file in files) {
+            for (file in files) {
 
                 list += "<p class='file' style='color:" + termtheme.file + "'>" + files[file]["name"] + "</p>";
 
@@ -519,15 +528,21 @@ var terminal = {
         },
 
         l: function() {
+            
+            var list,
+                keys,
+                files,
+                key,
+                file;
             var flag = commandArgs.slice(1).join(" ");
             
             if (flag === "-l") {
                 
-                var list = "";
-                var keys = Object.keys(pwd[1]);
-                var files = pwd[1].files;
+                list = "";
+                keys = Object.keys(pwd[1]);
+                files = pwd[1].files;
 
-                for (var key in keys) {
+                for (key in keys) {
 
                     if (keys[key] !== "files") {
 
@@ -537,7 +552,7 @@ var terminal = {
 
                 }
 
-                for (var file in files) {
+                for (file in files) {
 
                     list += "<p class='file' style='display: block; color:" + termtheme.file + "'>" + files[file]["name"] + "</p>";
 
@@ -609,12 +624,12 @@ var terminal = {
                 }
             } else {
             
-                var files = pwd[1].files;
-                var file = getFile(fileName, files); // retrieve file with the provided fileName
+                files = pwd[1].files;
+                file = getFile(fileName, files); // retrieve file with the provided fileName
 
                 if (file !== null && typeof file === 'object') { // if getFile retrieved a file
 
-                    var index = files.indexOf(file); // determine index of that file
+                    index = files.indexOf(file); // determine index of that file
 
                     files.splice(index, 1); // remove it from the files array
 
@@ -699,13 +714,20 @@ var terminal = {
         var files = pwd[1].files;
         var fileBool = dirSearchFiles(filedir, files); // true if arg1 is a file, and it exists
         var destDirObj = pathStringToObject(destination);
+        var key,
+            dir,
+            directory,
+            fil,
+            file,
+            index,
+            newFile;
         
-        for (var key in objProps) {
+        for (key in objProps) {
             
             if (filedir === objProps[key]) { // if filedir is a folder, a key of the pwd object
                 
-                var dir = objProps[key];
-                var directory = getDirectory(dir); // get the object that directory represents in the fs
+                dir = objProps[key];
+                directory = getDirectory(dir); // get the object that directory represents in the fs
                 
                 if (destDirObj !== null && typeof destDirObj === 'object') { // if arg2 was a valid place in the fs
                     
@@ -729,13 +751,13 @@ var terminal = {
         
         if (fileBool === true) { // if filedir was a file in the files array
             
-            var fil = filedir;
-            var file = getFile(fil, files); // retrieve it
+            fil = filedir;
+            file = getFile(fil, files); // retrieve it
             
             if (destDirObj !== null && typeof destDirObj === 'object') { // if arg2 was a valid place in the fs
                 
-                var index = files.indexOf(file); // get the index of arg1 file
-                var newFile = JSON.parse(JSON.stringify(file)); // copy it
+                index = files.indexOf(file); // get the index of arg1 file
+                newFile = JSON.parse(JSON.stringify(file)); // copy it
                     
                 files.splice(index, 1); // remove arg1 file from pwd files
                 destDirObj.files.push(newFile); // add it to the destination folder's files
@@ -769,15 +791,18 @@ var terminal = {
             var destination = commandArgs[2];
             var files = pwd[1].files;
             var fileBool = dirSearchFiles(file1, files); // true if the file exists in files array
+            var file,
+                destDirObj;
+
 
             if (fileBool === true) { // if the file exists
 
-                var file = getFile(file1, files); // retrieve it
-                var newFile = JSON.parse(JSON.stringify(file)); // copy it
+                file = getFile(file1, files); // retrieve it
+                newFile = JSON.parse(JSON.stringify(file)); // copy it
 
                 if (destination[0] === "/") { // if the file is being relocated
                     //problematic if destination directory is the pwd, new file of same name in same directory                
-                    var destDirObj = pathStringToObject(destination); // convert the provided string to the location it represents
+                    destDirObj = pathStringToObject(destination); // convert the provided string to the location it represents
 
                     if (destDirObj !== null && typeof destDirObj === 'object') { // if it is a location in the fs
 
@@ -828,15 +853,18 @@ var terminal = {
             
             var folder1 = commandArgs[2];
             var destination = commandArgs[3];
+            var dirObject,
+                newFolder,
+                destDirObj;
             
             if (pwd[1].hasOwnProperty(folder1)) { // if the folder to be copied exists
             
-                var dirObject = pwd[1][folder1];
-                var newFolder = JSON.parse(JSON.stringify(dirObject));
+                dirObject = pwd[1][folder1];
+                newFolder = JSON.parse(JSON.stringify(dirObject));
                 
                 if (destination[0] === "/") { // if the folder is being relocated
                     
-                    var destDirObj = pathStringToObject(destination);
+                    destDirObj = pathStringToObject(destination);
                     
                     if (destDirObj !== null && typeof destDirObj === 'object') { // if it is a location in the fs
 
@@ -1205,7 +1233,7 @@ var terminal = {
 
             var fileName = terminal.editor.header.innerHTML;
 
-            if ( fileName = "new buffer" ) { terminal.editor.changePrompt(); }
+            if ( fileName === "new buffer" ) { terminal.editor.changePrompt(); }
 
             if ( save ) { terminal.editor.save(fileName); terminal.editor.resetEditor(); }
 
@@ -1338,7 +1366,9 @@ function getFile(file, directory) {
 function tabFull(full) {
     var part1,
         dirObject,
+        file,
         files,
+        key,
         keys;
     var completions = [];
     var part2 = "";
@@ -1349,15 +1379,15 @@ function tabFull(full) {
         full = full.substr(0, length); // remove the last character from full
         length--; // decrement length
     }
-    var part1 = full; // part1 is full, minus everything after the /
+    part1 = full; // part1 is full, minus everything after the /
     full = full.substr(0, length); // remove the last character from full, a /
-    var dirObject = pathStringToObject(full); // retrieve the object that full now represents
+    dirObject = pathStringToObject(full); // retrieve the object that full now represents
 
     if (dirObject !== null && typeof dirObject === 'object') {
         keys = Object.keys(dirObject);
     }
 
-    for (var key in keys) {
+    for (key in keys) {
         if (keys[key].substring(0, part2.length) === part2) {
             completions.push(keys[key]);
         }
@@ -1365,7 +1395,7 @@ function tabFull(full) {
     
     files = dirObject.files;
 
-    for (var file in files) {
+    for (file in files) {
         if (files[file]["name"].substring(0, part2.length) === part2) {
             completions.push(files[file]["name"]);
         }
@@ -1377,8 +1407,10 @@ function tabRelative(full) {
     var completions = [];
     var keys = Object.keys(pwd[1]);
     var files = pwd[1].files;
+    var key,
+        file;
 
-    for (var key in keys) {
+    for (key in keys) {
 
         if (keys[key].substring(0, full.length) === full) {
 
@@ -1387,7 +1419,7 @@ function tabRelative(full) {
         }
     }
 
-    for (var file in files) {
+    for (file in files) {
 
         if (files[file]["name"].substring(0, full.length) === full) {
 
@@ -1405,6 +1437,8 @@ function getPreDirectory(directory) {
     var full = directory;
     var part2 = "";
     var length = full.length - 1;
+    var part1,
+        dirObject;
 
     while(full.charAt(length) !== '/') {
         part2 = full.charAt(length) + part2;
@@ -1412,9 +1446,9 @@ function getPreDirectory(directory) {
         length--;
     }
 
-    var part1 = full;
+    part1 = full;
     full = full.substr(0, length);
-    var dirObject = pathStringToObject(full);
+    dirObject = pathStringToObject(full);
     
     return [dirObject, part2, part1];
     
@@ -1441,14 +1475,14 @@ function replaceAll(find, replace, str) {
 }
 
 function pathStringToObject(dirString) {
-    
+    var dirObject;
     var dotdir = replaceAll("/", ".", dirString);
     
     while(dotdir.charAt(0) === '.') {
         dotdir = dotdir.substr(1);
      }
     
-    var dirObject = index(terminal.fs, dotdir);
+    dirObject = index(terminal.fs, dotdir);
     
     return dirObject;
 }
