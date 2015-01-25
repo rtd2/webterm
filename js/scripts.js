@@ -1832,7 +1832,7 @@ input.addEventListener("keydown", tab, false);
 terminal.editor.textArea.addEventListener("keyup", textEditor, false);
 
 
-// var defaultFs = 
+// var defaultFs = {
 //     "desktop": {
 //         "files": [
 //             {
@@ -1893,7 +1893,8 @@ terminal.editor.textArea.addEventListener("keyup", textEditor, false);
 //             "created": "",
 //             "modified": ""
 //         }
-//     ];
+//     ]
+//}
 
 
 // load user fs and settings
