@@ -601,7 +601,7 @@ var terminal = {
                 if (dirObject !== null && typeof dirObject === 'object') {
                     
                     files = dirObject.files;
-                    fileBool = dirSearchFiles(dirObject, files);
+                    fileBool = dirSearchFiles(file, files);
 
                     if (fileBool) {
                         
