@@ -769,64 +769,139 @@ var terminal = {
     // -----------------------------------------------------------------------
     cp: {
         defaultCase: function() {
-        
-            var file1 = commandArgs[1];
+            var files,
+                newFile,
+                fileObject,
+                srcPath,
+                srcObject,
+                srcFile,
+                srcReturns,
+                destPath,
+                destObject,
+                destFile,
+                destReturns,
+                destDirObj;
+            var file = commandArgs[1];
             var destination = commandArgs[2];
-            var files = pwd[1].files;
-            var fileBool = dirSearchFiles(file1, files); // true if the file exists in files array
+            
+            if (file[0] === "/") { // arg1, absolute path
+                
+                srcReturns = getPreDirectory(file);
+                srcObject = srcReturns[0];
+                srcFile = srcReturns[1];
+                srcPath = srcReturns[2];
 
-            if (fileBool === true) { // if the file exists
+                if (srcObject !== null && typeof srcObject === 'object') {
+                    
+                    srcFiles = srcObject.files;
 
-                var file = getFile(file1, files); // retrieve it
-                var newFile = JSON.parse(JSON.stringify(file)); // copy it
+                    if (dirSearchFiles(srcFile, srcFiles)) { // file exists, copy it
+                        
+                        srcObject = getFile(srcFile, srcFiles);
+                        newFile = JSON.parse(JSON.stringify(srcObject));
 
-                if (destination[0] === "/") { // if the file is being relocated
-                    //problematic if destination directory is the pwd, new file of same name in same directory                
-                    var destDirObj = pathStringToObject(destination); // convert the provided string to the location it represents
-
-                    if (destDirObj !== null && typeof destDirObj === 'object') { // if it is a location in the fs
-
-                        destDirObj.files.push(newFile); // add the file copy to the files array of that object/directory
+                    } else { // error, file to be copied doesn't exist
 
                         output.innerHTML += outputHTML;
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>1acp: cannot copy '" + srcFile + "': File does not exist</p>";
+                        
+                    }
+                    
+                } else { // if the provided location for the folder's creation was not a place in the fs
 
-                        terminal.save.fs();
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>1bcp: cannot copy '" + srcFile + "': Directory '" + srcPath + "' does not exist</p>";
+
+                }
+                
+            } else { // arg1, relative path
+                
+                srcFiles = pwd[1].files;
+                srcFile = file;
+
+                if (dirSearchFiles(file, srcFiles)) { // if the file exists
+
+                    fileObject = getFile(file, srcFiles); // retrieve it
+                    newFile = JSON.parse(JSON.stringify(fileObject)); // copy it
+
+                } else {
+
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>1ccp: cannot copy '" + file + "': No such file</p>";
+
+                }
+            }
+            
+            if (destination[0] === "/") { // arg2, absolute path, if the file is being relocated
+                
+                //problematic if destination directory is the pwd, new file of same name in same directory  
+                
+                destDirObj = pathStringToObject(destination); // convert the provided string to the location it represents
+                destReturns = getPreDirectory(destination); // in case the destination provided includes a new name
+                destObj = destReturns[0];
+                destFile = destReturns[1];
+                destPath = destReturns[2];
+                
+                if (destObj.hasOwnProperty(destFile)) {
+                    destFiles = destDirObj.files;
+                    
+                    if (dirSearchFiles(srcFile, destFiles)) { // error, the file already exists in the destination folder
+                        
+                        output.innerHTML += outputHTML;
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>2acp: cannot copy '" + srcFile + "': File '" + srcFile + "' already exists in destination directory</p>";
 
                     } else {
-
+                        
+                        destFiles.push(newFile);
                         output.innerHTML += outputHTML;
-                        output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + file1 + "': The destination directory does not exist</p>";
-
-                    }
-
-                } else { // if the file isn't being relocated, rename it
-
-                    if (file1 !== destination) {
-
-                        newFile.name = destination;
-                        newFile.shortname = destination;
-                        newFile.created = new Date();
-                        newFile.modified = new Date();
-
-                        files.push(newFile); // and push it the files array
-
-                        output.innerHTML += outputHTML;
-
                         terminal.save.fs();
-
-                    } else {
-
-                        output.innerHTML += outputHTML;
-                        output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + file1 + "': New file must have a different name</p>";
-
+                    
                     }
+                    
+                } else if (dirSearchFiles(destFile, destObj.files)) {
+                    
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>2bcp: cannot copy '" + srcFile + "': File '" + srcFile + "' already exists in '" + destPath + "'</p>";
+
+                } else if (destObj !== null && typeof destObj === 'object') {
+
+                    newFile.name = destFile;
+                    newFile.shortname = destFile;
+                    newFile.created = new Date();
+                    newFile.modified = new Date();
+
+                    destObj.files.push(newFile); // and push it the files array
+                    output.innerHTML += outputHTML;
+                    terminal.save.fs();
+
+                } else {
+                    
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>2ccp: cannot copy '" + srcFile + "': Directory '" + destPath + "' does not exist</p>";
+
                 }
 
-            } else {
+            } else { // arg2, relative path, if the file isn't being relocated, rename it
 
-                output.innerHTML += outputHTML;
-                output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + file1 + "': No such file</p>";
+                if (file !== destination) {
+                    
+                    newFile.name = destination;
+                    newFile.shortname = destination;
+                    newFile.created = new Date();
+                    newFile.modified = new Date();
 
+                    destFiles = pwd[1].files;
+                    destFiles.push(newFile); // and push it the files array
+
+                    output.innerHTML += outputHTML;
+
+                    terminal.save.fs();
+
+                } else { // error, file of the same name already exists in pwd
+
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>2ccp: cannot copy '" + file + "': New file must have a different name</p>";
+
+                }
             }
         },
         r: function() {
@@ -1321,9 +1396,9 @@ var commandArgs;
 var outputHTML;
 
 
-function dirSearchFiles(file, directory) {
-    for (var i = 0; i < directory.length; i++) {
-        if (file === directory[i]["name"]) {
+function dirSearchFiles(file, arr) {
+    for (var i = 0; i < arr.length; i++) {
+        if (file === arr[i]["name"]) {
             return true;
         }
     }
