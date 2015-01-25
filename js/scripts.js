@@ -634,19 +634,11 @@ var terminal = {
                     files.splice(index, 1); // remove it from the files array
 
                     output.innerHTML += outputHTML;
-<<<<<<< HEAD
 
                     terminal.save.fs();
 
                 } else {
 
-=======
-
-                    terminal.save.fs();
-
-                } else {
-
->>>>>>> d6c1b991d37f735964d0421a6ffb5117d79e4d27
                     output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot remove '" + fileName + "': File does not exist</p>";
 
@@ -808,7 +800,6 @@ var terminal = {
                 destDirObj;
             var file = commandArgs[1];
             var destination = commandArgs[2];
-<<<<<<< HEAD
             
             if (file[0] === "/") { // arg1, absolute path
                 
@@ -816,33 +807,17 @@ var terminal = {
                 srcObject = srcReturns[0];
                 srcFile = srcReturns[1];
                 srcPath = srcReturns[2];
-=======
-            var files = pwd[1].files;
-            var fileBool = dirSearchFiles(file1, files); // true if the file exists in files array
-            var file,
-                destDirObj;
-
->>>>>>> d6c1b991d37f735964d0421a6ffb5117d79e4d27
 
                 if (srcObject !== null && typeof srcObject === 'object') {
                     
                     srcFiles = srcObject.files;
 
-<<<<<<< HEAD
                     if (dirSearchFiles(srcFile, srcFiles)) { // file exists, copy it
                         
                         srcObject = getFile(srcFile, srcFiles);
                         newFile = JSON.parse(JSON.stringify(srcObject));
 
                     } else { // error, file to be copied doesn't exist
-=======
-                file = getFile(file1, files); // retrieve it
-                newFile = JSON.parse(JSON.stringify(file)); // copy it
-
-                if (destination[0] === "/") { // if the file is being relocated
-                    //problematic if destination directory is the pwd, new file of same name in same directory                
-                    destDirObj = pathStringToObject(destination); // convert the provided string to the location it represents
->>>>>>> d6c1b991d37f735964d0421a6ffb5117d79e4d27
 
                         output.innerHTML += outputHTML;
                         output.innerHTML += "<p style='color:" + termtheme.text + "'>1acp: cannot copy '" + srcFile + "': File does not exist</p>";
@@ -890,11 +865,7 @@ var terminal = {
                     if (dirSearchFiles(srcFile, destFiles)) { // error, the file already exists in the destination folder
                         
                         output.innerHTML += outputHTML;
-<<<<<<< HEAD
                         output.innerHTML += "<p style='color:" + termtheme.text + "'>2acp: cannot copy '" + srcFile + "': File '" + srcFile + "' already exists in destination directory</p>";
-=======
-                        output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + file1 + "': The destination directory does not exist</p>";
->>>>>>> d6c1b991d37f735964d0421a6ffb5117d79e4d27
 
                     } else {
                         
@@ -911,7 +882,6 @@ var terminal = {
 
                 } else if (destObj !== null && typeof destObj === 'object') {
 
-<<<<<<< HEAD
                     newFile.name = destFile;
                     newFile.shortname = destFile;
                     newFile.created = new Date();
@@ -920,14 +890,6 @@ var terminal = {
                     destObj.files.push(newFile); // and push it the files array
                     output.innerHTML += outputHTML;
                     terminal.save.fs();
-=======
-                    if (file1 !== destination) {
-
-                        newFile.name = destination;
-                        newFile.shortname = destination;
-                        newFile.created = new Date();
-                        newFile.modified = new Date();
->>>>>>> d6c1b991d37f735964d0421a6ffb5117d79e4d27
 
                 } else {
                     
@@ -963,18 +925,15 @@ var terminal = {
             
             var folder1 = commandArgs[2];
             var destination = commandArgs[3];
-            var dirObject,
-                newFolder,
-                destDirObj;
             
             if (pwd[1].hasOwnProperty(folder1)) { // if the folder to be copied exists
             
-                dirObject = pwd[1][folder1];
-                newFolder = JSON.parse(JSON.stringify(dirObject));
+                var dirObject = pwd[1][folder1];
+                var newFolder = JSON.parse(JSON.stringify(dirObject));
                 
                 if (destination[0] === "/") { // if the folder is being relocated
                     
-                    destDirObj = pathStringToObject(destination);
+                    var destDirObj = pathStringToObject(destination);
                     
                     if (destDirObj !== null && typeof destDirObj === 'object') { // if it is a location in the fs
 
@@ -1057,36 +1016,21 @@ var terminal = {
                 output.innerHTML += "<p style='color:" + termtheme.text + "'>touch: cannot create file '" + file + "': Destination directory '" + path + "' does not exist</p>";
 
             }
-<<<<<<< HEAD
             
         } else {
             
             files = pwd[1].files;
             fileBool = dirSearchFiles(fileName, files);
             
-=======
-            
-        } else {
-            
-            files = pwd[1].files;
-            fileBool = dirSearchFiles(fileName, files);
-            
->>>>>>> d6c1b991d37f735964d0421a6ffb5117d79e4d27
             if (fileBool === true) {
 
                 output.innerHTML += outputHTML;
                 output.innerHTML += "<p style='color:" + termtheme.text + "'>touch: cannot create file '" + fileName + "': File already exists</p>";
 
             } else {
-<<<<<<< HEAD
 
                 newFile = new terminal.File(fileName, fileName, " ", " ");
 
-=======
-
-                newFile = new terminal.File(fileName, fileName, " ", " ");
-
->>>>>>> d6c1b991d37f735964d0421a6ffb5117d79e4d27
                 files.push(newFile);
 
                 output.innerHTML += outputHTML;
