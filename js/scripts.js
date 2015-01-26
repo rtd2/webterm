@@ -931,14 +931,14 @@ var terminal = {
                     } else { // error, file to be copied doesn't exist
 
                         output.innerHTML += outputHTML;
-                        output.innerHTML += "<p style='color:" + termtheme.text + "'>1acp: cannot copy '" + srcFile + "': File does not exist</p>";
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFile + "': File does not exist</p>";
                         
                     }
                     
                 } else { // if the provided location for the folder's creation was not a place in the fs
 
                     output.innerHTML += outputHTML;
-                    output.innerHTML += "<p style='color:" + termtheme.text + "'>1bcp: cannot copy '" + srcFile + "': Directory '" + srcPath + "' does not exist</p>";
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFile + "': Directory '" + srcPath + "' does not exist</p>";
 
                 }
                 
@@ -955,7 +955,7 @@ var terminal = {
                 } else {
 
                     output.innerHTML += outputHTML;
-                    output.innerHTML += "<p style='color:" + termtheme.text + "'>1ccp: cannot copy '" + file + "': No such file</p>";
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + file + "': No such file</p>";
 
                 }
             }
@@ -976,7 +976,7 @@ var terminal = {
                     if (dirSearchFiles(srcFile, destFiles)) { // error, the file already exists in the destination folder
                         
                         output.innerHTML += outputHTML;
-                        output.innerHTML += "<p style='color:" + termtheme.text + "'>2acp: cannot copy '" + srcFile + "': File '" + srcFile + "' already exists in destination directory</p>";
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFile + "': File '" + srcFile + "' already exists in destination directory</p>";
 
                     } else {
                         
@@ -989,7 +989,7 @@ var terminal = {
                 } else if (dirSearchFiles(destFile, destObject.files)) {
                     
                     output.innerHTML += outputHTML;
-                    output.innerHTML += "<p style='color:" + termtheme.text + "'>2bcp: cannot copy '" + srcFile + "': File '" + srcFile + "' already exists in '" + destPath + "'</p>";
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFile + "': File '" + srcFile + "' already exists in '" + destPath + "'</p>";
 
                 } else if (destObject !== null && typeof destObject === 'object') {
 
@@ -999,12 +999,13 @@ var terminal = {
                     newFile.modified = new Date();
 
                     destObject.files.push(newFile); // and push it the files array
+                    
                     output.innerHTML += outputHTML;
                     terminal.save.fs();
 
                 } else {
                     
-                    output.innerHTML += "<p style='color:" + termtheme.text + "'>2ccp: cannot copy '" + srcFile + "': Directory '" + destPath + "' does not exist</p>";
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFile + "': Directory '" + destPath + "' does not exist</p>";
 
                 }
 
@@ -1019,61 +1020,139 @@ var terminal = {
 
                     destFiles = pwd[1].files;
                     destFiles.push(newFile); // and push it the files array
-
+                    
                     output.innerHTML += outputHTML;
-
                     terminal.save.fs();
 
                 } else { // error, file of the same name already exists in pwd
 
                     output.innerHTML += outputHTML;
-                    output.innerHTML += "<p style='color:" + termtheme.text + "'>2ccp: cannot copy '" + file + "': New file must have a different name</p>";
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + file + "': New file must have a different name</p>";
 
                 }
             }
         },
         r: function() {
-            
-            var folder1 = commandArgs[2];
+        
+            var source = commandArgs[2];
             var destination = commandArgs[3];
-            
-            if (pwd[1].hasOwnProperty(folder1)) { // if the folder to be copied exists
-            
-                var dirObject = pwd[1][folder1];
-                var newFolder = JSON.parse(JSON.stringify(dirObject));
-                
-                if (destination[0] === "/") { // if the folder is being relocated
-                    
-                    var destDirObj = pathStringToObject(destination);
-                    
-                    if (destDirObj !== null && typeof destDirObj === 'object') { // if it is a location in the fs
+            var error = false;
 
-                        destDirObj[folder1] = newFolder;
+            var srcReturns,
+                srcObject,
+                srcFolder,
+                srcPath,
+                srcDirObject,
+                destReturns,
+                destObject,
+                destFolder,
+                destPath,
+                dest,
+                index,
+                newFile;
 
-                        output.innerHTML += outputHTML;
+
+            if (source[0] === "/") { // source is an absolute path
+                srcReturns = getPreDirectory(source);
+                srcObject = srcReturns[0]; // the object provided directory should exist in
+                srcFolder = srcReturns[1]; // the directory
+                srcPath = srcReturns[2]; // a path that represents the source object
+
+                if (srcObject !== null && typeof srcObject === 'object') { // source object exists
+
+                    if (srcObject.hasOwnProperty(srcFolder)) { // directory exists
+                        srcDirObject = srcObject[srcFolder];
 
                     } else {
-
+                        error = true;
                         output.innerHTML += outputHTML;
-                        output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + folder1 + "': The destination folder does not exist</p>";
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFolder + "': No such directory</p>";
+                    }
+
+                } else { // error source object doesn't exist
+                    error = true;
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFolder + "': No such directory</p>";
+                }
+
+            } else { // source is a relative path
+                srcObject = pwd[1];
+                srcFolder = source;
+                srcPath = pwd[2];
+
+
+                if (srcObject.hasOwnProperty(srcFolder)) { // or a folder
+                    srcDirObject = srcObject[srcFolder];
+
+                } else { // error the file or folder doesn't exist
+                    error = true;
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFolder + "': No such directory</p>";
+                }
+            } // done with argument one, srcDirObject has variable prepared
+
+            if (destination[0] === "/" && error === false) { // destination is an absolute path
+                destReturns = getPreDirectory(destination);
+                destObject = destReturns[0];
+                destFolder = destReturns[1];
+                destPath = destReturns[2];
+                dest = pathStringToObject(destination);
+
+                if (dest !== null && typeof dest === 'object') { // destination object exists
+
+                    if (dest.hasOwnProperty(srcFolder)) { // error, directory by the same name already exists in destination
+                        output.innerHTML += outputHTML;
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFolder + "': Directory with the same name already exists in destination directory</p>";
+
+                    } else if (typeof srcDirObject === 'object') {
+                        dest[srcFolder] = srcDirObject; // add the arg1 directory to the destination directory
+                        
+                        output.innerHTML += outputHTML;
+                        terminal.save.fs();
 
                     }
 
-                } else { // if the folder isn't being relocated
+                } else if (destObject !== null && typeof destObject === 'object') {
 
-                    if (pwd[1].hasOwnProperty(destination)) { // if the destination folder exists, add the source folder to it
-                        
-                        pwd[1][destination][folder1] = newFolder;
+                    if (destObject.hasOwnProperty(destFolder)) { // error, directory by the same name already exists in destination
+                        output.innerHTML += outputHTML;
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFolder + "': Directory with the same name already exists in destination directory</p>";
+
+                    } else if (typeof srcDirObject === 'object') {
+                        destObject[destFolder] = srcDirObject; // add the arg1 directory to the destination directory
                         
                         output.innerHTML += outputHTML;
-
-                    } else { // if the destination folder doesn't exist, create it
-
-                        pwd[1][destination] = newFolder;
-                        
-                        output.innerHTML += outputHTML;
-                        
+                        terminal.save.fs();
                     }
+
+                } else { // error destination object doesn't exist
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFolder + "': Destination directory '" + destination + "' does not exist</p>";
+
+                }
+
+            } else if (error === false) { // destination is a relative path
+                destObject = getDirectory(destination);
+                destFolder = destination;
+                destPath = pwd[2];
+
+                if (destObject !== null && typeof destObject === 'object') { // if destination provided is a key of the pwd
+
+                    if (destObject.hasOwnProperty(srcFolder)) { // error, directory by the same name already exists in destination
+                        output.innerHTML += outputHTML;
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFolder + "': Directory with the same name already exists in destination directory</p>";
+
+                    } else if (typeof srcDirObject === 'object') { // the source is a directory
+                        destObject[srcFolder] = srcDirObject; // add the source directory to the destination directory
+                        
+                        output.innerHTML += outputHTML;
+                        terminal.save.fs();
+
+                    }
+
+                } else { // error, no such destination directory
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFolder + "': Destination directory '" + destination + "' does not exist</p>";
                 }
             }
         }
