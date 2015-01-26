@@ -710,77 +710,187 @@ var terminal = {
     // -----------------------------------------------------------------------
     mv: function() {
         
-        var filedir = commandArgs[1];
+        var source = commandArgs[1];
         var destination = commandArgs[2];
-        var objProps = Object.keys(pwd[1]);
-        var files = pwd[1].files;
-        var fileBool = dirSearchFiles(filedir, files); // true if arg1 is a file, and it exists
-        var destDirObj = pathStringToObject(destination);
-        var key,
-            dir,
-            directory,
-            fil,
-            file,
+        var error = false;
+        
+        var srcReturns,
+            srcObject,
+            srcFile,
+            srcPath,
+            srcFileObject,
+            srcDirObject,
+            srcFiles,
+            destReturns,
+            destObject,
+            destFile,
+            destPath,
+            destFiles,
             index,
             newFile;
-        
-        for (key in objProps) {
             
-            if (filedir === objProps[key]) { // if filedir is a folder, a key of the pwd object
-                
-                dir = objProps[key];
-                directory = getDirectory(dir); // get the object that directory represents in the fs
-                
-                if (destDirObj !== null && typeof destDirObj === 'object') { // if arg2 was a valid place in the fs
-                    
-                    delete pwd[1][dir]; // remove arg1 directory from pwd
-                    destDirObj[dir] = directory; // add the arg1 directory to the destination directory
-                    
-                    output.innerHTML += outputHTML;
+        
+        if (source[0] === "/") { // source is an absolute path
+            srcReturns = getPreDirectory(source);
+            srcObject = srcReturns[0]; // the object provided file or directory should exist in
+            srcFile = srcReturns[1]; // the file or directory
+            srcPath = srcReturns[2]; // a path that represents the source object
 
-                    terminal.save.fs();
-                    
-                } else { // if arg2 wasn't a valid place in the fs
-                    
-                    output.innerHTML += outputHTML;
-                    output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + filedir + "': Destination directory does not exist</p>";
+            if (srcObject !== null && typeof srcObject === 'object') { // source object exists
+
+                srcFiles = srcObject.files;
+
+                if (dirSearchFiles(srcFile, srcFiles)) { // file exists
+                    srcFileObject = getFile(srcFile, srcFiles);
                 
+                } else if (srcObject.hasOwnProperty(srcFile)) { // directory exists
+                    srcDirObject = srcObject[srcFile];
+                    
+                } else {
+                    error = true;
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': No such file or directory</p>";
                 }
                 
+            } else { // error source object doesn't exist
+                error = true;
+                output.innerHTML += outputHTML;
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': No such file or directory</p>";
             }
             
-        }
-        
-        if (fileBool === true) { // if filedir was a file in the files array
+        } else { // source is a relative path
+            srcObject = pwd[1];
+            srcFile = source;
+            srcPath = pwd[2];
+            srcFiles = srcObject.files;
             
-            fil = filedir;
-            file = getFile(fil, files); // retrieve it
-            
-            if (destDirObj !== null && typeof destDirObj === 'object') { // if arg2 was a valid place in the fs
+            if (dirSearchFiles(srcFile, srcFiles)) { // is it a file
+                srcFileObject = getFile(srcFile, srcFiles);
                 
-                index = files.indexOf(file); // get the index of arg1 file
-                newFile = JSON.parse(JSON.stringify(file)); // copy it
-                    
-                files.splice(index, 1); // remove arg1 file from pwd files
-                destDirObj.files.push(newFile); // add it to the destination folder's files
+            } else if (srcObject.hasOwnProperty(srcFile)) { // or a folder
+                srcDirObject = srcObject[srcFile];
                 
+            } else { // error the file or folder doesn't exist
+                error = true;
                 output.innerHTML += outputHTML;
-                
-                terminal.save.fs();
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': No such file or directory</p>";
+            }
+        } // done with argument one, srcFileObject or srcDirObject has variable prepared
+        
+        if (destination[0] === "/" && error === false) { // destination is an absolute path
+            destReturns = getPreDirectory(destination);
+            destObject = destReturns[0];
+            destFile = destReturns[1];
+            destPath = destReturns[2];
+            dest = pathStringToObject(destination);
+            
+            if (dest !== null && typeof dest === 'object') { // destination object exists
 
-            } else { // if arg2 wasn't a valid place in the fs
+                destFiles = dest.files;
+
+                if (dirSearchFiles(srcFile, destFiles)) { // error, file by the same name already exists in destination
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': File with the same name already exists in destination directory</p>";
                 
+                } else if (dest.hasOwnProperty(srcFile)) { // error, directory by the same name already exists in destination
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': Directory with the same name already exists in destination directory</p>";
+                    
+                } else if (srcFileObject === undefined && typeof srcDirObject === 'object') {
+                    dest[srcFile] = srcDirObject; // add the arg1 directory to the destination directory
+                    delete srcObject[srcFile]; // remove arg1 directory from pwd
+                    
+                    output.innerHTML += outputHTML;
+                    terminal.save.fs();
+                    
+                } else if (typeof srcFileObject === 'object' && srcDirObject === undefined) {
+                    index = srcFiles.indexOf(srcFileObject);
+                    newFile = JSON.parse(JSON.stringify(srcFileObject)); // copy source file object
+
+                    srcFiles.splice(index, 1); // remove arg1 file from pwd files
+                    destFiles.push(newFile); // add it to the destination folder's files
+
+                    output.innerHTML += outputHTML;
+                    terminal.save.fs();
+                }
+                                    
+            } else if (destObject !== null && typeof destObject === 'object') {
+                
+                if (dirSearchFiles(destFile, destObject.files)) { // error, file by the same name already exists in destination
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': File with the same name already exists in destination directory</p>";
+                
+                } else if (destObject.hasOwnProperty(destFile)) { // error, directory by the same name already exists in destination
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': Directory with the same name already exists in destination directory</p>";
+                
+                } else if (srcFileObject === undefined && typeof srcDirObject === 'object') {
+                    destObject[destFile] = srcDirObject; // add the arg1 directory to the destination directory
+                    delete srcObject[srcFile]; // remove arg1 directory from pwd
+
+                    output.innerHTML += outputHTML;
+                    terminal.save.fs();
+
+                } else if (typeof srcFileObject === 'object' && srcDirObject === undefined) {
+                    index = srcFiles.indexOf(srcFileObject);
+                    newFile = JSON.parse(JSON.stringify(srcFileObject)); // copy source file object
+                    newFile.name = destFile;
+                    newFile.shortname = destFile;
+                    newFile.created = new Date();
+                    newFile.modified = new Date();
+
+                    srcFiles.splice(index, 1); // remove arg1 file from pwd files
+                    destObject.files.push(newFile); // add it to the destination folder's files
+
+                    output.innerHTML += outputHTML;
+                    terminal.save.fs();
+                }
+                
+            } else { // error destination object doesn't exist
                 output.innerHTML += outputHTML;
-                output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + filedir + "': Destination directory does not exist</p>";
-            
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': Destination directory '" + destination + "' does not exist</p>";
+                
             }
-        }
-        
-        if (dir === undefined && fil === undefined) { // if arg1 wasn't a file or folder
             
-            output.innerHTML += outputHTML;
-            output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + filedir + "': No such file or directory</p>";
-        
+        } else if (error === false) { // destination is a relative path
+            destObject = getDirectory(destination);
+            destFile = destination;
+            destPath = pwd[2];
+            
+            if (destObject !== null && typeof destObject === 'object') { // if destination provided is a key of the pwd
+                destFiles = destObject.files;
+
+                if (dirSearchFiles(srcFile, destFiles)) { // error, file by the same name already exists in destination
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': File with the same name already exists in destination directory</p>";
+                
+                } else if (destObject.hasOwnProperty(srcFile)) { // error, directory by the same name already exists in destination
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': Directory with the same name already exists in destination directory</p>";
+                    
+                } else if (srcFileObject === undefined && typeof srcDirObject === 'object') { // the source is a directory
+                    destObject[srcFile] = srcDirObject; // add the source directory to the destination directory
+                    delete srcObject[srcFile]; // delete the source directory object
+                    
+                    output.innerHTML += outputHTML;
+                    terminal.save.fs();
+                    
+                } else if (typeof srcFileObject === 'object' && srcDirObject === undefined) { // the source is a file
+                    index = srcFiles.indexOf(srcFileObject); // determine index of source file object
+                    newFile = JSON.parse(JSON.stringify(srcFileObject)); // copy source file object
+
+                    srcFiles.splice(index, 1); // remove arg1 file from pwd files
+                    destFiles.push(newFile); // add it to the destination folder's files
+
+                    output.innerHTML += outputHTML;
+                    terminal.save.fs();
+                    
+                }
+                
+            } else { // error, no such destination directory
+                output.innerHTML += outputHTML;
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': Destination directory '" + destination + "' does not exist</p>";
+            }
         }
     },
     // -----------------------------------------------------------------------
@@ -788,8 +898,7 @@ var terminal = {
     // -----------------------------------------------------------------------
     cp: {
         defaultCase: function() {
-            var files,
-                newFile,
+            var newFile,
                 fileObject,
                 srcPath,
                 srcObject,
@@ -857,11 +966,11 @@ var terminal = {
                 
                 destDirObj = pathStringToObject(destination); // convert the provided string to the location it represents
                 destReturns = getPreDirectory(destination); // in case the destination provided includes a new name
-                destObj = destReturns[0];
+                destObject = destReturns[0];
                 destFile = destReturns[1];
                 destPath = destReturns[2];
                 
-                if (destObj.hasOwnProperty(destFile)) {
+                if (destObject.hasOwnProperty(destFile)) {
                     destFiles = destDirObj.files;
                     
                     if (dirSearchFiles(srcFile, destFiles)) { // error, the file already exists in the destination folder
@@ -877,19 +986,19 @@ var terminal = {
                     
                     }
                     
-                } else if (dirSearchFiles(destFile, destObj.files)) {
+                } else if (dirSearchFiles(destFile, destObject.files)) {
                     
                     output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>2bcp: cannot copy '" + srcFile + "': File '" + srcFile + "' already exists in '" + destPath + "'</p>";
 
-                } else if (destObj !== null && typeof destObj === 'object') {
+                } else if (destObject !== null && typeof destObject === 'object') {
 
                     newFile.name = destFile;
                     newFile.shortname = destFile;
                     newFile.created = new Date();
                     newFile.modified = new Date();
 
-                    destObj.files.push(newFile); // and push it the files array
+                    destObject.files.push(newFile); // and push it the files array
                     output.innerHTML += outputHTML;
                     terminal.save.fs();
 
@@ -1108,7 +1217,7 @@ var terminal = {
                 
                 if (completions[0] !== undefined && completions[1] === undefined) {
                     
-                    input.value = completions[0] + " ";
+                    input.value = completions[0];
                     input.size = completions[0].length + 1;
                     
                 }
