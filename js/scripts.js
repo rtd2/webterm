@@ -11,7 +11,6 @@ var terminal = {
                             "name": "abc.txt",
                             "shortname": "abc",
                             "content": "I am content",
-                            "extension": ".txt",
                             "created": "",
                             "modified": ""
                         },
@@ -19,7 +18,6 @@ var terminal = {
                             "name": "urmum.txt",
                             "shortname": "urmum",
                             "content": "I have content",
-                            "extension": ".txt",
                             "created": "",
                             "modified": ""
                         }
@@ -31,7 +29,6 @@ var terminal = {
                             "name": "example.txt",
                             "shortname": "example",
                             "content": "I am content",
-                            "extension": ".txt",
                             "created": "",
                             "modified": ""
                         },
@@ -39,7 +36,6 @@ var terminal = {
                             "name": "document.txt",
                             "shortname": "document",
                             "content": "I am content",
-                            "extension": ".txt",
                             "created": "",
                             "modified": ""
                         },
@@ -47,7 +43,6 @@ var terminal = {
                             "name": "another.txt",
                             "shortname": "another",
                             "content": "I am content",
-                            "extension": ".txt",
                             "created": "",
                             "modified": ""
                         }
@@ -152,12 +147,11 @@ var terminal = {
     // -----------------------------------------------------------------------
     // New file constructor
     // -----------------------------------------------------------------------
-    File: function (name, shortname, content, extension) {
+    File: function (name, shortname, content) {
 
         this.name = name;
         this.shortname = shortname;
         this.content = content;
-        this.extension = extension;
         this.created = new Date();
         this.modified = new Date();
 
@@ -1223,7 +1217,7 @@ var terminal = {
                     
                 } else {
                 
-                    newFile = new terminal.File(file, file, " ", " ");
+                    newFile = new terminal.File(file, file, " ");
 
                     files.push(newFile);
 
@@ -1252,7 +1246,7 @@ var terminal = {
 
             } else {
 
-                newFile = new terminal.File(fileName, fileName, " ", " ");
+                newFile = new terminal.File(fileName, fileName, " ");
 
                 files.push(newFile);
 
@@ -1477,15 +1471,15 @@ var terminal = {
             } 
             
 
-            // else { // THIS IS SLOPPY ... create and save new file
+            else { // create and save new file
 
-            //     var shortname = fileName.slice(0, -4);
-            //     var extension = fileName.slice(-4, fileName.length);
-            //     var content = terminal.editor.textArea.value;
-            //     terminal.fs.home.user.files.push(""); // add empty array item
-            //     terminal.fs.home.user.files[terminal.fs.home.user.files.length - 1] = new terminal.File(fileName, shortname, content, extension); // save file to empty array item
+                var shortname = fileName.slice(0, fileName.indexOf("."));
+                var content = terminal.editor.textArea.value;
+                newFile = new terminal.File(fileName, shortname, content); // save file to empty array item
+                terminal.fs.home.user.files.push(newFile);
+                terminal.save.fs();
             
-            // }
+            }
 
         },
         changePrompt: function () { // change to file name prompot
@@ -2060,7 +2054,6 @@ terminal.editor.textArea.addEventListener("keyup", textEditor, false);
 //                 "name": "abc.txt",
 //                 "shortname": "abc",
 //                 "content": "I am content",
-//                 "extension": ".txt",
 //                 "created": "",
 //                 "modified": ""
 //             },
@@ -2068,7 +2061,6 @@ terminal.editor.textArea.addEventListener("keyup", textEditor, false);
 //                 "name": "urmum.txt",
 //                 "shortname": "urmum",
 //                 "content": "I have content",
-//                 "extension": ".txt",
 //                 "created": "",
 //                 "modified": ""
 //             }
@@ -2080,7 +2072,6 @@ terminal.editor.textArea.addEventListener("keyup", textEditor, false);
 //                 "name": "example.txt",
 //                 "shortname": "example",
 //                 "content": "I am content",
-//                 "extension": ".txt",
 //                 "created": "",
 //                 "modified": ""
 //             },
@@ -2088,7 +2079,6 @@ terminal.editor.textArea.addEventListener("keyup", textEditor, false);
 //                 "name": "document.txt",
 //                 "shortname": "document",
 //                 "content": "I am content",
-//                 "extension": ".txt",
 //                 "created": "",
 //                 "modified": ""
 //             },
@@ -2096,7 +2086,6 @@ terminal.editor.textArea.addEventListener("keyup", textEditor, false);
 //                 "name": "another.txt",
 //                 "shortname": "another",
 //                 "content": "I am content",
-//                 "extension": ".txt",
 //                 "created": "",
 //                 "modified": ""
 //             }
@@ -2110,7 +2099,6 @@ terminal.editor.textArea.addEventListener("keyup", textEditor, false);
 //             "name": "readme.txt",
 //             "shortname": "readme",
 //             "content": "I am content",
-//             "extension": ".md",
 //             "created": "",
 //             "modified": ""
 //         }
