@@ -4,19 +4,19 @@ var tutorial = {
     
     stages: {
         one: {
-            title: "Got 15 minutes and want to learn Git?",
+            title: "Getting Started",
             substage: "1.1",
-            content: "Git allows groups of people to work on the same documents (often code) at the same time, and without stepping on each other's toes. It's a distributed version control system.<br><br>Our terminal prompt below is currently in a directory we decided to name 'octobox'. To initialize a Git repository here, type the following command:",
-            advice: "Directory:<br>A folder used for storing multiple files.<br>Repository:<br>A directory where Git has been initialized to start version controlling your files.<br>Clicky Click:<br>Click on the instructions preceded by an arrow. They will be copied into the terminal prompt.",
-            command: "git init",
+            content: "",
+            advice: "",
+            command: "",
             completed: false
         },
         two: {
-            title: "Checking the Status",
+            title: "",
             substage: "1.2",
-            content: "Good job! As Git just told us, our 'octobox' directory now has an empty repository in /.git/. The repository is a hidden directory where Git operates.<br>To save your progress as you go through this tutorial -- and earn a badge when you successfully complete it -- head over to create a free Code School account. We'll wait for you here.<br>Next up, let's type the git status command to see what the current state of our project is:",
-            advice: "The .git directory<br>On the left you'll notice a .git directory. It's usually hidden but we're showing it to you for convenience.<br>If you click it you'll notice it has all sorts of directories and files inside it. You'll rarely ever need to do anything inside here but it's the guts of Git, where all the magic happens.",
-            command: "git status",
+            content: "",
+            advice: "",
+            command: "",
             completed: false
         }
     },
