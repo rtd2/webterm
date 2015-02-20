@@ -1539,6 +1539,12 @@ var terminal = {
         fs: function () {
             saveItemToLocalStorage(terminal.fs, 'fs');
         }
+    },
+    tutorial: {
+        launch: function () {
+            document.getElementById('tutorial').style.display = "block";
+            tutorial.current();
+        }
     }
 
 }; // end terminal object
@@ -2020,6 +2026,11 @@ function checkCommand(e) {
 
                 case "editor":
                     terminal.editor.run();
+                    addToHistory(command);
+                break;
+
+                case "tutorial":
+                    terminal.tutorial.launch();
                     addToHistory(command);
                 break;
 

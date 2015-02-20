@@ -114,3 +114,7 @@ textarea:focus, input:focus{ outline: 0; }
   padding: 0 2px;
 }
 
+#tutorial {
+  display: none;
+}
+
