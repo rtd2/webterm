@@ -1,7 +1,5 @@
 var tutorial = {
     
-    currentStage: "one",
-    
     stages: {
         one: {
             title: "Getting Started",
@@ -20,14 +18,30 @@ var tutorial = {
             completed: false
         }
     },
+
+    currentStage: "one",
+    title: document.getElementById("stage-title"),
+    substage: document.getElementById("stage-substage"),
+    content: document.getElementById("stage-content"),
+    advice: document.getElementById("stage-advice"),
+    command: document.getElementById("stage-command"),
+
+    stageArray: function () {
+        return Object.keys(tutorial.stages);
+    },
+
+    swapContent: function () {
+        tutorial.title.innerText = tutorial.stages[tutorial.currentStage].title;
+        tutorial.substage.innerText = tutorial.stages[tutorial.currentStage].substage;
+        tutorial.content.innerText = tutorial.stages[tutorial.currentStage].content;
+        tutorial.advice.innerText = tutorial.stages[tutorial.currentStage].advice;
+        tutorial.command.innerText = tutorial.stages[tutorial.currentStage].command;
+    },
+
     current: function () {
-        var stageArray = Object.keys(tutorial.stages);
-        var title = document.getElementById("stage-title");
-        var substage = document.getElementById("stage-substage");
-        var content = document.getElementById("stage-content");
-        var advice = document.getElementById("stage-advice");
-        var command = document.getElementById("stage-command");
-        
+
+        var stageArray = tutorial.stageArray();
+
         console.log(stageArray); // ["one", "two"]
         console.log(tutorial.currentStage); // "one"
         console.log(stageArray.indexOf(tutorial.currentStage)); // 0
@@ -37,22 +51,13 @@ var tutorial = {
         
         console.log(tutorial.currentStage); // "two"
         console.log(tutorial.stages[tutorial.currentStage].title);
-        
-        //swap out contents of page
-        title.innerText = tutorial.stages[tutorial.currentStage].title;
-        substage.innerText = tutorial.stages[tutorial.currentStage].substage;
-        content.innerText = tutorial.stages[tutorial.currentStage].content;
-        advice.innerText = tutorial.stages[tutorial.currentStage].advice;
-        command.innerText = tutorial.stages[tutorial.currentStage].command;
+
+        tutorial.swapContent();
     },
     next: function() {
-        var stageArray = Object.keys(tutorial.stages);
-        var title = document.getElementById("stage-title");
-        var substage = document.getElementById("stage-substage");
-        var content = document.getElementById("stage-content");
-        var advice = document.getElementById("stage-advice");
-        var command = document.getElementById("stage-command");
-        
+
+        var stageArray = tutorial.stageArray();
+
         console.log(stageArray); // ["one", "two"]
         console.log(tutorial.currentStage); // "one"
         console.log(stageArray.indexOf(tutorial.currentStage)); // 0
@@ -64,31 +69,16 @@ var tutorial = {
         console.log(tutorial.currentStage); // "two"
         console.log(tutorial.stages[tutorial.currentStage].title);
         
-        //swap out contents of page
-        title.innerText = tutorial.stages[tutorial.currentStage].title;
-        substage.innerText = tutorial.stages[tutorial.currentStage].substage;
-        content.innerHTML = tutorial.stages[tutorial.currentStage].content;
-        advice.innerHTML = tutorial.stages[tutorial.currentStage].advice;
-        command.innerHTML = tutorial.stages[tutorial.currentStage].command;
+        tutorial.swapContent();
     },
     
     previous: function() {
-        var stageArray = Object.keys(tutorial.stages);
-        var title = document.getElementById("stage-title");
-        var substage = document.getElementById("stage-substage");
-        var content = document.getElementById("stage-content");
-        var advice = document.getElementById("stage-advice");
-        var command = document.getElementById("stage-command");
+
+        var stageArray = tutorial.stageArray();
         
         var index = stageArray.indexOf(tutorial.currentStage);
         tutorial.currentStage = stageArray[index - 1];
 
-        // swap out contents of page
-        // same code as next
-        title.innerText = tutorial.stages[tutorial.currentStage].title;
-        substage.innerText = tutorial.stages[tutorial.currentStage].substage;
-        content.innerText = tutorial.stages[tutorial.currentStage].content;
-        advice.innerText = tutorial.stages[tutorial.currentStage].advice;
-        command.innerText = tutorial.stages[tutorial.currentStage].command;
+        tutorial.swapContent();
     }
 }

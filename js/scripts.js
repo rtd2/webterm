@@ -1542,6 +1542,7 @@ var terminal = {
     },
     tutorial: {
         launch: function () {
+            terminal.clear();
             document.getElementById('tutorial').style.display = "block";
             tutorial.current();
         }
