@@ -1543,6 +1543,7 @@ var terminal = {
     tutorial: { // should this be here on in tutorial.js ??
 
         launch: function () {
+            // need to set theme styles ... could we be handling things better in the app by utilizing classes, rather than style changes ??
             terminal.clear();
             document.getElementById('tutorial').style.display = "block";
             tutorial.current();
@@ -1560,6 +1561,10 @@ var terminal = {
 // START VARIABLES AND FUNCTIONS
 
 var helpList = {
+    "tutorial": {
+        name: "tutorial",
+        info: "Launch the tutorial. Type 'exit' to quit tutorial when launched."
+    },
     "touch": {
         name: "touch",
         info: "Create a new file in the present working directory<br>touch [file]<br>ex. touch mydocument.txt"
@@ -2085,6 +2090,8 @@ function checkCommand(e) {
 input.addEventListener("keyup", checkCommand, false);
 input.addEventListener("keydown", tab, false);
 terminal.editor.textArea.addEventListener("keyup", textEditor, false);
+// event listener to set focus from page click. will break usability when editor is open
+// document.addEventListener("click", function(){document.getElementById('input').focus(); console.log("fired");});
 
 
 // var defaultFs = {

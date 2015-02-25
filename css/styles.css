@@ -116,8 +116,20 @@ textarea:focus, input:focus{ outline: 0; }
 
 #tutorial {
   display: none;
-  border: 2px solid white;
   padding: 1em;
   margin: 1em;
+  border: 2px solid white;
 }
 
+#stage-title,
+#stage-substage,
+#stage-content,
+#stage-advice{
+  font-family: Georgia, serif;
+}
+
+#advice-command,
+#substage,
+#stage-title {
+  color: #f9f9f9;
+}

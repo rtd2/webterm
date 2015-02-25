@@ -5,9 +5,9 @@ var tutorial = {
     stages: {
         one: {
             title: "Getting Started",
-            substage: "1.1",
+            substage: "<span id='substage'>1.1</span>",
             content: "What is it: The terminal is an interface in which you can type and execute text based commands. Why use it: It can be much faster to complete some tasks using a Terminal than with graphical applications and menus. Another benefit is allowing access to many more commands and scripts.",
-            advice: "Type 'next' and we'll jump into things.",
+            advice: "Type '<span id='advice-command'>next</span>' and we'll jump into things.",
             command: "next",
             completed: false
         },
@@ -33,11 +33,9 @@ var tutorial = {
     },
 
     swapContent: function () {
-        tutorial.title.innerText = tutorial.stages[tutorial.currentStage].title;
-        tutorial.substage.innerText = tutorial.stages[tutorial.currentStage].substage;
+        tutorial.title.innerHTML = tutorial.stages[tutorial.currentStage].substage + " " + tutorial.stages[tutorial.currentStage].title;
         tutorial.content.innerText = tutorial.stages[tutorial.currentStage].content;
-        tutorial.advice.innerText = tutorial.stages[tutorial.currentStage].advice;
-        tutorial.command.innerText = tutorial.stages[tutorial.currentStage].command;
+        tutorial.advice.innerHTML = tutorial.stages[tutorial.currentStage].advice;
     },
 
     current: function () {
