@@ -1,4 +1,6 @@
 var tutorial = {
+
+    on: false,
     
     stages: {
         one: {

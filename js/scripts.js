@@ -1540,11 +1540,18 @@ var terminal = {
             saveItemToLocalStorage(terminal.fs, 'fs');
         }
     },
-    tutorial: {
+    tutorial: { // should this be here on in tutorial.js ??
+
         launch: function () {
             terminal.clear();
             document.getElementById('tutorial').style.display = "block";
             tutorial.current();
+            tutorial.on = true;
+        },
+        exit: function () {
+            terminal.clear();
+            document.getElementById('tutorial').style.display = "none";
+            tutorial.on = false;
         }
     }
 
@@ -2033,6 +2040,27 @@ function checkCommand(e) {
                 case "tutorial":
                     terminal.tutorial.launch();
                     addToHistory(command);
+                break;
+
+                case "next":
+                    if (tutorial.on) {
+                        tutorial.next();
+                        addToHistory(command);
+                    }
+                break;
+
+                case "prev":
+                    if (tutorial.on) {
+                        tutorial.previous();
+                        addToHistory(command);
+                    }
+                break;
+
+                case "exit":
+                    if (tutorial.on) {
+                        terminal.tutorial.exit();
+                        addToHistory(command);
+                    }
                 break;
 
                 default:
