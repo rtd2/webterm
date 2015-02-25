@@ -28,9 +28,10 @@ var tutorial = {
     advice: document.getElementById("stage-advice"),
     command: document.getElementById("stage-command"),
 
-    stageArray: function () {
+    stageArrayInit: function () {
         return Object.keys(tutorial.stages);
     },
+    stageArray: undefined, // will initialize this at first run
 
     swapContent: function () {
         tutorial.title.innerHTML = tutorial.stages[tutorial.currentStage].substage + " " + tutorial.stages[tutorial.currentStage].title;
@@ -39,10 +40,9 @@ var tutorial = {
     },
 
     current: function () {
+        var stageArray = tutorial.stageArray;
 
         if ( getItemFromLocalStorage('tutorial') ) { tutorial.currentStage = getItemFromLocalStorage('tutorial'); }
-
-        var stageArray = tutorial.stageArray();
 
         console.log(stageArray); // ["one", "two"]
         console.log(tutorial.currentStage); // "one"
@@ -56,9 +56,9 @@ var tutorial = {
 
         tutorial.swapContent();
     },
-    next: function() {
+    next: function() { // throws error when on last item
 
-        var stageArray = tutorial.stageArray();
+        var stageArray = tutorial.stageArray;
 
         console.log(stageArray); // ["one", "two"]
         console.log(tutorial.currentStage); // "one"
@@ -76,9 +76,9 @@ var tutorial = {
         terminal.save.tutorial();
     },
     
-    previous: function() {
+    previous: function() { // throws error when on first item
 
-        var stageArray = tutorial.stageArray();
+        var stageArray = tutorial.stageArray;
         
         var index = stageArray.indexOf(tutorial.currentStage);
         tutorial.currentStage = stageArray[index - 1];

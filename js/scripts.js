@@ -1548,6 +1548,8 @@ var terminal = {
         launch: function () {
             // need to set theme styles ... could we be handling things better in the app by utilizing classes, rather than style changes ??
             terminal.clear();
+            tutorial.stageArray = tutorial.stageArrayInit(); // init stageArray variable
+            document.getElementsByTagName('body')[0].style.margin ="1em";
             document.getElementById('tutorial').style.display = "block";
             tutorial.current();
             tutorial.on = true;
@@ -1555,6 +1557,7 @@ var terminal = {
         exit: function () {
             terminal.clear();
             document.getElementById('tutorial').style.display = "none";
+            document.getElementsByTagName('body')[0].style.margin ="0.5em";
             tutorial.on = false;
         }
     }
@@ -2046,19 +2049,21 @@ function checkCommand(e) {
                 break;
 
                 case "tutorial":
-                    terminal.tutorial.launch();
-                    addToHistory(command);
+                    if ( ! tutorial.on ) {
+                        terminal.tutorial.launch();
+                        addToHistory(command);
+                    }
                 break;
 
-                case "next":
-                    if (tutorial.on) {
+                case "next": // throws error when on last item
+                    if ( tutorial.on ) {
                         tutorial.next();
                         addToHistory(command);
                     }
                 break;
 
-                case "prev":
-                    if (tutorial.on) {
+                case "prev": // throws error when on first item
+                    if ( tutorial.on ) {
                         tutorial.previous();
                         addToHistory(command);
                     }
@@ -2086,9 +2091,9 @@ function checkCommand(e) {
         input.value = ""; // reset command line
         input.size = 1; // reset caret
         count = 0; // reset up/down history
-    } // enter key
+    } // enter key end
 
-} // checkCommand
+} // checkCommand end
 
 input.addEventListener("keyup", checkCommand, false);
 input.addEventListener("keydown", tab, false);
