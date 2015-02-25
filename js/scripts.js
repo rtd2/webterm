@@ -1538,6 +1538,9 @@ var terminal = {
         },
         fs: function () {
             saveItemToLocalStorage(terminal.fs, 'fs');
+        },
+        tutorial: function () {
+            saveItemToLocalStorage(tutorial.currentStage, 'tutorial');
         }
     },
     tutorial: { // should this be here on in tutorial.js ??

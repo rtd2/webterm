@@ -40,6 +40,8 @@ var tutorial = {
 
     current: function () {
 
+        if ( getItemFromLocalStorage('tutorial') ) { tutorial.currentStage = getItemFromLocalStorage('tutorial'); }
+
         var stageArray = tutorial.stageArray();
 
         console.log(stageArray); // ["one", "two"]
@@ -70,6 +72,8 @@ var tutorial = {
         console.log(tutorial.stages[tutorial.currentStage].title);
         
         tutorial.swapContent();
+
+        terminal.save.tutorial();
     },
     
     previous: function() {
@@ -80,5 +84,7 @@ var tutorial = {
         tutorial.currentStage = stageArray[index - 1];
 
         tutorial.swapContent();
+
+        terminal.save.tutorial();
     }
 }
