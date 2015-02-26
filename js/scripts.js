@@ -1538,6 +1538,27 @@ var terminal = {
         },
         fs: function () {
             saveItemToLocalStorage(terminal.fs, 'fs');
+        },
+        tutorial: function () {
+            saveItemToLocalStorage(tutorial.currentStage, 'tutorial');
+        }
+    },
+    tutorial: { // should this be here on in tutorial.js ??
+
+        launch: function () {
+            // need to set theme styles ... could we be handling things better in the app by utilizing classes, rather than style changes ??
+            terminal.clear();
+            tutorial.stageArray = tutorial.stageArrayInit(); // init stageArray variable
+            document.getElementsByTagName('body')[0].style.margin ="1em";
+            document.getElementById('tutorial').style.display = "block";
+            tutorial.current();
+            tutorial.on = true;
+        },
+        exit: function () {
+            terminal.clear();
+            document.getElementById('tutorial').style.display = "none";
+            document.getElementsByTagName('body')[0].style.margin ="0.5em";
+            tutorial.on = false;
         }
     }
 
@@ -1546,6 +1567,10 @@ var terminal = {
 // START VARIABLES AND FUNCTIONS
 
 var helpList = {
+    "tutorial": {
+        name: "tutorial",
+        info: "Launch the tutorial. Type 'exit' to quit tutorial when launched."
+    },
     "touch": {
         name: "touch",
         info: "Create a new file in the present working directory<br>touch [file]<br>ex. touch mydocument.txt"
@@ -2023,6 +2048,34 @@ function checkCommand(e) {
                     addToHistory(command);
                 break;
 
+                case "tutorial":
+                    if ( ! tutorial.on ) {
+                        terminal.tutorial.launch();
+                        addToHistory(command);
+                    }
+                break;
+
+                case "next": // throws error when on last item
+                    if ( tutorial.on && tutorial.stageArray.indexOf(tutorial.currentStage) != tutorial.stageArray.length - 1 ) {
+                        tutorial.next();
+                        addToHistory(command);
+                    }
+                break;
+
+                case "prev": // throws error when on first item
+                    if ( tutorial.on && tutorial.stageArray.indexOf(tutorial.currentStage) != 0 ) {
+                        tutorial.previous();
+                        addToHistory(command);
+                    }
+                break;
+
+                case "exit":
+                    if (tutorial.on) {
+                        terminal.tutorial.exit();
+                        addToHistory(command);
+                    }
+                break;
+
                 default:
                     if (commands.indexOf(command) == -1) {
                         output.innerHTML += outputHTML;
@@ -2038,13 +2091,15 @@ function checkCommand(e) {
         input.value = ""; // reset command line
         input.size = 1; // reset caret
         count = 0; // reset up/down history
-    } // enter key
+    } // enter key end
 
-} // checkCommand
+} // checkCommand end
 
 input.addEventListener("keyup", checkCommand, false);
 input.addEventListener("keydown", tab, false);
 terminal.editor.textArea.addEventListener("keyup", textEditor, false);
+// event listener to set focus from page click. will break usability when editor is open
+// document.addEventListener("click", function(){document.getElementById('input').focus(); console.log("fired");});
 
 
 // var defaultFs = {
