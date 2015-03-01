@@ -56,7 +56,7 @@ var tutorial = {
 
         tutorial.swapContent();
     },
-    next: function() { // throws error when on last item
+    next: function() {
 
         var stageArray = tutorial.stageArray;
 
@@ -76,7 +76,7 @@ var tutorial = {
         terminal.save.tutorial();
     },
     
-    previous: function() { // throws error when on first item
+    previous: function() {
 
         var stageArray = tutorial.stageArray;
         
