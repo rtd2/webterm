@@ -2065,14 +2065,14 @@ function checkCommand(e) {
                     }
                 break;
 
-                case "next": // throws error when on last item
+                case "next":
                     if ( tutorial.on && tutorial.stageArray.indexOf(tutorial.currentStage) != tutorial.stageArray.length - 1 ) {
                         tutorial.next();
                         addToHistory(command);
                     }
                 break;
 
-                case "prev": // throws error when on first item
+                case "prev":
                     if ( tutorial.on && tutorial.stageArray.indexOf(tutorial.currentStage) != 0 ) {
                         tutorial.previous();
                         addToHistory(command);

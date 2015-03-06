@@ -155,6 +155,7 @@ input:focus {
 
 #advice-command,
 #substage,
-#stage-title {
+#stage-title,
+.tutorial-highlight {
   color: #f9f9f9;
 }
