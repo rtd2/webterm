@@ -34,6 +34,14 @@ var tutorial = {
             advice: "<br/>Try typing '<span id='advice-command'>pwd</span>' to see where you are in your file system.",
             command: "pwd",
             completed: false
+        },
+        five: {
+            title: "cd",
+            substage: "<span id='substage'>1.5</span>",
+            content: "'cd' stands for Current Directory, and is used to traverse your file system. This is the equivalent of clicking through your finder windows. This is a very useful command that will save you lots of time.<br/><br/>Usage: cd filepath<br/>Example: cd /home/foo<br/>",
+            advice: "<br/>If foo exists, this will put you in the foo folder, which resides in the home folder. If successful, 'pwd' should now say '/home/foo'<br/><br/>Try 'cd /home/documents', followed by 'pwd'.",
+            command: "pwd",
+            completed: false
         }
     },
 
