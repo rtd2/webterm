@@ -1,0 +1,165 @@
+The terminal
+
+What is it?
+The terminal is an interface in which you can type and execute text based commands.
+
+Why use it?
+It can be much faster to complete some tasks using a Terminal than with graphical applications and menus. Another benefit is allowing access to many more commands and scripts.
+
+A common terminal task of installing an application can be achieved within a single command, compared to navigating through the finder.
+
+For example the following command would install 'something', rather than clicking through file system and going through the install prompts
+
+sudo apt-get install 'something'
+
+you are telling the computer what to do, and this becomes very powerful
+
+type 'next' to continue
+
+
+
+commands
+
+commands pre-defined words and letters that help you do common tasks quicker and more efficiently
+commands are typed into the terminal and sent with the enter key
+They make take arguments (more on that).
+
+
+
+flags
+
+flags are additional options and settings that can be passed with commands. they allow for greater flexibility and functionality.
+
+
+
+pwd
+
+'pwd' stands for Present Working Directory, and is used to output the path of the current working directory. It will show you where you are in the file system, sometimes referred to as a file tree.
+
+pwd
+/home/whereyouare
+
+try typing 'pwd' to see where you are in your file system
+
+
+
+
+cd
+
+'cd' stands for Current Directory, and is used to traverse your file system. This is the equivalent of clicking through your finder windows. This is a very useful command that will save you lots of time.
+
+usage: cd <filepath>
+example: cd /home/foo
+if foo exists, this will put you in the foo folder, which resides in the home folder
+if successful, 'pwd' should now say '/home/foo'
+
+try cd /home/documents
+
+
+What we have just done is cd to an absolute filepath. An absolute filepath means we know exactly where it lives in our file system. We can also use a relative filepath, meaning we are passing the filepath relative to our current location in the file system (current folder). Using relative filepaths will be much more common.
+
+To use a relative path we use '..' This simply means go up one level in the file system. 
+
+if our pwd is '/home/documents/coolstuff' and we type 'cd ..' our pwd will become '/home/documents'
+
+we can go one step further with this. for example, if our pwd is '/home/documents/coolstuff' and we want to '/home/documents/radstuff' we can type 'cd ../radstuff' to do so. This means go back to 'documents' and look for 'radstuff', if radstuff is found, take me to it.
+
+
+mess around with cd for a bit and when you're ready type 'next' to move on.
+
+// may want to talk about root briefly and that typing cd will take your there //
+
+
+
+
+ls
+
+'ls' is short for list. the command 'ls' will list out the content of your pwd. 'ls' is very commonly used in conjunction with 'cd'.
+
+Example: we are in a folder that contains three files: stuff.txt, file.doc, picture.jpg. 'ls' will print each of those files.
+
+type 'ls' to see what is in your pwd, and then go ahead and 'cd' to some places and see what contents exist by using 'ls'.
+
+
+Flags
+'-l'
+the 'l' flag will list the contents in cleaner, more list-like order. It will also show, permissions on the files, which will not be covered here, but can read up on here(link).
+
+type 'ls -l' to see a different listing of the contents in your pwd.
+
+
+
+mkdir
+
+So now that we know how to traverse the file system and show files, we need to know how to do the common everyday tasks of creating, moving, and deleting files and folders.
+
+Lets start with creating a folder. The command for creating a folder is 'mkdir'. It stands for make directory. It takes a folder name as an argument.
+
+usage: mkdir <folder name>
+example: mkdir myNewFolder
+This will create an empty folder called myNewFolder in your pwd, as long as it doesn't already exist.
+Try creating a folder of your own. Type 'next' when you have done so.
+
+
+
+touch
+
+'cd' to your new folder, and we'll add a new file to it.
+the command for this is 'touch' which takes a file name as an argument. Touch eliminates the unnecessary steps of actually opening a file, saving it, and closing it. Starting to see the value of the terminal?!
+
+usage: touch <file name>
+example: touch myNewFile.txt
+This will create a file called myNewFile.txt in your pwd.
+Once you've created at least once file of your own, type 'next' to move on to deleting files.
+
+
+
+rm
+
+Sometimes a file or folder is no longer needed, and we want to delete them.
+The 'rm' command, short for remove, will do that for us. Be careful with this command because it will not prompt you if you are sure. It will instantly remove the file or folder, and if it's a folder, all of it's contents, which could be many more files and folders.
+
+usage: rm <folder/file path>
+let's start with removing a file, since folders require an extra step
+example: rm myFile.txt
+This will delete myFile.txt from the file system.
+
+
+
+flags
+
+-r stands for recursive (you should be prompted if you're sure)
+this flag is required to remove a folder. it tells the computer to remove the folder, including all of its contents
+usage: rm -r <folder/file path>
+example: rm -r myFolder
+you will be prompted if you are sure you want to delete the folder along with its contents.
+if yest, myFolder has been deleted, along with all of the files and folders inside of it
+
+
+-f stands for force
+this will force the delete without being prompted
+
+-rf will be recursive and forced
+USE WITH CAUTION
+example: rm -rf myFolder
+Bye bye myFolder!
+
+
+
+
+
+utility / helper commands
+
+
+clear
+
+if at any time your window gets too full or cluttered, type 'clear' and it will do just that.
+
+
+history (up/down key)
+
+tab complete
+
+help
+
+links to other commands
