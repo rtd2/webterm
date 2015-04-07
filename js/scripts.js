@@ -80,7 +80,7 @@ var terminal = {
         "lastLogin": "",
         "themeDefault": "old"
     },
-    ver: "0.1",
+    ver: "0.5",
     termthemes: {
         old: {
             background: "#2E312C",
