@@ -481,6 +481,13 @@ var terminal = {
         
     },
     // -----------------------------------------------------------------------
+    // Open Github repo in a new tab.
+    // -----------------------------------------------------------------------
+    github: function() {
+            output.innerHTML += outputHTML;
+            window.open('https://github.com/rtd2/webterm','_blank');
+    },
+    // -----------------------------------------------------------------------
     // Output the present working directory
     // -----------------------------------------------------------------------
     pwd: function() {
@@ -2010,6 +2017,11 @@ function checkCommand(e) {
 
                 case "youtube":
                     terminal.youtube.defaultCase();
+                    addToHistory(command);
+                break;
+
+                case "github":
+                    terminal.github();
                     addToHistory(command);
                 break;
                     
