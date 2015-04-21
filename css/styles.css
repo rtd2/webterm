@@ -30,7 +30,7 @@ https://github.com/yui/pure/blob/master/LICENSE.md
 }
 
 html { 
-  cursor: text; 
+  cursor: text;
 }
 
 body { 
@@ -51,9 +51,7 @@ input {
   color: #9DCE91;
   font-family: 'oldconsole';
   font-size: 30px;
-  background-image: url(../images/block.png);
   background-repeat: no-repeat;
-  background-position: 100% 0%;
 }
 
 textarea:focus,
