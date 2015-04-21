@@ -72,13 +72,13 @@ var terminal = {
         "hist": [],
         "user": "user",
         "lastLogin": "",
-        "themeDefault": "old"
+        "themeDefault": "black"
     },
     "settings": {
         "hist": [],
         "user": "user",
         "lastLogin": "",
-        "themeDefault": "old"
+        "themeDefault": "black"
     },
     ver: "0.5",
     termthemes: {
@@ -97,11 +97,11 @@ var terminal = {
             commandLine: "#000080"
         },
         black: {
-            background: "#111",
-            text: "#FFF",
-            file: "#FFF",
-            folder: "limegreen",
-            commandLine: "#FF69B4"
+            background: "#222",
+            text: "#F9F9F9",
+            file: "#AAA",
+            folder: "#659EF9",
+            commandLine: "#8BFA7F"
             //font: "'Lucida Console', Monaco, monospace"
         }
     },
@@ -111,9 +111,9 @@ var terminal = {
     // -----------------------------------------------------------------------
     init: function () {
 
-        var d = new Date();
-        var date = d.toString();
-        var oldDate;
+        var d = new Date(),
+            date = d.toString(),
+            oldDate;
 
         if ( getItemFromLocalStorage('signin') ) {
 
@@ -126,12 +126,12 @@ var terminal = {
 
             if ( getItemFromLocalStorage('settings') ) {
 
-            terminal.userSettings = getItemFromLocalStorage('settings'); // load settings: history, user, last login, theme
-            termtheme = terminal.termthemes[terminal.userSettings.themeDefault];
-            terminal.theme.updateDom();
-            terminal.settings.hist = terminal.userSettings.hist;
-            oldDate = terminal.userSettings.lastLogin;
-            terminal.userSettings.lastLogin = date;
+                terminal.userSettings = getItemFromLocalStorage('settings'); // load settings: history, user, last login, theme
+                termtheme = terminal.termthemes[terminal.userSettings.themeDefault];
+                terminal.theme.updateDom();
+                terminal.settings.hist = terminal.userSettings.hist;
+                oldDate = terminal.userSettings.lastLogin;
+                terminal.userSettings.lastLogin = date;
 
             }
 
@@ -141,6 +141,7 @@ var terminal = {
         } else { 
             output.innerHTML = "<p style='color:" + termtheme.text + " '>Welcome to the terminal on the web. Type help for a list of commands.";
             terminal.settings.lastLogin = date;
+            terminal.theme.updateDom();
         }
         
     },
@@ -165,7 +166,7 @@ var terminal = {
     // Display help information, list of commands. Methods: list, info
     // -----------------------------------------------------------------------
     help: {
-        list: function() {
+        list: function() { // list each command
             var displayCommands = "";
 
             for (var i = 0; i < commands.length; i++) {
@@ -177,7 +178,7 @@ var terminal = {
             output.innerHTML += outputHTML;
             output.innerHTML += displayCommands;
         },
-        info: function() {
+        info: function() { // show the help info for a command
             var query = commandArgs[0];
             if (commands.indexOf(query) != -1) {
                 
@@ -220,10 +221,10 @@ var terminal = {
     // -----------------------------------------------------------------------
     theme: {
         defaultCase: function() {
-            var theme = commandArgs.slice(1).join(" ");
-            var themes = Object.keys(terminal.termthemes);
-            var themeList;
-            var displayThemes = themes.join(", ");
+            var theme = commandArgs.slice(1).join(" "),
+                themes = Object.keys(terminal.termthemes),
+                themeList,
+                displayThemes = themes.join(", ");
             
             if (theme != "-l") {
 
@@ -267,7 +268,9 @@ var terminal = {
         },
         updateDom: function () {
             var spans,
-                putNodes;
+                putNodes,
+                i,
+                t;
 
             document.body.style.background = termtheme.background;
             input.style.color = termtheme.text;
@@ -275,12 +278,12 @@ var terminal = {
             commandLine.style.color = termtheme.commandLine;
 
             putNodes = output.childNodes;
-            for (var i = 0; i < putNodes.length; i++) {
+            for (i = 0; i < putNodes.length; i++) {
                 putNodes[i].style.color = termtheme.text;
             }
 
             spans = document.querySelectorAll("#output > p > span");
-            for (var t = 0; t < spans.length; t++) {
+            for (t = 0; t < spans.length; t++) {
                 spans[t].style.color = termtheme.commandLine;
             }
 
@@ -325,10 +328,15 @@ var terminal = {
     // Output the terminal history array
     // -----------------------------------------------------------------------
     history: function() {
-        output.innerHTML += outputHTML;
-        for (var key in terminal.settings.hist) {
+        var item,
+            count = 1 ,
+            hist = terminal.settings.hist;
 
-            output.innerHTML += "<p style='color:" + termtheme.text + "'>" + terminal.settings.hist[key] + "</p>";
+        output.innerHTML += outputHTML;
+
+        for (item in hist) {
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>" + count + "  " + hist[item] + "</p>";
+            count ++;
         }
     },
     // -----------------------------------------------------------------------
@@ -336,7 +344,7 @@ var terminal = {
     // -----------------------------------------------------------------------
     version: function() {
         output.innerHTML += outputHTML;
-        output.innerHTML += "<p style='color:" + termtheme.text + "'>WebTerm " + terminal.ver + "</p>";
+        output.innerHTML += "<p style='color:" + termtheme.text + "'>WebTerm " + terminal.version + "</p>";
     },
     // -----------------------------------------------------------------------
     // If the folder doesn't exist in pwd, create it
@@ -345,8 +353,8 @@ var terminal = {
         var returns,
             folder,
             path,
-            dirObject;
-        var folderName = commandArgs[1];
+            dirObject,
+            folderName = commandArgs[1];
         
         if (folderName[0] === "/") { // if the intended destination for this folder is elsewhere in the filesystem
             
@@ -398,13 +406,13 @@ var terminal = {
         var dirObject,
             currentDir,
             reldir,
-            le;
-        var directory = commandArgs.slice(1).join(" ");
+            le,
+            directory = commandArgs.slice(1).join(" ");
         
         if (directory == "..") { // if the argument is ..
 
             currentDir = pwd[2]; // currentDir is set to the pwd display string
-            le = pwd[2].length - 1; // le is set to the last index of currentDir
+            le = currentDir.length - 1; // le is set to the last index of currentDir
             
             while(currentDir.charAt(le) !== '/') { // so long as the last index of currentDir isn't a /
                 currentDir = currentDir.substr(0, le); // remove the last index of currentDir
@@ -458,25 +466,27 @@ var terminal = {
             window.open('http://www.youtube.com','_blank');
         },
         s: function() {
-            var base = "https://www.youtube.com/results?search_query=";
-            var term = "";
-            var url;
+            var base = "https://www.youtube.com/results?search_query=",
+                term = "",
+                url,
+                i;
+
             output.innerHTML += outputHTML;
 
-            for (var i = 2; i < commandArgs.length; i++) {
+            for (i = 2; i < commandArgs.length; i++) {
 
                 term += commandArgs[i] + "%20";
 
             }
 
-            term = term.slice(0,-3);
+            term = term.slice(0,-3); // remove extra %20
 
             if (term !== "") {
 
                 url = base + term;
                 window.open(url, '_blank');
 
-            }
+            } else { output.innerHTML += "<p style='color:" + termtheme.text + "'>Please indicate a search query.</p>"; }
         }
         
     },
@@ -502,17 +512,16 @@ var terminal = {
     ls: {
         defaultCase: function() {
             var key,
-                file;
-            var list = "";
-            var keys = Object.keys(pwd[1]);
-            var files = pwd[1].files;
-
+                file,
+                list = "",
+                keys = Object.keys(pwd[1]),
+                files = pwd[1].files;
 
             for (key in keys) {
 
                 if (keys[key] !== "files") {
 
-                    list+= "<p class='folder' style='color:" + termtheme.folder + "'>" + keys[key] + "</p>";
+                    list += "<p class='folder' style='color:" + termtheme.folder + "'>" + keys[key] + "</p>";
 
                 }
 
@@ -536,8 +545,8 @@ var terminal = {
                 keys,
                 files,
                 key,
-                file;
-            var flag = commandArgs.slice(1).join(" ");
+                file,
+                flag = commandArgs.slice(1).join(" ");
             
             if (flag === "-l") {
                 
@@ -549,7 +558,7 @@ var terminal = {
 
                     if (keys[key] !== "files") {
 
-                        list+= "<p class='folder' style='display: block; color:" + termtheme.folder + "'>" + keys[key] + "</p>";
+                        list += "<p class='folder' style='display: block; color:" + termtheme.folder + "'>" + keys[key] + "</p>";
 
                     }
 
@@ -563,11 +572,6 @@ var terminal = {
 
                 output.innerHTML += outputHTML;
                 output.innerHTML += list;
-                
-            } else if (flag === "--help" || flag === "-help") {
-                
-                output.innerHTML += outputHTML;
-                output.innerHTML += "<p style='color:" + termtheme.text + "'>Help information..</p>";
                 
             } else {
                 
@@ -589,8 +593,8 @@ var terminal = {
                 path,
                 fileObject,
                 files,
-                index;
-            var fileName = commandArgs[1];
+                index,
+                fileName = commandArgs[1];
             
             if (fileName[0] === "/") { // if the file is located elsewhere in the fs
             
@@ -654,8 +658,8 @@ var terminal = {
                 folder,
                 path,
                 returns,
-                dirKeys;
-            var folderName = commandArgs[2];
+                dirKeys,
+                folderName = commandArgs[2];
             
             if (folderName[0] === "/") { // if the folder is located elsewhere in the fs
                 
@@ -711,11 +715,10 @@ var terminal = {
     // -----------------------------------------------------------------------
     mv: function() {
         
-        var source = commandArgs[1];
-        var destination = commandArgs[2];
-        var error = false;
-        
-        var srcReturns,
+        var source = commandArgs[1],
+            destination = commandArgs[2],
+            error = false,
+            srcReturns,
             srcObject,
             srcFile,
             srcPath,
@@ -935,9 +938,9 @@ var terminal = {
                 destObject,
                 destFile,
                 destReturns,
-                destDirObj;
-            var file = commandArgs[1];
-            var destination = commandArgs[2];
+                destDirObj,
+                file = commandArgs[1],
+                destination = commandArgs[2];
             
             if (file[0] === "/") { // arg1, absolute path
                 
@@ -1061,11 +1064,10 @@ var terminal = {
         },
         r: function() {
         
-            var source = commandArgs[2];
-            var destination = commandArgs[3];
-            var error = false;
-
-            var srcReturns,
+                source = commandArgs[2],
+                destination = commandArgs[3],
+                error = false,
+                srcReturns,
                 srcObject,
                 srcFolder,
                 srcPath,
@@ -1202,8 +1204,8 @@ var terminal = {
             dirObject,
             file,
             path,
-            newFile;
-        var fileName = commandArgs.slice(1).join(" ");
+            newFile,
+            fileName = commandArgs.slice(1).join(" ");
         
         
         if (fileName[0] === "/") { // if the destination folder is located elsewhere in the fs
@@ -1310,16 +1312,17 @@ var terminal = {
     tabComplete: function() {
       
         var part1,
-            returns;
-        var completions = [];
-        var commandInput = input.value;
-        var commandArgs = commandInput.split(" ");
+            returns,
+            command,
+            completions = [],
+            commandInput = input.value,
+            commandArgs = commandInput.split(" ");
         
         if (commandInput.length > 0) {
             
             if (commandArgs.length === 1) {
                 
-                for (var command in commands) {
+                for (command in commands) {
                     
                     if (commands[command].substring(0, commandInput.length) === commandInput) {
 
@@ -1428,7 +1431,9 @@ var terminal = {
         run: function (file) { // startup editor passing in optional file name
             var fileName,
                 files,
-                fileData;
+                fileData,
+                item,
+                i;
 
             if ( file ) { 
 
@@ -1454,7 +1459,7 @@ var terminal = {
             terminal.editor.savePrompt.style.background = termtheme.text;
 
             // style footer list items. iterate over items with class of highlight and apply styles.
-            for ( var i = 0; i < terminal.editor.highlight.length; i++ ) {
+            for ( i = 0; i < terminal.editor.highlight.length; i++ ) {
 
                 item = terminal.editor.highlight[i];
                 item.style.color = termtheme.background;
@@ -1489,10 +1494,10 @@ var terminal = {
             }
 
         },
-        changePrompt: function () { // change to file name prompot
+        changePrompt: function () { // change to file name prompt
             terminal.editor.savePrompt.innerHTML = "File Name to Write: new buffer";
         },
-        hidePrompt: function () { 
+        hidePrompt: function () { // hide save prompt
             terminal.editor.savePrompt.style.display = "none";
             terminal.editor.prompting = false;
         },
@@ -1545,14 +1550,40 @@ var terminal = {
         },
         fs: function () {
             saveItemToLocalStorage(terminal.fs, 'fs');
+        },
+        tutorial: function () {
+            saveItemToLocalStorage(tutorial.currentStage, 'tutorial');
+        }
+    },
+    tutorial: { // should this be here on in tutorial.js ??
+
+        launch: function () {
+            // need to set theme styles ... could we be handling things better in the app by utilizing classes, rather than style changes ??
+            terminal.clear();
+            tutorial.stageArray = tutorial.stageArrayInit(); // init stageArray variable
+            document.getElementsByTagName('body')[0].style.margin ="1em";
+            document.getElementById('tutorial').style.display = "block";
+            tutorial.current();
+            tutorial.on = true;
+        },
+        exit: function () {
+            terminal.clear();
+            document.getElementById('tutorial').style.display = "none";
+            document.getElementsByTagName('body')[0].style.margin ="0.5em";
+            tutorial.on = false;
         }
     }
 
 }; // end terminal object
 
-// START VARIABLES AND FUNCTIONS
+
+
 
 var helpList = {
+    "tutorial": {
+        name: "tutorial",
+        info: "Launch the tutorial. Type 'exit' to quit tutorial when launched."
+    },
     "touch": {
         name: "touch",
         info: "Create a new file in the present working directory<br>touch [file]<br>ex. touch mydocument.txt"
@@ -1629,15 +1660,21 @@ var helpList = {
         name: "mv",
         info: "Move (cut and paste) a file or directory<br>mv [file] [destination]<br>ex. mv readme.txt /home/user/desktop<br>mv [directory] [destination]<br>ex. mv Documents /home/user/Desktop"
     }
-};
-var commands = Object.keys(helpList);
-var pwd = ["~", terminal.fs.home.user, "/home/user"];
-var input = document.getElementById("input");
-var histindex = 0;
-var count = 0;
-var termtheme = terminal.termthemes[terminal.settings.themeDefault];
-var commandArgs;
-var outputHTML;
+}; // end helpList
+
+
+
+
+// START VARIABLES AND FUNCTIONS
+
+var commands = Object.keys(helpList),
+    pwd = ["~", terminal.fs.home.user, "/home/user"],
+    input = document.getElementById("input"),
+    histindex = 0,
+    count = 0,
+    termtheme = terminal.termthemes[terminal.settings.themeDefault],
+    commandArgs,
+    outputHTML;
 
 
 function dirSearchFiles(file, arr) {
@@ -1662,10 +1699,10 @@ function tabFull(full) {
         file,
         files,
         key,
-        keys;
-    var completions = [];
-    var part2 = "";
-    var length = full.length - 1;
+        keys,
+        completions = [],
+        part2 = "",
+        length = full.length - 1;
     
     while(full.charAt(length) !== '/') { // until the last character of full is a /
         part2 = full.charAt(length) + part2; // add the last character of full to part2 string
@@ -1697,10 +1734,10 @@ function tabFull(full) {
 }
 
 function tabRelative(full) {
-    var completions = [];
-    var keys = Object.keys(pwd[1]);
-    var files = pwd[1].files;
-    var key,
+    var completions = [],
+        keys = Object.keys(pwd[1]),
+        files = pwd[1].files,
+        key,
         file;
 
     for (key in keys) {
@@ -1727,10 +1764,10 @@ function tabRelative(full) {
 
 function getPreDirectory(directory) {
     
-    var full = directory;
-    var part2 = "";
-    var length = full.length - 1;
-    var part1,
+    var full = directory,
+        part2 = "",
+        length = full.length - 1,
+        part1,
         dirObject;
 
     while(full.charAt(length) !== '/') {
@@ -1748,8 +1785,8 @@ function getPreDirectory(directory) {
 }
 
 function getDirectory(directory) {
-    var currentDir = pwd[2] + "/" + directory;
-    var dirObject = pathStringToObject(currentDir);
+    var currentDir = pwd[2] + "/" + directory,
+        dirObject = pathStringToObject(currentDir);
     return dirObject;
 }
 
@@ -1768,8 +1805,8 @@ function replaceAll(find, replace, str) {
 }
 
 function pathStringToObject(dirString) {
-    var dirObject;
-    var dotdir = replaceAll("/", ".", dirString);
+    var dirObject,
+        dotdir = replaceAll("/", ".", dirString);
     
     while(dotdir.charAt(0) === '.') {
         dotdir = dotdir.substr(1);
@@ -1803,10 +1840,8 @@ function textEditor(e) { // for handling saving and exiting cases
     if (e.keyCode === 67 && e.ctrlKey && terminal.editor.prompting === true) { terminal.editor.hidePrompt(); } // c key
 }
 
-function saveItemToLocalStorage (item, keyname) {
-    
+function saveItemToLocalStorage (item, keyname) {  
     localStorage.setItem( keyname, JSON.stringify(item) ); //create new key values and store in localStorage. convert object to string.
-
 }
 
 function getItemFromLocalStorage (keyname) {
@@ -1831,9 +1866,10 @@ function removeItemFromLocalStorage (keyname) {
 
 function checkCommand(e) {
 
-    var command = input.value.toLowerCase();
-    var len = command.length;
-    var output = document.getElementById("output");
+    var command = input.value.toLowerCase(),
+        len = command.length,
+        output = document.getElementById("output");
+    
     commandArgs = command.split(" ");
     outputHTML = "<p style='color:" + termtheme.text + "'><span style='color:" + termtheme.commandLine + "'>WebTerm:" + pwd[0] + " " + terminal.settings.user + "$ </span>" + command + "</p>";
 
@@ -2035,6 +2071,34 @@ function checkCommand(e) {
                     addToHistory(command);
                 break;
 
+                case "tutorial":
+                    if ( ! tutorial.on ) {
+                        terminal.tutorial.launch();
+                        addToHistory(command);
+                    }
+                break;
+
+                case "next":
+                    if ( tutorial.on && tutorial.stageArray.indexOf(tutorial.currentStage) != tutorial.stageArray.length - 1 ) {
+                        tutorial.next();
+                        addToHistory(command);
+                    }
+                break;
+
+                case "prev":
+                    if ( tutorial.on && tutorial.stageArray.indexOf(tutorial.currentStage) != 0 ) {
+                        tutorial.previous();
+                        addToHistory(command);
+                    }
+                break;
+
+                case "exit":
+                    if (tutorial.on) {
+                        terminal.tutorial.exit();
+                        addToHistory(command);
+                    }
+                break;
+
                 default:
                     if (commands.indexOf(command) == -1) {
                         output.innerHTML += outputHTML;
@@ -2050,13 +2114,16 @@ function checkCommand(e) {
         input.value = ""; // reset command line
         input.size = 1; // reset caret
         count = 0; // reset up/down history
-    } // enter key
+    
+    } // end enter key
 
-} // checkCommand
+} // end checkCommand
 
 input.addEventListener("keyup", checkCommand, false);
 input.addEventListener("keydown", tab, false);
 terminal.editor.textArea.addEventListener("keyup", textEditor, false);
+// event listener to set focus from page click. will break usability when editor is open
+// document.addEventListener("click", function(){document.getElementById('input').focus(); console.log("fired");});
 
 
 // var defaultFs = {
