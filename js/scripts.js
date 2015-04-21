@@ -72,13 +72,13 @@ var terminal = {
         "hist": [],
         "user": "user",
         "lastLogin": "",
-        "themeDefault": "old"
+        "themeDefault": "black"
     },
     "settings": {
         "hist": [],
         "user": "user",
         "lastLogin": "",
-        "themeDefault": "old"
+        "themeDefault": "black"
     },
     ver: "0.5",
     termthemes: {
@@ -97,11 +97,11 @@ var terminal = {
             commandLine: "#000080"
         },
         black: {
-            background: "#111",
-            text: "#FFF",
-            file: "#FFF",
-            folder: "limegreen",
-            commandLine: "#FF69B4"
+            background: "#222",
+            text: "#F9F9F9",
+            file: "#AAA",
+            folder: "#659EF9",
+            commandLine: "#8BFA7F"
             //font: "'Lucida Console', Monaco, monospace"
         }
     },
@@ -141,6 +141,7 @@ var terminal = {
         } else { 
             output.innerHTML = "<p style='color:" + termtheme.text + " '>Welcome to the terminal on the web. Type help for a list of commands.";
             terminal.settings.lastLogin = date;
+            terminal.theme.updateDom();
         }
         
     },

@@ -34,24 +34,23 @@ html {
 }
 
 body { 
-  background: #2E312C;
   margin: 0.5em;
 }
 
-p { color: #9DCE91;
-  font-size: 30px; 
-  font-family: 'oldconsole';
-  margin: 0px;
+p {
+  color: #9DCE91;
+  font-size: 20px; 
+  margin-top: 7px;
+  margin-bottom: 7px;
+  font-family: monospace;
 }
 
 textarea,
 input {
-  background: #2E312C;
   border: 0px;
-  color: #9DCE91;
-  font-family: 'oldconsole';
-  font-size: 30px;
+  font-size: 20px;
   background-repeat: no-repeat;
+  font-family: monospace;
 }
 
 textarea:focus,
