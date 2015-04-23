@@ -491,6 +491,13 @@ var terminal = {
         
     },
     // -----------------------------------------------------------------------
+    // Open Github repo in a new tab.
+    // -----------------------------------------------------------------------
+    github: function() {
+            output.innerHTML += outputHTML;
+            window.open('https://github.com/rtd2/webterm','_blank');
+    },
+    // -----------------------------------------------------------------------
     // Output the present working directory
     // -----------------------------------------------------------------------
     pwd: function() {
@@ -1409,6 +1416,39 @@ var terminal = {
         }
     },
     // -----------------------------------------------------------------------------------------
+    // CAT
+    // -----------------------------------------------------------------------------------------
+    cat: function (file) {
+        var fileObj,
+            isFile,
+            returns,
+            fileName,
+            dirObj,
+            path;
+
+        if (file[0] === "/") {
+            returns = getPreDirectory(file);
+            dirObj = returns[0];
+            fileName = returns[1];
+            path = returns[2];
+
+            if (dirObj !== null && typeof dirObj === 'object') { printFile(fileName, dirObj.files); } // if parent directory actually exists in the fs
+
+        } else { printFile(file, pwd[1].files); }
+
+        function printFile(fileName, filesArr) {
+            isFile = dirSearchFiles(fileName,filesArr);
+            if ( isFile ) {
+                    fileObj = getFile(fileName, filesArr);
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>" + fileObj.content + "</p>";   
+                } else { 
+                    output.innerHTML += outputHTML;
+                    output.innerHTML += "<p style='color:" + termtheme.text + "'>" + file + " does not exist.</p>";
+            }
+        }
+    },
+    // -----------------------------------------------------------------------------------------
     // Text Editor. Methods: run, save, changePrompt, hidePrompt, showPrompt, resetEditor, exit
     // -----------------------------------------------------------------------------------------
     editor: {
@@ -1928,6 +1968,11 @@ function checkCommand(e) {
                         terminal.editor.run(commandArgs[1]);
                         addToHistory(command);
                     break;
+
+                    case "cat":
+                        terminal.cat(commandArgs[1]);
+                        addToHistory(command);
+                    break;
                         
                     default:
                         if (commands.indexOf(commandArgs[0]) == -1) {
@@ -2036,6 +2081,11 @@ function checkCommand(e) {
 
                 case "ls":
                     terminal.ls.defaultCase();
+                    addToHistory(command);
+                break;
+
+                case "github":
+                    terminal.github();
                     addToHistory(command);
                 break;
 
