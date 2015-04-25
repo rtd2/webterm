@@ -24,13 +24,14 @@ https://github.com/yui/pure/blob/master/LICENSE.md
 /*could maybe take advantage of combinators, pseudo classes/elements, advanced selectors to avoid some dom style changes, or maybe just toggle classes*/
 
 
-@font-face {
+/*@font-face {
   font-family: oldconsole;
   src: url('../fonts/clacon.ttf');
-}
+}*/
 
 html { 
   cursor: text;
+  font-family: "Courier New", monospace;
 }
 
 body { 
@@ -43,7 +44,6 @@ p {
   font-size: 20px; 
   margin-top: 7px;
   margin-bottom: 7px;
-  font-family: monospace;
 }
 
 textarea,
@@ -51,7 +51,7 @@ input {
   border: 0px;
   font-size: 20px;
   background-repeat: no-repeat;
-  font-family: monospace;
+  font-family: "Courier New", monospace;
 }
 
 textarea:focus,

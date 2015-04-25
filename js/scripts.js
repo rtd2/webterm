@@ -2050,7 +2050,7 @@ function checkCommand(e) {
                 case "--help":  
                 case  "-help":
                 case     "-h":
-                    terminal.help.info();
+                    runCommand(terminal.help.info);
                     break;
             }
             
