@@ -1,4 +1,20 @@
-var terminal = {
+// LOCAL VARS
+var commands,
+    pwd,
+    input,
+    histindex,
+    count,
+    termtheme,
+    commandArgs,
+    outputHTML,
+    terminal,
+    helplist;
+
+
+// START TERMINAL
+
+terminal = {
+
 // -----------------------------------------------------------------------
 // VIRTUAL FILESYSTEM
 // -----------------------------------------------------------------------
@@ -61,9 +77,10 @@ var terminal = {
                         "modified": ""
                     }
                 ]
-            }
-        },
-        "bin": {}
+            },
+        "bin": { "files": [] },
+        "files": []
+        }
     },
 // -----------------------------------------------------------------------
 // MORE TERMINAL PROPERTIES
@@ -80,7 +97,7 @@ var terminal = {
         "lastLogin": "",
         "themeDefault": "black"
     },
-    ver: "0.5",
+    ver: "0.6",
     termthemes: {
         old: {
             background: "#2E312C",
@@ -143,6 +160,12 @@ var terminal = {
             terminal.settings.lastLogin = date;
             terminal.theme.updateDom();
         }
+
+        // set event listeners
+        input.addEventListener("keyup", checkCommand, false);
+        input.addEventListener("keydown", tab, false);
+        document.getElementsByTagName('body')[0].addEventListener('click', setCommandLineFocus, false);
+        terminal.editor.textArea.addEventListener("keyup", textEditor, false);
         
     },
     // -----------------------------------------------------------------------
@@ -191,6 +214,20 @@ var terminal = {
                 output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + query + "' found. Type 'help' for a list of commands.</p>";
 
             }
+        }
+    },
+    man: function () {
+        var query = commandArgs[1];
+            if (commands.indexOf(query) != -1) {
+                
+                output.innerHTML += outputHTML;
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>" + helpList[query].info + "</p>";
+                
+            } else {
+                
+                output.innerHTML += outputHTML;
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + query + "' found. Type 'help' for a list of commands.</p>";
+
         }
     },
     // -----------------------------------------------------------------------
@@ -321,7 +358,6 @@ var terminal = {
         commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.settings.user + "$ ";
         output.innerHTML += outputHTML;
         removeItemFromLocalStorage('signin');//delete signin key
-        //terminal.fs.home.user = defaultFs; // reset fs to original state
 
     },
     // -----------------------------------------------------------------------
@@ -344,7 +380,7 @@ var terminal = {
     // -----------------------------------------------------------------------
     version: function() {
         output.innerHTML += outputHTML;
-        output.innerHTML += "<p style='color:" + termtheme.text + "'>WebTerm " + terminal.version + "</p>";
+        output.innerHTML += "<p style='color:" + termtheme.text + "'>WebTerm version " + terminal.ver + "</p>";
     },
     // -----------------------------------------------------------------------
     // If the folder doesn't exist in pwd, create it
@@ -1064,7 +1100,7 @@ var terminal = {
         },
         r: function() {
         
-                source = commandArgs[2],
+            var source = commandArgs[2],
                 destination = commandArgs[3],
                 error = false,
                 srcReturns,
@@ -1468,6 +1504,8 @@ var terminal = {
                 item,
                 i;
 
+            document.getElementsByTagName('body')[0].removeEventListener('click', setCommandLineFocus, false);
+
             if ( file ) { 
 
                 terminal.editor.header.innerHTML = file;                    
@@ -1552,6 +1590,7 @@ var terminal = {
 
         },
         resetEditor: function() { // reset editor settings to blank
+            document.getElementsByTagName('body')[0].addEventListener('click', setCommandLineFocus,false);
             terminal.editor.editor.style.display = "none"; // hide editor overlay 
             terminal.editor.savePrompt.style.display = "none"; // hide save prompt
             terminal.editor.textArea.value = ""; // reset text area
@@ -1607,12 +1646,15 @@ var terminal = {
         }
     }
 
-}; // end terminal object
+}; 
+
+// END TERMINAL OBJECT
 
 
 
+// START HELPLIST
 
-var helpList = {
+helpList = {
     "tutorial": {
         name: "tutorial",
         info: "Launch the tutorial. Type 'exit' to quit tutorial when launched."
@@ -1692,23 +1734,33 @@ var helpList = {
     "mv": {
         name: "mv",
         info: "Move (cut and paste) a file or directory<br>mv [file] [destination]<br>ex. mv readme.txt /home/user/desktop<br>mv [directory] [destination]<br>ex. mv Documents /home/user/Desktop"
+    },
+    "cat": {
+        name: "cat",
+        info: "The 'cat' utility reads files and writes them to the standard output.<br>cat [file]<br>ex. cat readme.txt"
+    },
+    "man": {
+        name: "man",
+        info: "Man is a verbose form of help.<br>man [command]<br>man help"
     }
-}; // end helpList
+}; 
+
+// END HELPLIST
 
 
 
 
-// START VARIABLES AND FUNCTIONS
+// SETTING VARIABLES
 
-var commands = Object.keys(helpList),
-    pwd = ["~", terminal.fs.home.user, "/home/user"],
-    input = document.getElementById("input"),
-    histindex = 0,
-    count = 0,
-    termtheme = terminal.termthemes[terminal.settings.themeDefault],
-    commandArgs,
-    outputHTML;
+commands = Object.keys(helpList);
+pwd = ["~", terminal.fs.home.user, "/home/user"];
+input = document.getElementById("input");
+histindex = 0;
+count = 0;
+termtheme = terminal.termthemes[terminal.settings.themeDefault];
 
+
+// FUNCTION DECLARATIONS
 
 function dirSearchFiles(file, arr) {
     for (var i = 0; i < arr.length; i++) {
@@ -1896,15 +1948,30 @@ function removeItemFromLocalStorage (keyname) {
     localStorage.removeItem(keyname);
 }
 
+function setCommandLineFocus() {
+    input.focus();
+}
+
+
+function scrollToBottom() {
+    window.scroll(0, 10000);
+}
 
 function checkCommand(e) {
 
-    var command = input.value.toLowerCase(),
-        len = command.length,
+    // should refactor to take multiple args as array    
+    function runCommand(command, args){
+        command(args);
+        scrollToBottom();
+        addToHistory(commandInput);
+    }
+
+    var commandInput = input.value.toLowerCase(),
+        len = commandInput.length,
         output = document.getElementById("output");
     
-    commandArgs = command.split(" ");
-    outputHTML = "<p style='color:" + termtheme.text + "'><span style='color:" + termtheme.commandLine + "'>WebTerm:" + pwd[0] + " " + terminal.settings.user + "$ </span>" + command + "</p>";
+    commandArgs = commandInput.split(" ");
+    outputHTML = "<p style='color:" + termtheme.text + "'><span style='color:" + termtheme.commandLine + "'>WebTerm:" + pwd[0] + " " + terminal.settings.user + "$ </span>" + commandInput + "</p>";
 
     if (len > 0) { // adjust the caret
         input.size = len + 1;
@@ -1921,58 +1988,52 @@ function checkCommand(e) {
     if (e.keyCode === 13) { // enter key
         
         if (commandArgs.length === 2) { // if the command entered has one argument
-            if (commandArgs[1] != "-help" && commandArgs[1] != "--help") {
+            if (commandArgs[1] != "-help" && commandArgs[1] != "--help" && commandArgs[1] != "-h") {
                 switch (commandArgs[0]) {
 
                     case "mkdir":
-                        terminal.mkdir();
-                        addToHistory(command);
-                    break;
+                        runCommand(terminal.mkdir);
+                        break;
 
                     case "touch":
-                        terminal.touch();
-                        addToHistory(command);
-                    break;
+                        runCommand(terminal.touch);
+                        break;
 
                     case "signin":
-                        terminal.signin();
-                        addToHistory(command);
-                    break;
+                        runCommand(terminal.signin);
+                        break;
 
                     case "theme":
-                        terminal.theme.defaultCase();
-                        addToHistory(command);
-                    break;
+                        runCommand(terminal.theme.defaultCase);
+                        break;
 
                     case "rm":
-                        terminal.rm.defaultCase();
-                        addToHistory(command);
-                    break;
+                        runCommand(terminal.rm.defaultCase);
+                        break;
 
                     case "echo":
-                        terminal.echo();
-                        addToHistory(command);
-                    break;
+                        runCommand(terminal.echo);
+                        break;
 
                     case "ls":
-                        terminal.ls.l();
-                        addToHistory(command);
-                    break;
+                        runCommand(terminal.ls.l);
+                        break;
 
                     case "cd":
-                        terminal.cd();
-                        addToHistory(command);
-                    break;
+                        runCommand(terminal.cd);
+                        break;
 
                     case "editor":
-                        terminal.editor.run(commandArgs[1]);
-                        addToHistory(command);
-                    break;
+                        runCommand(terminal.editor.run(commandArgs[1]));
+                        break;
 
                     case "cat":
-                        terminal.cat(commandArgs[1]);
-                        addToHistory(command);
-                    break;
+                        runCommand(terminal.cat, commandArgs[1]);
+                        break;
+
+                    case "man":
+                        runCommand(terminal.man, commandArgs[1]);
+                        break;
                         
                     default:
                         if (commands.indexOf(commandArgs[0]) == -1) {
@@ -1986,15 +2047,11 @@ function checkCommand(e) {
             }
             
             switch(commandArgs[1]) {
-                case "--help":
+                case "--help":  
+                case  "-help":
+                case     "-h":
                     terminal.help.info();
-                    addToHistory(command);
-                break;
-                    
-                case "-help":
-                    terminal.help.info();
-                    addToHistory(command);
-                break;
+                    break;
             }
             
         } else if (commandArgs.length > 2) { // if the command entered has more than one argument
@@ -2002,19 +2059,16 @@ function checkCommand(e) {
                 switch (commandArgs[0] + " " + commandArgs[1]) {
                 
                     case "youtube -s":
-                        terminal.youtube.s();
-                        addToHistory(command);
-                    break;
+                        runCommand(terminal.youtube.s);
+                        break;
                         
                     case "rm -r":
-                        terminal.rm.r();
-                        addToHistory(command);
-                    break;
+                        runCommand(terminal.rm.r);
+                        break;
 
                     case "theme -set":
-                        terminal.theme.set(commandArgs[2]);
-                        addToHistory(command);
-                    break;
+                        runCommand(terminal.theme.set, commandArgs[2]);
+                        break;
 
                     default:
                         if (commands.indexOf(commandArgs[0]) == -1) {
@@ -2027,129 +2081,110 @@ function checkCommand(e) {
                 }
             }
             
-            if (commandArgs[0] === "mv") {
-                terminal.mv();
-                addToHistory(command);
-            }
+            if (commandArgs[0] === "mv") { runCommand(terminal.mv); }
             
-            if (commandArgs[0] + " " + commandArgs[1] === "cp -r") {
-                
-                terminal.cp.r();
-                addToHistory(command);
-                
-            } else if (commandArgs[0] === "cp") {
-                
-                terminal.cp.defaultCase();
-                addToHistory(command);
-            }
+            if (commandArgs[0] + " " + commandArgs[1] === "cp -r") { runCommand(terminal.cp.r); }
+
+            else if (commandArgs[0] === "cp") { runCommand(terminal.cp.defaultCase); }
             
         } else { // if the command entered has no arguments
 
-            switch (command) {
+            switch (commandInput) {
 
                 case "help":
-                    terminal.help.list();
-                    addToHistory(command);
-                break;
+                    runCommand(terminal.help.list);
+                    break;
                     
                 case "signout":
-                    terminal.signout();
-                    addToHistory(command);
-                break;
+                    runCommand(terminal.signout);
+                    break;
                     
                 case "version":
-                    terminal.version();
-                    addToHistory(command);
-                break;
+                    runCommand(terminal.version);
+                    break;
                     
                 case "history":
-                    terminal.history();
-                    addToHistory(command);
-                break;
+                    runCommand(terminal.history);
+                    break;
 
                 case "pwd":
-                    terminal.pwd();
-                    addToHistory(command);
-                break;
+                    runCommand(terminal.pwd);
+                    break;
 
                 case "cd":
                     output.innerHTML += outputHTML;
                     pwd = ["~", terminal.fs.home.user, "/home/user"];
                     commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.settings.user + "$ ";
-                    addToHistory(command);
-                break;
+                    break;
 
                 case "ls":
-                    terminal.ls.defaultCase();
-                    addToHistory(command);
-                break;
+                    runCommand(terminal.ls.defaultCase);
+                    break;
 
                 case "github":
-                    terminal.github();
-                    addToHistory(command);
-                break;
+                    runCommand(terminal.github);
+                    break;
 
                 case "clear":
-                    terminal.clear();
-                    addToHistory(command);
-                break;
+                    runCommand(terminal.clear);
+                    break;
 
                 case "youtube":
-                    terminal.youtube.defaultCase();
-                    addToHistory(command);
-                break;
+                    runCommand(terminal.youtube.defaultCase);
+                    break;
 
                 case "github":
-                    terminal.github();
-                    addToHistory(command);
-                break;
+                    runCommand(terminal.github);
+                    break;
                     
                 case "date":
-                    terminal.date();
-                    addToHistory(command);
-                break;
+                    runCommand(terminal.date);
+                    break;
 
                 case "editor":
-                    terminal.editor.run();
-                    addToHistory(command);
-                break;
+                    runCommand(terminal.editor.run);
+                    break;
 
-                case "tutorial":
-                    if ( ! tutorial.on ) {
-                        terminal.tutorial.launch();
-                        addToHistory(command);
-                    }
-                break;
+
+                // TUTORIAL STUFF
+                // case "tutorial":
+                //     if ( ! tutorial.on ) {
+                //         runCommand(terminal.tutorial.launch);
+                //     }
+                //     break;
 
                 case "next":
                     if ( tutorial.on && tutorial.stageArray.indexOf(tutorial.currentStage) != tutorial.stageArray.length - 1 ) {
                         tutorial.next();
-                        addToHistory(command);
                     }
-                break;
+                    break;
 
                 case "prev":
                     if ( tutorial.on && tutorial.stageArray.indexOf(tutorial.currentStage) != 0 ) {
                         tutorial.previous();
-                        addToHistory(command);
                     }
-                break;
+                    break;
 
                 case "exit":
                     if (tutorial.on) {
                         terminal.tutorial.exit();
-                        addToHistory(command);
                     }
-                break;
+                    break;
+                // END TUTORIAL STUFF
+
 
                 default:
-                    if (commands.indexOf(command) == -1) {
+                    if (commands.indexOf(commandInput) == -1) {
                         output.innerHTML += outputHTML;
-                        output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + command + "' found. Type 'help' for a list of commands.</p>";
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + commandInput + "' found. Type 'help' for a list of commands.</p>";
+                        scrollToBottom();
+                        addToHistory(commandInput);
             
                     } else {
                         output.innerHTML += outputHTML;
-                        output.innerHTML += "<p style='color:" + termtheme.text + "'>Try '" + command + " -help' for information on proper usage</p>";
+                        output.innerHTML += "<p style='color:" + termtheme.text + "'>Try '" + commandInput + " -help' for information on proper usage</p>";
+                        scrollToBottom();
+                        addToHistory(commandInput);
                     }
             }
         }
@@ -2158,75 +2193,28 @@ function checkCommand(e) {
         input.size = 1; // reset caret
         count = 0; // reset up/down history
     
-    } // end enter key
+    } // END ENTER KEY
 
-} // end checkCommand
-
-input.addEventListener("keyup", checkCommand, false);
-input.addEventListener("keydown", tab, false);
-terminal.editor.textArea.addEventListener("keyup", textEditor, false);
-// event listener to set focus from page click. will break usability when editor is open
-// document.addEventListener("click", function(){document.getElementById('input').focus(); console.log("fired");});
+} // END checkCommand
 
 
-// var defaultFs = {
-//     "desktop": {
-//         "files": [
-//             {
-//                 "name": "abc.txt",
-//                 "shortname": "abc",
-//                 "content": "I am content",
-//                 "created": "",
-//                 "modified": ""
-//             },
-//             {
-//                 "name": "urmum.txt",
-//                 "shortname": "urmum",
-//                 "content": "I have content",
-//                 "created": "",
-//                 "modified": ""
-//             }
-//         ]
-//     },
-//     "downloads": {
-//         "files": [
-//             {
-//                 "name": "example.txt",
-//                 "shortname": "example",
-//                 "content": "I am content",
-//                 "created": "",
-//                 "modified": ""
-//             },
-//             {
-//                 "name": "document.txt",
-//                 "shortname": "document",
-//                 "content": "I am content",
-//                 "created": "",
-//                 "modified": ""
-//             },
-//             {
-//                 "name": "another.txt",
-//                 "shortname": "another",
-//                 "content": "I am content",
-//                 "created": "",
-//                 "modified": ""
-//             }
-//         ]
-//     },
-//     "documents": {
-//         "files": []
-//     },
-//     "files": [
-//         {
-//             "name": "readme.txt",
-//             "shortname": "readme",
-//             "content": "I am content",
-//             "created": "",
-//             "modified": ""
-//         }
-//     ]
-//}
-
-
-// load user fs and settings
+// LOAD USER AND FS SETTINGS
 terminal.init();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
