@@ -1959,8 +1959,9 @@ function scrollToBottom() {
 
 function checkCommand(e) {
 
-    // should refactor to take multiple args as array    
-    function runCommand(command, args){
+    // seems more flexible doing it this way, as the amount of commands grows.    
+    function runCommand(args) {
+        var command = this;
         command(args);
         scrollToBottom();
         addToHistory(commandInput);
@@ -1992,47 +1993,48 @@ function checkCommand(e) {
                 switch (commandArgs[0]) {
 
                     case "mkdir":
-                        runCommand(terminal.mkdir);
+                        runCommand.apply(terminal.mkdir);
                         break;
 
                     case "touch":
-                        runCommand(terminal.touch);
+                        runCommand.apply(terminal.touch);
                         break;
 
                     case "signin":
-                        runCommand(terminal.signin);
+                        runCommand.apply(terminal.signin);
                         break;
 
                     case "theme":
-                        runCommand(terminal.theme.defaultCase);
+                        runCommand.apply(terminal.theme.defaultCase);
                         break;
 
                     case "rm":
-                        runCommand(terminal.rm.defaultCase);
+                        runCommand.apply(terminal.rm.defaultCase);
                         break;
 
                     case "echo":
-                        runCommand(terminal.echo);
+                        runCommand.apply(terminal.echo);
                         break;
 
                     case "ls":
-                        runCommand(terminal.ls.l);
+                        runCommand.apply(terminal.ls.l);
                         break;
 
                     case "cd":
-                        runCommand(terminal.cd);
+                        runCommand.apply(terminal.cd);
                         break;
 
                     case "editor":
-                        runCommand(terminal.editor.run(commandArgs[1]));
+                        runCommand.apply(terminal.editor.run, [commandArgs[1]]);
+                        window.scroll(0, 0); // NEEDED TO RESET SCROLL TO TOP
                         break;
 
                     case "cat":
-                        runCommand(terminal.cat, commandArgs[1]);
+                        runCommand.apply(terminal.cat, [commandArgs[1]]);
                         break;
 
                     case "man":
-                        runCommand(terminal.man, commandArgs[1]);
+                        runCommand.apply(terminal.man, [commandArgs[1]]);
                         break;
                         
                     default:
@@ -2050,7 +2052,7 @@ function checkCommand(e) {
                 case "--help":  
                 case  "-help":
                 case     "-h":
-                    runCommand(terminal.help.info);
+                    runCommand.apply(terminal.help.info);
                     break;
             }
             
@@ -2059,15 +2061,15 @@ function checkCommand(e) {
                 switch (commandArgs[0] + " " + commandArgs[1]) {
                 
                     case "youtube -s":
-                        runCommand(terminal.youtube.s);
+                        runCommand.apply(terminal.youtube.s);
                         break;
                         
                     case "rm -r":
-                        runCommand(terminal.rm.r);
+                        runCommand.apply(terminal.rm.r);
                         break;
 
                     case "theme -set":
-                        runCommand(terminal.theme.set, commandArgs[2]);
+                        runCommand.apply(terminal.theme.set, [commandArgs[2]]);
                         break;
 
                     default:
@@ -2081,34 +2083,34 @@ function checkCommand(e) {
                 }
             }
             
-            if (commandArgs[0] === "mv") { runCommand(terminal.mv); }
+            if (commandArgs[0] === "mv") { runCommand.apply(terminal.mv); }
             
-            if (commandArgs[0] + " " + commandArgs[1] === "cp -r") { runCommand(terminal.cp.r); }
+            if (commandArgs[0] + " " + commandArgs[1] === "cp -r") { runCommand.apply(terminal.cp.r); }
 
-            else if (commandArgs[0] === "cp") { runCommand(terminal.cp.defaultCase); }
+            else if (commandArgs[0] === "cp") { runCommand.apply(terminal.cp.defaultCase); }
             
         } else { // if the command entered has no arguments
 
             switch (commandInput) {
 
                 case "help":
-                    runCommand(terminal.help.list);
+                    runCommand.apply(terminal.help.list);
                     break;
                     
                 case "signout":
-                    runCommand(terminal.signout);
+                    runCommand.apply(terminal.signout);
                     break;
                     
                 case "version":
-                    runCommand(terminal.version);
+                    runCommand.apply(terminal.version);
                     break;
                     
                 case "history":
-                    runCommand(terminal.history);
+                    runCommand.apply(terminal.history);
                     break;
 
                 case "pwd":
-                    runCommand(terminal.pwd);
+                    runCommand.apply(terminal.pwd);
                     break;
 
                 case "cd":
@@ -2118,34 +2120,35 @@ function checkCommand(e) {
                     break;
 
                 case "ls":
-                    runCommand(terminal.ls.defaultCase);
+                    runCommand.apply(terminal.ls.defaultCase);
                     break;
 
                 case "github":
-                    runCommand(terminal.github);
+                    runCommand.apply(terminal.github);
                     break;
 
                 case "clear":
-                    runCommand(terminal.clear);
+                    runCommand.apply(terminal.clear);
                     break;
 
                 case "youtube":
-                    runCommand(terminal.youtube.defaultCase);
+                    runCommand.apply(terminal.youtube.defaultCase);
                     break;
                     
                 case "date":
-                    runCommand(terminal.date);
+                    runCommand.apply(terminal.date);
                     break;
 
                 case "editor":
-                    runCommand(terminal.editor.run);
+                    runCommand.apply(terminal.editor.run);
+                    window.scroll(0, 0); // NEEDED TO RESET SCROLL TO TOP
                     break;
 
 
                 // TUTORIAL STUFF
                 case "tutorial":
                     if ( ! tutorial.on ) {
-                        runCommand(terminal.tutorial.launch);
+                        runCommand.apply(terminal.tutorial.launch);
                     }
                     break;
 
