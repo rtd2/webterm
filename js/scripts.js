@@ -2123,10 +2123,6 @@ function checkCommand(e) {
                     runCommand.apply(terminal.ls.defaultCase);
                     break;
 
-                case "github":
-                    runCommand.apply(terminal.github);
-                    break;
-
                 case "clear":
                     runCommand.apply(terminal.clear);
                     break;
@@ -2136,7 +2132,7 @@ function checkCommand(e) {
                     break;
 
                 case "github":
-                    runCommand(terminal.github);
+                    runCommand.apply(terminal.github);
                     break;
                     
                 case "date":
