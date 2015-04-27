@@ -198,19 +198,16 @@ terminal = {
 
             }
 
-            output.innerHTML += outputHTML;
             output.innerHTML += displayCommands;
         },
         info: function() { // show the help info for a command
             var query = commandArgs[0];
             if (commands.indexOf(query) != -1) {
                 
-                output.innerHTML += outputHTML;
                 output.innerHTML += "<p style='color:" + termtheme.text + "'>" + helpList[query].info + "</p>";
                 
             } else {
                 
-                output.innerHTML += outputHTML;
                 output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + query + "' found. Type 'help' for a list of commands.</p>";
 
             }
@@ -220,12 +217,10 @@ terminal = {
         var query = commandArgs[1];
             if (commands.indexOf(query) != -1) {
                 
-                output.innerHTML += outputHTML;
                 output.innerHTML += "<p style='color:" + termtheme.text + "'>" + helpList[query].info + "</p>";
                 
             } else {
                 
-                output.innerHTML += outputHTML;
                 output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + query + "' found. Type 'help' for a list of commands.</p>";
 
         }
@@ -240,7 +235,6 @@ terminal = {
     // Display current date, time, and timezone
     // -----------------------------------------------------------------------
     date: function() {
-        output.innerHTML += outputHTML;
         output.innerHTML += "<p style='color:" + termtheme.text + "'>" + new Date() + "</p>";
     },
     // -----------------------------------------------------------------------
@@ -249,7 +243,6 @@ terminal = {
     echo: function() {
         var echo = commandArgs.slice(1).join(" ");
 
-        output.innerHTML += outputHTML;
         output.innerHTML += "<p style='color:" + termtheme.text + "'>" + echo + "</p>";
             
     },
@@ -265,7 +258,6 @@ terminal = {
             
             if (theme != "-l") {
 
-                output.innerHTML += outputHTML;
 
                 switch ( theme ) {
 
@@ -291,7 +283,6 @@ terminal = {
             } else {
                 
                 themeList = "";
-                output.innerHTML += outputHTML;
 
                 for (theme in themes) {
                     themeList += "<p style='color:" + termtheme.text + "'>";
@@ -329,7 +320,6 @@ terminal = {
             terminal.settings.themeDefault = theme;
             terminal.userSettings.themeDefault = theme;
             termtheme = terminal.termthemes[theme];
-            output.innerHTML += outputHTML;
             output.innerHTML += "<p style='color:" + termtheme.text + "'>Default theme set to " + theme + ".</p>";
             terminal.theme.updateDom();
             terminal.save.settings();
@@ -344,7 +334,6 @@ terminal = {
         terminal.settings.user = user;
         terminal.userSettings.user = user;
         commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.settings.user + "$ ";
-        output.innerHTML += outputHTML;
         terminal.save.settings();
         saveItemToLocalStorage(user, 'signin'); //create signin key
 
@@ -356,30 +345,61 @@ terminal = {
 
         terminal.settings.user = "user";
         commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.settings.user + "$ ";
-        output.innerHTML += outputHTML;
         removeItemFromLocalStorage('signin');//delete signin key
 
     },
     // -----------------------------------------------------------------------
     // Output the terminal history array
     // -----------------------------------------------------------------------
-    history: function() {
-        var item,
-            count = 1 ,
-            hist = terminal.settings.hist;
+    history: {
+        defaultCase: function() {
+            var item,
+                count = 1 ,
+                hist = terminal.settings.hist;
 
-        output.innerHTML += outputHTML;
 
-        for (item in hist) {
-            output.innerHTML += "<p style='color:" + termtheme.text + "'>" + count + "  " + hist[item] + "</p>";
-            count ++;
+            for (item in hist) {
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>" + count + "  " + hist[item] + "</p>";
+                count ++;
+            }
+        },
+        arg: function() {
+            var argument = commandArgs[1],
+                hist = terminal.settings.hist,
+                count = hist.length,
+                displayArr = [];
+
+            if (argument === "-c") {
+
+                terminal.settings.hist = [];
+
+            } else if (isNaN(argument)) {
+
+                output.innerHTML += "<p style='color:" + termtheme.text + "'>history: No such option. For information on proper usage, enter 'history -help'</p>";
+
+
+            } else {
+
+                if(argument > hist.length) {argument = hist.length;}
+                
+                while(count > (hist.length - argument)) {
+
+                    displayArr.unshift("<p style='color:" + termtheme.text + "'>" + count + "  "  + hist[count-1] + "</p>");
+                    count--;
+                }
+
+                for (item in displayArr) {
+                    
+                    output.innerHTML += displayArr[item];
+
+                }
+            }            
         }
     },
     // -----------------------------------------------------------------------
     // Output the version of the terminal
     // -----------------------------------------------------------------------
     version: function() {
-        output.innerHTML += outputHTML;
         output.innerHTML += "<p style='color:" + termtheme.text + "'>WebTerm version " + terminal.ver + "</p>";
     },
     // -----------------------------------------------------------------------
@@ -403,33 +423,28 @@ terminal = {
                 
                 if (dirObject.hasOwnProperty(folder)) { // if the desired folder name already exists in destination
                     
-                    output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>mkdir: cannot create '" + folder + "': Directory already exists in '" + path + "'</p>";
                     
                 } else { // if it doesn't, create it
                     
                     dirObject[folder] = {files: []};
-                    output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>Directory called '" + folder + "' successfully created.</p>";
                     terminal.save.fs();
                 }
                     
             } else { // if the provided location for the folder's creation was not a place in the fs
                
-                output.innerHTML += outputHTML;
                 output.innerHTML += "<p style='color:" + termtheme.text + "'>mkdir: cannot create '" + folder + "': Destination directory '" + path + "' does not exist</p>";
 
             }
             
         } else if (pwd[1].hasOwnProperty(folderName)) { // if a folder by this name exists in the pwd
 
-            output.innerHTML += outputHTML;
             output.innerHTML += "<p style='color:" + termtheme.text + "'>mkdir: cannot create '" + folderName + "': Directory already exists</p>";
 
         } else {
 
             pwd[1][folderName] = {files: []};
-            output.innerHTML += outputHTML;
             output.innerHTML += "<p style='color:" + termtheme.text + "'>Directory called '" + folderName + "' successfully created.</p>";
             terminal.save.fs();
 
@@ -460,7 +475,6 @@ terminal = {
             
             if (dirObject !== undefined) { // if pathStringToObject returned an object
                 
-                output.innerHTML += outputHTML;
                 pwd = [currentDir, dirObject, currentDir]; // set pwd alias, object, and display
                 commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.settings.user + "$ "; // commandLine set to represent new pwd
                 
@@ -471,7 +485,6 @@ terminal = {
             reldir = pwd[2] + "/" + directory; // add the argument to the pwd display string
             dirObject = pathStringToObject(reldir);
             
-            output.innerHTML += outputHTML;
             pwd = [reldir, dirObject, reldir];
             commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.settings.user + "$ ";
         
@@ -481,13 +494,11 @@ terminal = {
             
             if (dirObject !== undefined) {
                 
-                output.innerHTML += outputHTML;
                 pwd = [directory, dirObject, directory];
                 commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.settings.user + "$ ";
                 
             } else { // if the provided argument isn't "..", a key of the pwd, or a recognized absolute path
                 
-                output.innerHTML += outputHTML;
                 output.innerHTML += "<p style='color:" + termtheme.text + "'>cd: No such directory</p>";
                 
             }
@@ -498,7 +509,6 @@ terminal = {
     // -----------------------------------------------------------------------
     youtube: {
         defaultCase: function() {
-            output.innerHTML += outputHTML;
             window.open('http://www.youtube.com','_blank');
         },
         s: function() {
@@ -507,7 +517,6 @@ terminal = {
                 url,
                 i;
 
-            output.innerHTML += outputHTML;
 
             for (i = 2; i < commandArgs.length; i++) {
 
@@ -530,7 +539,6 @@ terminal = {
     // Open Github repo in a new tab.
     // -----------------------------------------------------------------------
     github: function() {
-            output.innerHTML += outputHTML;
             window.open('https://github.com/rtd2/webterm','_blank');
     },
     // -----------------------------------------------------------------------
@@ -538,7 +546,6 @@ terminal = {
     // -----------------------------------------------------------------------
     pwd: function() {
         
-        output.innerHTML += outputHTML;
         output.innerHTML += "<p style='color:" + termtheme.text + "'>" + pwd[2] + "</p>";
     
     },
@@ -569,7 +576,6 @@ terminal = {
 
             }
 
-            output.innerHTML += outputHTML;
             output.innerHTML += list;
             
             if ( list === "" ) { output.innerHTML += "<p style='color:" + termtheme.text + "'>ls: The current directory is empty</p>"; }
@@ -606,12 +612,10 @@ terminal = {
 
                 }
 
-                output.innerHTML += outputHTML;
                 output.innerHTML += list;
                 
             } else {
                 
-                output.innerHTML += outputHTML;
                 output.innerHTML += "<p style='color:" + termtheme.text + "'>ls: invalid option '" + flag + "'</p><p style='color:" + termtheme.text + "'>Try 'ls --help' for more information.</p>";
             
             }
@@ -649,19 +653,16 @@ terminal = {
                         fileObject = getFile(file, dirObject);
                         index = files.indexOf(fileObject);
                         files.splice(index, 1);
-                        output.innerHTML += outputHTML;
                         terminal.save.fs();
 
                     } else {
 
-                        output.innerHTML += outputHTML;
                         output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot delete '" + file + "': File does not exist</p>";
                         
                     }
                     
                 } else { // if the provided location for the folder's creation was not a place in the fs
 
-                    output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot delete '" + file + "': Directory '" + path + "' does not exist</p>";
 
                 }
@@ -676,13 +677,11 @@ terminal = {
 
                     files.splice(index, 1); // remove it from the files array
 
-                    output.innerHTML += outputHTML;
 
                     terminal.save.fs();
 
                 } else {
 
-                    output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot remove '" + fileName + "': File does not exist</p>";
 
                 }
@@ -710,18 +709,15 @@ terminal = {
                     if (dirObject.hasOwnProperty(folder)) {
                         
                         delete dirObject[folder];
-                        output.innerHTML += outputHTML;
                         terminal.save.fs();
 
                     } else {
 
-                        output.innerHTML += outputHTML;
                         output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot remove '" + folder + "': No such directory</p>";
                         
                     }
                 } else {
                     
-                    output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot delete '" + folder + "': Directory '" + path + "' does not exist</p>";
 
                 }
@@ -733,13 +729,11 @@ terminal = {
 
                     delete pwd[1][folderName];
 
-                    output.innerHTML += outputHTML;
 
                     terminal.save.fs();
 
                 } else {
 
-                    output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>rm: cannot remove '" + folderName + "': No such directory</p>";
 
                 }
@@ -788,13 +782,11 @@ terminal = {
 
                     } else {
                         error = true;
-                        output.innerHTML += outputHTML;
                         output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': No such file or directory</p>";
                     }
 
                 } else { // error source object doesn't exist
                     error = true;
-                    output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': No such file or directory</p>";
                 }
 
@@ -812,7 +804,6 @@ terminal = {
 
                 } else { // error the file or folder doesn't exist
                     error = true;
-                    output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': No such file or directory</p>";
                 }
             } // done with argument one, srcFileObject or srcDirObject has variable prepared
@@ -829,18 +820,15 @@ terminal = {
                     destFiles = dest.files;
 
                     if (dirSearchFiles(srcFile, destFiles)) { // error, file by the same name already exists in destination
-                        output.innerHTML += outputHTML;
                         output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': File with the same name already exists in destination directory</p>";
 
                     } else if (dest.hasOwnProperty(srcFile)) { // error, directory by the same name already exists in destination
-                        output.innerHTML += outputHTML;
                         output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': Directory with the same name already exists in destination directory</p>";
 
                     } else if (srcFileObject === undefined && typeof srcDirObject === 'object') {
                         dest[srcFile] = srcDirObject; // add the arg1 directory to the destination directory
                         delete srcObject[srcFile]; // remove arg1 directory from pwd
 
-                        output.innerHTML += outputHTML;
                         terminal.save.fs();
 
                     } else if (typeof srcFileObject === 'object' && srcDirObject === undefined) {
@@ -850,25 +838,21 @@ terminal = {
                         srcFiles.splice(index, 1); // remove arg1 file from pwd files
                         destFiles.push(newFile); // add it to the destination folder's files
 
-                        output.innerHTML += outputHTML;
                         terminal.save.fs();
                     }
 
                 } else if (destObject !== null && typeof destObject === 'object') {
 
                     if (dirSearchFiles(destFile, destObject.files)) { // error, file by the same name already exists in destination
-                        output.innerHTML += outputHTML;
                         output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': File with the same name already exists in destination directory</p>";
 
                     } else if (destObject.hasOwnProperty(destFile)) { // error, directory by the same name already exists in destination
-                        output.innerHTML += outputHTML;
                         output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': Directory with the same name already exists in destination directory</p>";
 
                     } else if (srcFileObject === undefined && typeof srcDirObject === 'object') {
                         destObject[destFile] = srcDirObject; // add the arg1 directory to the destination directory
                         delete srcObject[srcFile]; // remove arg1 directory from pwd
 
-                        output.innerHTML += outputHTML;
                         terminal.save.fs();
 
                     } else if (typeof srcFileObject === 'object' && srcDirObject === undefined) {
@@ -882,12 +866,10 @@ terminal = {
                         srcFiles.splice(index, 1); // remove arg1 file from pwd files
                         destObject.files.push(newFile); // add it to the destination folder's files
 
-                        output.innerHTML += outputHTML;
                         terminal.save.fs();
                     }
 
                 } else { // error destination object doesn't exist
-                    output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': Destination directory '" + destination + "' does not exist</p>";
 
                 }
@@ -901,18 +883,15 @@ terminal = {
                     destFiles = destObject.files;
 
                     if (dirSearchFiles(srcFile, destFiles)) { // error, file by the same name already exists in destination
-                        output.innerHTML += outputHTML;
                         output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': File with the same name already exists in destination directory</p>";
 
                     } else if (destObject.hasOwnProperty(srcFile)) { // error, directory by the same name already exists in destination
-                        output.innerHTML += outputHTML;
                         output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + srcFile + "': Directory with the same name already exists in destination directory</p>";
 
                     } else if (srcFileObject === undefined && typeof srcDirObject === 'object') { // the source is a directory
                         destObject[srcFile] = srcDirObject; // add the source directory to the destination directory
                         delete srcObject[srcFile]; // delete the source directory object
 
-                        output.innerHTML += outputHTML;
                         terminal.save.fs();
 
                     } else if (typeof srcFileObject === 'object' && srcDirObject === undefined) { // the source is a file
@@ -922,7 +901,6 @@ terminal = {
                         srcFiles.splice(index, 1); // remove arg1 file from pwd files
                         destFiles.push(newFile); // add it to the destination folder's files
 
-                        output.innerHTML += outputHTML;
                         terminal.save.fs();
 
                     }
@@ -933,7 +911,6 @@ terminal = {
                         pwd[1][destFile] = srcDirObject; // add the source directory to the destination directory
                         delete srcObject[srcFile]; // delete the source directory object
 
-                        output.innerHTML += outputHTML;
                         terminal.save.fs();
 
                     } else if (typeof srcFileObject === 'object' && srcDirObject === undefined) { // the source is a file
@@ -947,7 +924,6 @@ terminal = {
                         srcFiles.splice(index, 1); // remove arg1 file from pwd files
                         destFiles.push(newFile); // add it to the destination folder's files
 
-                        output.innerHTML += outputHTML;
                         terminal.save.fs();
 
                     }
@@ -955,7 +931,6 @@ terminal = {
                 }
             }
         } else {
-            output.innerHTML += outputHTML;
             output.innerHTML += "<p style='color:" + termtheme.text + "'>mv: cannot move '" + source + "' to a subdirectory of itself";
         }
     },
@@ -996,14 +971,12 @@ terminal = {
 
                     } else { // error, file to be copied doesn't exist
 
-                        output.innerHTML += outputHTML;
                         output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFile + "': File does not exist</p>";
                         
                     }
                     
                 } else { // if the provided location for the folder's creation was not a place in the fs
 
-                    output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFile + "': Directory '" + srcPath + "' does not exist</p>";
 
                 }
@@ -1020,7 +993,6 @@ terminal = {
 
                 } else {
 
-                    output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + file + "': No such file</p>";
 
                 }
@@ -1041,20 +1013,17 @@ terminal = {
                     
                     if (dirSearchFiles(srcFile, destFiles)) { // error, the file already exists in the destination folder
                         
-                        output.innerHTML += outputHTML;
                         output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFile + "': File '" + srcFile + "' already exists in destination directory</p>";
 
                     } else {
                         
                         destFiles.push(newFile);
-                        output.innerHTML += outputHTML;
                         terminal.save.fs();
                     
                     }
                     
                 } else if (dirSearchFiles(destFile, destObject.files)) {
                     
-                    output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFile + "': File '" + srcFile + "' already exists in '" + destPath + "'</p>";
 
                 } else if (destObject !== null && typeof destObject === 'object') {
@@ -1066,7 +1035,6 @@ terminal = {
 
                     destObject.files.push(newFile); // and push it the files array
                     
-                    output.innerHTML += outputHTML;
                     terminal.save.fs();
 
                 } else {
@@ -1087,12 +1055,10 @@ terminal = {
                     destFiles = pwd[1].files;
                     destFiles.push(newFile); // and push it the files array
                     
-                    output.innerHTML += outputHTML;
                     terminal.save.fs();
 
                 } else { // error, file of the same name already exists in pwd
 
-                    output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + file + "': New file must have a different name</p>";
 
                 }
@@ -1130,13 +1096,11 @@ terminal = {
 
                     } else {
                         error = true;
-                        output.innerHTML += outputHTML;
                         output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFolder + "': No such directory</p>";
                     }
 
                 } else { // error source object doesn't exist
                     error = true;
-                    output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFolder + "': No such directory</p>";
                 }
 
@@ -1151,7 +1115,6 @@ terminal = {
 
                 } else { // error the file or folder doesn't exist
                     error = true;
-                    output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFolder + "': No such directory</p>";
                 }
             } // done with argument one, srcDirObject has variable prepared
@@ -1166,13 +1129,11 @@ terminal = {
                 if (dest !== null && typeof dest === 'object') { // destination object exists
 
                     if (dest.hasOwnProperty(srcFolder)) { // error, directory by the same name already exists in destination
-                        output.innerHTML += outputHTML;
                         output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFolder + "': Directory with the same name already exists in destination directory</p>";
 
                     } else if (typeof srcDirObject === 'object') {
                         dest[srcFolder] = srcDirObject; // add the arg1 directory to the destination directory
                         
-                        output.innerHTML += outputHTML;
                         terminal.save.fs();
 
                     }
@@ -1180,18 +1141,15 @@ terminal = {
                 } else if (destObject !== null && typeof destObject === 'object') {
 
                     if (destObject.hasOwnProperty(destFolder)) { // error, directory by the same name already exists in destination
-                        output.innerHTML += outputHTML;
                         output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFolder + "': Directory with the same name already exists in destination directory</p>";
 
                     } else if (typeof srcDirObject === 'object') {
                         destObject[destFolder] = srcDirObject; // add the arg1 directory to the destination directory
                         
-                        output.innerHTML += outputHTML;
                         terminal.save.fs();
                     }
 
                 } else { // error destination object doesn't exist
-                    output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFolder + "': Destination directory '" + destination + "' does not exist</p>";
 
                 }
@@ -1207,13 +1165,11 @@ terminal = {
                 if (destObject !== null && typeof destObject === 'object') { // if destination provided is a key of the pwd
 
                     if (destObject.hasOwnProperty(srcFolder)) { // error, directory by the same name already exists in destination
-                        output.innerHTML += outputHTML;
                         output.innerHTML += "<p style='color:" + termtheme.text + "'>cp: cannot copy '" + srcFolder + "': Directory with the same name already exists in destination directory</p>";
 
                     } else if (typeof srcDirObject === 'object') { // the source is a directory
                         destObject[srcFolder] = srcDirObject; // add the source directory to the destination directory
                         
-                        output.innerHTML += outputHTML;
                         terminal.save.fs();
 
                     }
@@ -1222,7 +1178,6 @@ terminal = {
                     
                     pwd[1][destFolder] = srcDirObject; // add the source directory to the destination directory
                         
-                    output.innerHTML += outputHTML;
                     terminal.save.fs();
                 
                 }
@@ -1257,7 +1212,6 @@ terminal = {
             
                 if (fileBool) { // if the folder to be copied exists
             
-                    output.innerHTML += outputHTML;                
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>touch: cannot create file '" + file + "': File already exists in '" + path + "'</p>";
                     
                 } else {
@@ -1266,7 +1220,6 @@ terminal = {
 
                     files.push(newFile);
 
-                    output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>File called '" + file + "' successfully created in '" + path + "'</p>";
 
                     terminal.save.fs();
@@ -1274,7 +1227,6 @@ terminal = {
                 }
             } else {
 
-                output.innerHTML += outputHTML;
                 output.innerHTML += "<p style='color:" + termtheme.text + "'>touch: cannot create file '" + file + "': Destination directory '" + path + "' does not exist</p>";
 
             }
@@ -1286,7 +1238,6 @@ terminal = {
             
             if (fileBool === true) {
 
-                output.innerHTML += outputHTML;
                 output.innerHTML += "<p style='color:" + termtheme.text + "'>touch: cannot create file '" + fileName + "': File already exists</p>";
 
             } else {
@@ -1295,7 +1246,6 @@ terminal = {
 
                 files.push(newFile);
 
-                output.innerHTML += outputHTML;
                 output.innerHTML += "<p style='color:" + termtheme.text + "'>File called '" + fileName + "' successfully created.</p>";
 
                 terminal.save.fs();
@@ -1476,10 +1426,8 @@ terminal = {
             isFile = dirSearchFiles(fileName,filesArr);
             if ( isFile ) {
                     fileObj = getFile(fileName, filesArr);
-                    output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>" + fileObj.content + "</p>";   
                 } else { 
-                    output.innerHTML += outputHTML;
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>" + file + " does not exist.</p>";
             }
         }
@@ -1697,7 +1645,7 @@ helpList = {
     },
     "history": {
         name: "history",
-        info: "Output a list of previously entered commands<br>history"
+        info: "Output a list of previously entered commands<br>history<br><br>Output a number of previously entered commands<br>history [number]</br>ex. 'history 5' will list history items 1-5<br><br>Clear the list of previously entered commands</br>history -c"
     },
     "cd": {
         name: "cd",
@@ -1960,11 +1908,20 @@ function scrollToBottom() {
 function checkCommand(e) {
 
     // seems more flexible doing it this way, as the amount of commands grows.    
-    function runCommand(args) {
+    function runCommand(arg) {
         var command = this;
-        command(args);
+        output.innerHTML += outputHTML;
+        command(arg);
         scrollToBottom();
         addToHistory(commandInput);
+    }
+
+    function displayInputError() {
+
+        output.innerHTML += outputHTML;
+        scrollToBottom();
+        addToHistory(commandInput);
+
     }
 
     var commandInput = input.value.toLowerCase(),
@@ -1998,6 +1955,10 @@ function checkCommand(e) {
 
                     case "touch":
                         runCommand.apply(terminal.touch);
+                        break;
+
+                    case "history":
+                        runCommand.apply(terminal.history.arg, [commandArgs[1]]);
                         break;
 
                     case "signin":
@@ -2039,10 +2000,10 @@ function checkCommand(e) {
                         
                     default:
                         if (commands.indexOf(commandArgs[0]) == -1) {
-                            output.innerHTML += outputHTML;
+                            displayInputError();
                             output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + commandArgs[0] + "' found. Type 'help' for a list of commands.</p>";
                         } else {
-                            output.innerHTML += outputHTML;
+                            displayInputError();
                             output.innerHTML += "<p style='color:" + termtheme.text + "'>Try '" + commandArgs[0] + " -help' for information on proper usage</p>";
                         }
                 }
@@ -2074,10 +2035,10 @@ function checkCommand(e) {
 
                     default:
                         if (commands.indexOf(commandArgs[0]) == -1) {
-                            output.innerHTML += outputHTML;
+                            displayInputError();
                             output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + commandArgs[0] + "' found. Type 'help' for a list of commands.</p>";
                         } else {
-                            output.innerHTML += outputHTML;
+                            displayInputError();
                             output.innerHTML += "<p style='color:" + termtheme.text + "'>Try '" + commandArgs[0] + " -help' for information on proper usage</p>";
                         }
                 }
@@ -2106,7 +2067,7 @@ function checkCommand(e) {
                     break;
                     
                 case "history":
-                    runCommand.apply(terminal.history);
+                    runCommand.apply(terminal.history.defaultCase);
                     break;
 
                 case "pwd":
@@ -2114,7 +2075,6 @@ function checkCommand(e) {
                     break;
 
                 case "cd":
-                    output.innerHTML += outputHTML;
                     pwd = ["~", terminal.fs.home.user, "/home/user"];
                     commandLine.innerHTML = "WebTerm:" + pwd[0] + " " + terminal.settings.user + "$ ";
                     break;
@@ -2174,16 +2134,12 @@ function checkCommand(e) {
 
                 default:
                     if (commands.indexOf(commandInput) == -1) {
-                        output.innerHTML += outputHTML;
+                        displayInputError();
                         output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + commandInput + "' found. Type 'help' for a list of commands.</p>";
-                        scrollToBottom();
-                        addToHistory(commandInput);
             
                     } else {
-                        output.innerHTML += outputHTML;
+                        displayInputError();
                         output.innerHTML += "<p style='color:" + termtheme.text + "'>Try '" + commandInput + " -help' for information on proper usage</p>";
-                        scrollToBottom();
-                        addToHistory(commandInput);
                     }
             }
         }
@@ -2199,21 +2155,3 @@ function checkCommand(e) {
 
 // LOAD USER AND FS SETTINGS
 terminal.init();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
