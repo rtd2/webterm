@@ -1443,6 +1443,7 @@ terminal = {
         highlight: document.getElementsByClassName("highlight"),
         header: document.getElementById("editorHeader"),
         savePrompt: document.getElementById("savePrompt"),
+        consoleDomOutputStore: undefined,
         prompting: false,
         currentFile: undefined,
         run: function (file) { // startup editor passing in optional file name
@@ -1453,6 +1454,8 @@ terminal = {
                 i;
 
             document.getElementsByTagName('body')[0].removeEventListener('click', setCommandLineFocus, false);
+            terminal.editor.consoleDomOutputStore = output.innerHTML; //store console dom output
+            terminal.clear(); // clear dom (to be replaced on editor exit)
 
             if ( file ) { 
 
@@ -1557,6 +1560,7 @@ terminal = {
 
             if ( ! save ) { terminal.editor.resetEditor(); }
 
+            output.innerHTML = terminal.editor.consoleDomOutputStore; // add console dom output back
             input.focus();
 
         }
