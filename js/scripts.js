@@ -1423,10 +1423,11 @@ terminal = {
         } else { printFile(file, pwd[1].files); }
 
         function printFile(fileName, filesArr) {
+
             isFile = dirSearchFiles(fileName,filesArr);
             if ( isFile ) {
                     fileObj = getFile(fileName, filesArr);
-                    output.innerHTML += "<p style='color:" + termtheme.text + "'>" + fileObj.content + "</p>";   
+                    output.innerHTML += "<pre class='cat-output' style='color:" + termtheme.text + "; background:" + termtheme.background + "'>" + fileObj.content + "</pre>";
                 } else { 
                     output.innerHTML += "<p style='color:" + termtheme.text + "'>" + file + " does not exist.</p>";
             }
