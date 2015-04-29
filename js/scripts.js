@@ -1923,9 +1923,20 @@ function checkCommand(e) {
     function displayInputError() {
 
         output.innerHTML += outputHTML;
-        scrollToBottom();
+        setTimeout(scrollToBottom, 0); // doing this pushes scrollToBottom to next cycle of event loop, giving us the behavior we want in the default cases. Else we would have to call it twice and add lines of code (boo hoo to that)
         addToHistory(commandInput);
 
+    }
+
+    function defaultErrorHandler(commandInput) {
+        if (commands.indexOf(commandInput) == -1) {
+            displayInputError();
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + commandInput + "' found. Type 'help' for a list of commands.</p>";
+
+        } else {
+            displayInputError();
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>Try '" + commandInput + " -help' for information on proper usage</p>";
+        }
     }
 
     var commandInput = input.value.toLowerCase(),
@@ -2003,13 +2014,7 @@ function checkCommand(e) {
                         break;
                         
                     default:
-                        if (commands.indexOf(commandArgs[0]) == -1) {
-                            displayInputError();
-                            output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + commandArgs[0] + "' found. Type 'help' for a list of commands.</p>";
-                        } else {
-                            displayInputError();
-                            output.innerHTML += "<p style='color:" + termtheme.text + "'>Try '" + commandArgs[0] + " -help' for information on proper usage</p>";
-                        }
+                        defaultErrorHandler(commandArgs[0]);
                 }
             }
             
@@ -2038,13 +2043,7 @@ function checkCommand(e) {
                         break;
 
                     default:
-                        if (commands.indexOf(commandArgs[0]) == -1) {
-                            displayInputError();
-                            output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + commandArgs[0] + "' found. Type 'help' for a list of commands.</p>";
-                        } else {
-                            displayInputError();
-                            output.innerHTML += "<p style='color:" + termtheme.text + "'>Try '" + commandArgs[0] + " -help' for information on proper usage</p>";
-                        }
+                        defaultErrorHandler(commandArgs[0]);
                 }
             }
             
@@ -2137,14 +2136,7 @@ function checkCommand(e) {
 
 
                 default:
-                    if (commands.indexOf(commandInput) == -1) {
-                        displayInputError();
-                        output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + commandInput + "' found. Type 'help' for a list of commands.</p>";
-            
-                    } else {
-                        displayInputError();
-                        output.innerHTML += "<p style='color:" + termtheme.text + "'>Try '" + commandInput + " -help' for information on proper usage</p>";
-                    }
+                    defaultErrorHandler(commandArgs[0]);
             }
         }
 
