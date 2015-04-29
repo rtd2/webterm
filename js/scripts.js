@@ -1928,14 +1928,14 @@ function checkCommand(e) {
 
     }
 
-    function defaultErrorHandler(commandInput) {
-        if (commands.indexOf(commandInput) == -1) {
+    function defaultErrorHandler(commandArg) {
+        if (commands.indexOf(commandArg) == -1) {
             displayInputError();
-            output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + commandInput + "' found. Type 'help' for a list of commands.</p>";
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>No command '" + commandArg + "' found. Type 'help' for a list of commands.</p>";
 
         } else {
             displayInputError();
-            output.innerHTML += "<p style='color:" + termtheme.text + "'>Try '" + commandInput + " -help' for information on proper usage</p>";
+            output.innerHTML += "<p style='color:" + termtheme.text + "'>Try '" + commandArg + " -help' for information on proper usage</p>";
         }
     }
 
@@ -2136,7 +2136,7 @@ function checkCommand(e) {
 
 
                 default:
-                    defaultErrorHandler(commandArgs[0]);
+                    defaultErrorHandler(commandInput);
             }
         }
 
