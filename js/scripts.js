@@ -1437,17 +1437,22 @@ terminal = {
     // GREP. Used for performing a search.
     // -----------------------------------------------------------------------------------------
     grep: function (search, file) {
-        var searchLength = search.length;
-        var fileContent;
-        var searchIndex = file.search(search) //this will return index location (-1 if not found)
-        if (!searchIndex) { console.log("not found"); }
-        else { 
-            var lines = file.split('\n');
-            var index = [];
-            for(var line = 0; line < lines.length; line++){
-                var lineVal = lines[line];
-                var found = lineVal.search(search);
-                if (found > -1) { console.log(lineVal); }
+        var fileContent,
+            searchIndex,
+            line,
+            lines,
+            lineVal,
+            found;
+        
+        searchIndex = file.search(search) //this will return index location (-1 if not found)
+        
+        if (searchIndex === -1) { output.innerHTML += "<p style='color:" + termtheme.text + "'>" + search + " not found.</p>"; } // search not found, show error message
+        else { // search found, display line
+            lines = file.split('\n');
+            for(line = 0; line < lines.length; line++){
+                lineVal = lines[line];
+                found = lineVal.search(search);
+                if (found > -1) { output.innerHTML += "<p style='color:" + termtheme.text + "'>" + lineVal + "</p>"; console.log(lineVal); }
             }
         }
     },
