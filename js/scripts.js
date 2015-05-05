@@ -1434,6 +1434,24 @@ terminal = {
         }
     },
     // -----------------------------------------------------------------------------------------
+    // GREP. Used for performing a search.
+    // -----------------------------------------------------------------------------------------
+    grep: function (search, file) {
+        var searchLength = search.length;
+        var fileContent;
+        var searchIndex = file.search(search) //this will return index location (-1 if not found)
+        if (!searchIndex) { console.log("not found"); }
+        else { 
+            var lines = file.split('\n');
+            var index = [];
+            for(var line = 0; line < lines.length; line++){
+                var lineVal = lines[line];
+                var found = lineVal.search(search);
+                if (found > -1) { console.log(lineVal); }
+            }
+        }
+    },
+    // -----------------------------------------------------------------------------------------
     // Text Editor. Methods: run, save, changePrompt, hidePrompt, showPrompt, resetEditor, exit
     // -----------------------------------------------------------------------------------------
     editor: {
