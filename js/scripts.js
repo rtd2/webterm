@@ -1442,19 +1442,29 @@ terminal = {
             line,
             lines,
             lineVal,
-            found;
+            found,
+            isFile,
+            fileObj;
+
+        isFile = dirSearchFiles(file, pwd[1].files);
+
+        if (isFile) { // there is a file, let's search it
+
+            fileObj = getFile(file, pwd[1].files);
+            fileContent = fileObj.content;
+            searchIndex = fileContent.indexOf(search) //this will return index location (-1 if not found)
         
-        searchIndex = file.search(search) //this will return index location (-1 if not found)
-        
-        if (searchIndex === -1) { output.innerHTML += "<p style='color:" + termtheme.text + "'>" + search + " not found.</p>"; } // search not found, show error message
-        else { // search found, display line
-            lines = file.split('\n');
-            for(line = 0; line < lines.length; line++){
-                lineVal = lines[line];
-                found = lineVal.search(search);
-                if (found > -1) { output.innerHTML += "<p style='color:" + termtheme.text + "'>" + lineVal + "</p>"; console.log(lineVal); }
+            if (searchIndex === -1) { output.innerHTML += "<p style='color:" + termtheme.text + "'>" + search + " not found in " + file + ".</p>"; } // search not found, show error message
+            else { // search found, display line
+                lines = fileContent.split('\n');
+                for(line = 0; line < lines.length; line++){
+                    lineVal = lines[line];
+                    found = lineVal.indexOf(search);
+                    if (found > -1) { output.innerHTML += "<p style='color:" + termtheme.text + "'>" + lineVal + "</p>"; }
+                }
             }
         }
+        else { output.innerHTML += "<p style='color:" + termtheme.text + "'>File " + file + " not found.</p>"; } // no file. let's tell the user.       
     },
     // -----------------------------------------------------------------------------------------
     // Text Editor. Methods: run, save, changePrompt, hidePrompt, showPrompt, resetEditor, exit
@@ -1718,6 +1728,10 @@ helpList = {
     "man": {
         name: "man",
         info: "Man is a verbose form of help.<br>man [command]<br>man help"
+    },
+    "grep": {
+        name: "grep",
+        info: "Grep is a search tool.<br>grep [search term] [file]<br>grep foo bar.txt"
     }
 }; 
 
@@ -1936,10 +1950,10 @@ function scrollToBottom() {
 function checkCommand(e) {
 
     // seems more flexible doing it this way, as the amount of commands grows.    
-    function runCommand(arg) {
+    function runCommand(arg1, arg2) {
         var command = this;
         output.innerHTML += outputHTML;
-        command(arg);
+        command(arg1, arg2);
         scrollToBottom();
         addToHistory(commandInput);
     }
@@ -2051,7 +2065,7 @@ function checkCommand(e) {
             }
             
         } else if (commandArgs.length > 2) { // if the command entered has more than one argument
-            if (commandArgs[0] != "mv" && commandArgs[0] != "cp") {
+            if (commandArgs[0] != "mv" && commandArgs[0] != "cp" && commandArgs[0] != "grep") {
                 switch (commandArgs[0] + " " + commandArgs[1]) {
                 
                     case "youtube -s":
@@ -2072,6 +2086,8 @@ function checkCommand(e) {
             }
             
             if (commandArgs[0] === "mv") { runCommand.apply(terminal.mv); }
+
+            if (commandArgs[0] === "grep") { runCommand.apply(terminal.grep, [commandArgs[1], commandArgs[2]]); }
             
             if (commandArgs[0] + " " + commandArgs[1] === "cp -r") { runCommand.apply(terminal.cp.r); }
 
