@@ -1,18 +1,32 @@
+add directions for opening up terminal either at beginning, end, or both.
+
+content:
+
+- pwd
+- ls
+- cd
+
+- mkdir
+- touch
+- rm
+
+- cp
+- mv
+
+
+
+
 The terminal
 
 What is it?
 The terminal is an interface in which you can type and execute text based commands.
 
 Why use it?
-It can be much faster to complete some tasks using a Terminal than with graphical applications and menus. Another benefit is allowing access to many more commands and scripts.
+It is often much faster to complete some tasks using a Terminal than with graphical applications and menus you are most likely familiar with. Another benefit is that the terminal provides access to broader, more advanced funcitonality via commands and scripts.
 
-A common terminal task of installing an application can be achieved within a single command, compared to navigating through the finder.
+A common terminal task of installing an application can be achieved within a single command, compared to navigating through the file system.
 
-For example the following command would install 'something', rather than clicking through file system and going through the install prompts
-
-sudo apt-get install 'something'
-
-you are telling the computer what to do, and this becomes very powerful
+With the terminal you are telling the computer what to do, and this becomes very powerful
 
 type 'next' to continue
 
@@ -20,21 +34,38 @@ type 'next' to continue
 
 commands
 
-commands pre-defined words and letters that help you do common tasks quicker and more efficiently
-commands are typed into the terminal and sent with the enter key
-They make take arguments (more on that).
+In order to tell a computer exactly what to do, we provide instructions in the form of commands. Commands are pre-defined words and letters that help you do common tasks quicker and more efficiently. To run a command simply type the command into the terminal and press enter. Commands are typically made up of the utility, an argument, and a flag, where the argument and flag are optional.
+
+Here is the syntax for a command: utility [flag] [argument]
+
+
+Flags (or parameters) are additional options and settings that can be passed with commands. They allow for greater flexibility and functionality.
+
+
+Arguments are used when the utility needs to know exactly what you want for a certain action, such as a file or folder.
+
+
+$ ls -l User/Desktop
+
+This command uses the ls utility to list the contents of directories. The -l flag indicates that we want it to list in long format. We pass in the directory as an argument to list the contents of. This command is saying show me the contents, in long format, of the Desktop directory that is inside of the User directory.
 
 
 
-flags
 
-flags are additional options and settings that can be passed with commands. they allow for greater flexibility and functionality.
+file system:
+
+In a computer, a file system, also seen as filesystem, is the way in which files are named and where they are placed logically for storage and retrieval. Files are placed into directories, also called a folder in Windows, and organized into a hierarchical tree structure. Documents, Music, and Photo directories are commonly found in a file system. We can use the terminal to quickly traverse the file system, accessing and interacting with these files and directories. The words directory and folder may be used interchangeably.
+
+
+Let's get started:
+
+We know enough now to get started. When you open up your terminal this is like the equivalent of opening up your user directory and seeing a listing files and folders. There will be a line of text showing your location in the file system and at the end of the line will be a $. This indicates that the rest of the line is a command, and there will be a cursor known as the prompt waiting for input from us in the shape of commands.
 
 
 
 pwd
 
-'pwd' stands for Present Working Directory, and is used to output the path of the current working directory. It will show you where you are in the file system, sometimes referred to as a file tree.
+You may be able to tell where you are based on the current output before the $, but sometimes you need something more explicit. If you are ever wondering just where you are in the file system type 'pwd', which stands for Present Working Directory, and is used to output the path of the current working directory. It will show you where you are in the file system, sometimes referred to as a file tree.
 
 pwd
 /home/whereyouare
@@ -44,19 +75,51 @@ try typing 'pwd' to see where you are in your file system
 
 
 
+'ls' is short for list. the command 'ls' will list out the content of your pwd. 'ls' is very commonly used in conjunction with 'cd'.
+
+Example: we are in a folder that contains three files: stuff.txt, file.doc, picture.jpg. 'ls' will print each of those files.
+
+type 'ls' to see what is in your pwd, and then go ahead and 'cd' to some places and see what contents exist by using 'ls'.
+
+
+Flags
+'-l'
+the 'l' flag will list the contents in cleaner, more list-like order. It will also show, permissions on the files, which will not be covered here, but can read up on here(link).
+
+type 'ls -l' to see a different listing of the contents in your pwd.
+
+
+
+
+
 cd
 
-'cd' stands for Current Directory, and is used to traverse your file system. This is the equivalent of clicking through your finder windows. This is a very useful command that will save you lots of time.
+It's great to know where you are, but many times you will need to get somewhere you are not. We use 'cd' to traverse the file system. It stands for Change Directory, and is used to traverse your file system. Rather than clicking through folders to get to a particular location, we issue a 'cd' command. 'cd' is a very useful command that will save you lots of time.
 
 usage: cd <filepath>
 example: cd /home/foo
 if foo exists, this will put you in the foo folder, which resides in the home folder
 if successful, 'pwd' should now say '/home/foo'
 
-try cd /home/documents
+try cd /home/documents and when you're ready type 'next' to learn more about filepath.
 
 
-What we have just done is cd to an absolute filepath. An absolute filepath means we know exactly where it lives in our file system. We can also use a relative filepath, meaning we are passing the filepath relative to our current location in the file system (current folder). Using relative filepaths will be much more common.
+
+We have just introduced a new and very foundational topic, filepath. 
+
+
+
+// edited to this line
+
+
+
+In the previous section dave just done is cd to an absolute filepath. An absolute filepath means we know exactly where it lives in our file system. We can also use a relative filepath, meaning we are passing the filepath relative to our current location in the file system (current folder). Using relative filepaths will be much more common.
+
+
+
+
+
+
 
 To use a relative path we use '..' This simply means go up one level in the file system. 
 
@@ -72,20 +135,11 @@ mess around with cd for a bit and when you're ready type 'next' to move on.
 
 
 
-ls
-
-'ls' is short for list. the command 'ls' will list out the content of your pwd. 'ls' is very commonly used in conjunction with 'cd'.
-
-Example: we are in a folder that contains three files: stuff.txt, file.doc, picture.jpg. 'ls' will print each of those files.
-
-type 'ls' to see what is in your pwd, and then go ahead and 'cd' to some places and see what contents exist by using 'ls'.
 
 
-Flags
-'-l'
-the 'l' flag will list the contents in cleaner, more list-like order. It will also show, permissions on the files, which will not be covered here, but can read up on here(link).
 
-type 'ls -l' to see a different listing of the contents in your pwd.
+
+
 
 
 
