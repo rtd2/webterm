@@ -1,40 +1,72 @@
-The terminal
+** Notes **
+
+- add directions for opening up terminal either at beginning, end, or both.
+- cover sudo somewhere
+- root
+
+
+-----------------
+
+content:
+
+- pwd
+- ls
+- cd
+
+- mkdir
+- touch
+- rm
+
+- cp
+- mv
+
+
+
+** The terminal **
 
 What is it?
-The terminal is an interface in which you can type and execute text based commands.
+The terminal is an interface in which you can type and execute text based commands that tell the computer what to do.
 
 Why use it?
-It can be much faster to complete some tasks using a Terminal than with graphical applications and menus. Another benefit is allowing access to many more commands and scripts.
+It is often much faster to complete some tasks using a terminal than with graphical applications and menus you are most likely familiar with. Another benefit is that the terminal provides access to broader, more advanced funcitonality via commands and scripts. For example, a common terminal task of installing an application can be achieved within a single command, compared to navigating through the file system and clicking through prompts.
 
-A common terminal task of installing an application can be achieved within a single command, compared to navigating through the finder.
-
-For example the following command would install 'something', rather than clicking through file system and going through the install prompts
-
-sudo apt-get install 'something'
-
-you are telling the computer what to do, and this becomes very powerful
+With the terminal you are in control, telling the computer what to do, and this becomes very powerful.
 
 type 'next' to continue
 
 
 
-commands
+** commands **
 
-commands pre-defined words and letters that help you do common tasks quicker and more efficiently
-commands are typed into the terminal and sent with the enter key
-They make take arguments (more on that).
+In order to tell a computer exactly what to do, we provide instructions in the form of commands. Commands are pre-defined words and letters that help you do common tasks quicker and more efficiently. To run a command simply type the command into the terminal and press enter. Commands are typically made up of the utility, an argument, and a flag, where the argument and flag are optional.
+
+Here is the syntax for a command: utility [flag] [argument]
+
+Flags (or parameters) are additional options and settings that can be passed to the utility and allow for greater flexibility and functionality.
+
+Arguments are used when the utility needs to know exactly what you want for a certain action, such as a file or folder. The following is an example of a command:
+
+$ ls -l User/Desktop
+
+This command uses the ls utility to list the contents of directories. The -l flag indicates that we want it to list in long format, and we pass in the directory as an argument to list the contents of. This command is saying, "Show me the contents, in long format, of the Desktop directory that is inside of the User directory.""
 
 
 
-flags
+** filesystem **
 
-flags are additional options and settings that can be passed with commands. they allow for greater flexibility and functionality.
+In a computer, a filesystem, also seen as file system, is the way in which files are named and where they are placed logically for storage and retrieval. Files are placed into directories, also called folders in Windows, and organized into a hierarchical tree structure. The words directory and folder may be used interchangeably. Documents, Music, and Photo directories are commonly found in a filesystem, and which might help you to better think of it. We can use the terminal to quickly traverse the file system, accessing and interacting with files and directories.
 
 
 
-pwd
+** Let's get started **
 
-'pwd' stands for Present Working Directory, and is used to output the path of the current working directory. It will show you where you are in the file system, sometimes referred to as a file tree.
+We now know enough to get started. When you open up your terminal it is like the equivalent of opening up your user directory and seeing a listing files and folders. There will be a line of text showing your location in the filesystem and at the end of the line will be a $. This indicates that the rest of the line is a command, and there will be a cursor, known as the prompt, waiting for input from us in the shape of commands.
+
+
+
+** pwd **
+
+You may be able to tell where you are in the filesystem based on the current output before the $, but sometimes you need something more explicit. If you are ever wondering just where you are in the filesystem type 'pwd', which stands for Present Working Directory. 'pwd' will output the path of the current working directory, showing you just where you are in the filesystem.
 
 pwd
 /home/whereyouare
@@ -43,53 +75,53 @@ try typing 'pwd' to see where you are in your file system
 
 
 
+** ls **
 
-cd
-
-'cd' stands for Current Directory, and is used to traverse your file system. This is the equivalent of clicking through your finder windows. This is a very useful command that will save you lots of time.
-
-usage: cd <filepath>
-example: cd /home/foo
-if foo exists, this will put you in the foo folder, which resides in the home folder
-if successful, 'pwd' should now say '/home/foo'
-
-try cd /home/documents
-
-
-What we have just done is cd to an absolute filepath. An absolute filepath means we know exactly where it lives in our file system. We can also use a relative filepath, meaning we are passing the filepath relative to our current location in the file system (current folder). Using relative filepaths will be much more common.
-
-To use a relative path we use '..' This simply means go up one level in the file system. 
-
-if our pwd is '/home/documents/coolstuff' and we type 'cd ..' our pwd will become '/home/documents'
-
-we can go one step further with this. for example, if our pwd is '/home/documents/coolstuff' and we want to '/home/documents/radstuff' we can type 'cd ../radstuff' to do so. This means go back to 'documents' and look for 'radstuff', if radstuff is found, take me to it.
-
-
-mess around with cd for a bit and when you're ready type 'next' to move on.
-
-// may want to talk about root briefly and that typing cd will take your there //
-
-
-
-
-ls
-
-'ls' is short for list. the command 'ls' will list out the content of your pwd. 'ls' is very commonly used in conjunction with 'cd'.
-
-Example: we are in a folder that contains three files: stuff.txt, file.doc, picture.jpg. 'ls' will print each of those files.
-
-type 'ls' to see what is in your pwd, and then go ahead and 'cd' to some places and see what contents exist by using 'ls'.
-
+Now that we know where we are, let's see what files and folders are living in our current directory. Type 'ls', which is short for list. It will list out the content of your present working directory. In fact most commands will execute in your current location unless another is given as an argument.
 
 Flags
 '-l'
-the 'l' flag will list the contents in cleaner, more list-like order. It will also show, permissions on the files, which will not be covered here, but can read up on here(link).
+the 'l' flag will list the contents in a long form, which is often cleaner and easier to read. It will also show permissions, which will not be covered here, but can read up on here: https://www.linux.com/learn/tutorials/309527-understanding-linux-file-permissions
 
-type 'ls -l' to see a different listing of the contents in your pwd.
+type 'ls -l' to see the diffence in long format.
 
 
 
-mkdir
+** cd **
+
+Now we know where we are *and* what exists there, but now we want to go somewhere else. To traverse the filesystem and 'Change Directory' we use 'cd'. Rather than clicking through folders to get to a particular location, we issue a 'cd' command. 'cd' is a very useful command that will save you lots of time. 'cd' simply takes a filepath as an argument and that's where it will take you. If you submit 'cd' without an argument, it will take you to the user root directory. A root directory contains all other directories and files.
+
+usage: cd <filepath>
+example: cd /home/documents
+if documents exists, this will put you in the documents folder, which resides in the home folder. if the filepath given does is incorrect or doesn't exist you will stay put.
+if successful, 'pwd' should now say '/home/documents'
+
+try 'cd /home/documents' and then 'pwd' when you're. When you're ready type 'next' to learn more about filepath.
+
+
+
+
+** filepath **
+
+
+	** absolute **
+
+	In the previous section when we passed the filepath '/home/documents', it was known as an absolute filepath. An absolute filepath means we know exactly where it lives in our file system and are typing the full path. Get comfortable with using 'cd' with absolute paths, and when you're ready type 'next' to move on to relative paths.
+
+
+	** relative **
+
+	Relative paths list the filepath relative to the current location, or present working directory. To use a relative path we use '..' This simply means go up one level in the file system. If our pwd is '/home/documents/coolstuff' and we type 'cd ..' our pwd will become '/home/documents'. We can even go one step further with this. For example, if our pwd is '/home/documents/coolstuff' and we want to get to '/home/documents/radstuff' we can type 'cd ../radstuff' to do so. This means go back to 'documents' and look for 'radstuff', if 'radstuff' is found, take me to it. Once this all sinks in relative path will probably become more common use to you.
+
+	Mess around with 'cd' and relative paths for a bit and when you're ready type 'next' to move on to the next section, 'mkdir'.
+
+
+
+// EDITED TO HERE
+
+
+
+** mkdir **
 
 So now that we know how to traverse the file system and show files, we need to know how to do the common everyday tasks of creating, moving, and deleting files and folders.
 
@@ -102,7 +134,7 @@ Try creating a folder of your own. Type 'next' when you have done so.
 
 
 
-touch
+** touch **
 
 'cd' to your new folder, and we'll add a new file to it.
 the command for this is 'touch' which takes a file name as an argument. Touch eliminates the unnecessary steps of actually opening a file, saving it, and closing it. Starting to see the value of the terminal?!
@@ -114,7 +146,7 @@ Once you've created at least once file of your own, type 'next' to move on to de
 
 
 
-rm
+** rm **
 
 Sometimes a file or folder is no longer needed, and we want to delete them.
 The 'rm' command, short for remove, will do that for us. Be careful with this command because it will not prompt you if you are sure. It will instantly remove the file or folder, and if it's a folder, all of it's contents, which could be many more files and folders.
@@ -160,6 +192,6 @@ history (up/down key)
 
 tab complete
 
-help
+help / man
 
 links to other commands
