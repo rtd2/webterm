@@ -1732,6 +1732,10 @@ helpList = {
     "grep": {
         name: "grep",
         info: "Grep is a search tool.<br>grep [search term] [file]<br>grep foo bar.txt"
+    },
+    "exit": {
+        name: "exit",
+        info: "Exit will close the terminal, and effectively, the tab you are in. Poof!"
     }
 }; 
 
@@ -2146,6 +2150,9 @@ function checkCommand(e) {
                     runCommand.apply(terminal.editor.run);
                     window.scroll(0, 0); // NEEDED TO RESET SCROLL TO TOP
                     break;
+
+                case "exit":
+                    window.close();
 
 
                 // TUTORIAL STUFF
