@@ -4,4 +4,4 @@ The Terminal on the Web is meant to be a teaching tool for those new to the term
 
 http://learntheterminal.com/
 
-written in vanilla JS
+written in vanilla JS :icecream:
