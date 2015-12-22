@@ -28,7 +28,7 @@ What is it?
 The terminal is an interface in which you can type and execute text based commands that tell the computer what to do.
 
 Why use it?
-It is often much faster to complete some tasks using a terminal than with graphical applications and menus you are most likely familiar with. Another benefit is that the terminal provides access to broader, more advanced funcitonality via commands and scripts. For example, a common terminal task of installing an application can be achieved within a single command, compared to navigating through the file system and clicking through prompts.
+It is often much faster to complete some tasks using a terminal than with graphical user interfaces (GUIs) and menus you are most likely familiar with. Another benefit is that the terminal provides access to broader, more advanced functionality via commands and scripts. For example, a common terminal task of installing an application can be achieved within a single command, compared to navigating through the file system and clicking through prompts.
 
 With the terminal you are in control, telling the computer what to do, and this becomes very powerful.
 
@@ -48,19 +48,19 @@ Arguments are used when the utility needs to know exactly what you want for a ce
 
 $ ls -l User/Desktop
 
-This command uses the ls utility to list the contents of directories. The -l flag indicates that we want it to list in long format, and we pass in the directory as an argument to list the contents of. This command is saying, "Show me the contents, in long format, of the Desktop directory that is inside of the User directory.""
+This command uses the ls utility to list the contents of directories. The -l flag indicates that we want it to list in long format, and we pass in the directory as an argument to list the contents of. This command is saying, "Show me the contents, in long format, of the Desktop directory that is inside of the User directory."
 
 
 
 ** filesystem **
 
-In a computer, a filesystem, also seen as file system, is the way in which files are named and where they are placed logically for storage and retrieval. Files are placed into directories, also called folders in Windows, and organized into a hierarchical tree structure. The words directory and folder may be used interchangeably. Documents, Music, and Photo directories are commonly found in a filesystem, and which might help you to better think of it. We can use the terminal to quickly traverse the file system, accessing and interacting with files and directories.
+In a computer, a filesystem, also seen as file system, is the way in which files are named and where they are placed logically for storage and retrieval. Files are placed into directories, also called folders in Windows, and organized into a hierarchical tree structure. The words 'directory' and 'folder' may be used interchangeably. Documents, Music, and Photo directories are commonly found in a filesystem, which might help you to better think of it. We can use the terminal to quickly traverse the file system, accessing and interacting with files and directories.
 
 
 
 ** Let's get started **
 
-We now know enough to get started. When you open up your terminal it is like the equivalent of opening up your user directory and seeing a listing files and folders. There will be a line of text showing your location in the filesystem and at the end of the line will be a $. This indicates that the rest of the line is a command, and there will be a cursor, known as the prompt, waiting for input from us in the shape of commands.
+We now know enough to get started. When you open up your terminal it is like the equivalent of opening up your user directory and seeing a listing of files and folders. There will be a line of text showing your location in the filesystem and at the end of the line will be a $. This indicates that the rest of the line is a command, and there will be a cursor, known as the prompt, waiting for input from us in the shape of commands.
 
 
 
@@ -89,14 +89,14 @@ type 'ls -l' to see the diffence in long format.
 
 ** cd **
 
-Now we know where we are *and* what exists there, but now we want to go somewhere else. To traverse the filesystem and 'Change Directory' we use 'cd'. Rather than clicking through folders to get to a particular location, we issue a 'cd' command. 'cd' is a very useful command that will save you lots of time. 'cd' simply takes a filepath as an argument and that's where it will take you. If you submit 'cd' without an argument, it will take you to the user root directory. A root directory contains all other directories and files.
+Now we know where we are *and* what exists there, but now we want to go somewhere else. To traverse the filesystem and 'Change Directory' we use 'cd'. Rather than clicking through folders to get to a particular location, we issue a 'cd' command. 'cd' is a very useful command that will save you lots of time. 'cd' simply takes a filepath as an argument and that's where it will take you. If you submit 'cd' without an argument, it will take you to the user root directory. A root directory contains all other directories and files. It is the first or top-most directory. Think of it like the trunk of a tree, the starting point where all branches originate from.
 
 usage: cd <filepath>
 example: cd /home/documents
 if documents exists, this will put you in the documents folder, which resides in the home folder. if the filepath given does is incorrect or doesn't exist you will stay put.
 if successful, 'pwd' should now say '/home/documents'
 
-try 'cd /home/documents' and then 'pwd' when you're. When you're ready type 'next' to learn more about filepath.
+try 'cd /home/documents' and then 'pwd'. When you're ready type 'next' to learn more about filepath.
 
 
 
@@ -117,67 +117,61 @@ try 'cd /home/documents' and then 'pwd' when you're. When you're ready type 'nex
 
 
 
-// EDITED TO HERE
-
-
-
 ** mkdir **
 
-So now that we know how to traverse the file system and show files, we need to know how to do the common everyday tasks of creating, moving, and deleting files and folders.
+So now that we know how to traverse the file system and show files, it's time to create. We will need to know how to do the common everyday tasks of creating, moving, and deleting files and folders.
 
-Lets start with creating a folder. The command for creating a folder is 'mkdir'. It stands for make directory. It takes a folder name as an argument.
+Lets start with creating a folder that we can then put files in. The command for creating a folder is 'mkdir'. It stands for make directory. 'mdkir' takes a folder name as an argument. This is similar to 'right clicking' and choosing 'New Folder', but in a quicker, less clunky way.
 
 usage: mkdir <folder name>
 example: mkdir myNewFolder
-This will create an empty folder called myNewFolder in your pwd, as long as it doesn't already exist.
-Try creating a folder of your own. Type 'next' when you have done so.
+This will create an empty folder called 'myNewFolder' in your pwd, as long as it doesn't already exist. Try creating a folder of your own. Type 'next' when you have done so and are ready to create a file to put in your newly created folder.
 
 
 
 ** touch **
 
-'cd' to your new folder, and we'll add a new file to it.
-the command for this is 'touch' which takes a file name as an argument. Touch eliminates the unnecessary steps of actually opening a file, saving it, and closing it. Starting to see the value of the terminal?!
+'cd' to your new folder, and we'll add a new file to it. The command to create a file is 'touch', which takes a file name as an argument. 'touch' eliminates the unnecessary steps of actually opening a file, saving it, and closing it. Starting to see the value of the terminal?!
 
 usage: touch <file name>
 example: touch myNewFile.txt
-This will create a file called myNewFile.txt in your pwd.
-Once you've created at least once file of your own, type 'next' to move on to deleting files.
+This will create a file called 'myNewFile.txt' in your pwd. Once you've created at least one file of your own, type 'next' to move on to deleting files.
 
 
 
 ** rm **
 
-Sometimes a file or folder is no longer needed, and we want to delete them.
-The 'rm' command, short for remove, will do that for us. Be careful with this command because it will not prompt you if you are sure. It will instantly remove the file or folder, and if it's a folder, all of it's contents, which could be many more files and folders.
+Sometimes a file or folder is no longer needed, and we want to delete it. The 'rm' command, short for remove, will do that for us. Be careful with this command because it will not prompt you if you are sure. It will instantly remove the file or folder, and if it's a folder, all of it's contents, which could be many more files and folders.
 
 usage: rm <folder/file path>
-let's start with removing a file, since folders require an extra step
+Let's start with removing a file, since folders require an extra step.
 example: rm myFile.txt
-This will delete myFile.txt from the file system.
+This will delete 'myFile.txt' from the file system.
 
 
+'rm' comes with some flags for additional control, and are actually required if removing a folder, rather than a single file. If you wish to remove a folder, and are absolutely sure that's what you want to do, the '-r' flag will allow you to do so. '-r' stands for recursive and should be prompt you to confirm this is what you want to do. The 'r' flag tells the computer to remove the folder, including all of its contents (files and folders).
 
-flags
-
--r stands for recursive (you should be prompted if you're sure)
-this flag is required to remove a folder. it tells the computer to remove the folder, including all of its contents
 usage: rm -r <folder/file path>
 example: rm -r myFolder
-you will be prompted if you are sure you want to delete the folder along with its contents.
-if yest, myFolder has been deleted, along with all of the files and folders inside of it
+You will be prompted if you are sure you want to delete the folder along with its contents. If yes, 'myFolder' has been deleted, along with all of the files and folders inside of it.
+
 
 
 -f stands for force
-this will force the delete without being prompted
+There are times that you may want to force the delete without being prompted. '-f' stands for force and will do just that. MAKE SURE YOU KNOW WHAT YOU ARE DOING WHEN USING THIS!! There is no undo button. When it's gone it's gone!
 
--rf will be recursive and forced
-USE WITH CAUTION
+It you use '-r' and '-f' together as '-rf', it will do a recursive and forced deletion of a folder and all of its contents, without prompting you. Again, USE WITH CAUTION.
 example: rm -rf myFolder
-Bye bye myFolder!
+Bye bye myFolder and everything inside of it!
 
 
 
+
+--------
+EDITED TO HERE
+--------
+
+Add cp & mv....
 
 
 utility / helper commands
