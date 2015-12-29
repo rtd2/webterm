@@ -4,7 +4,6 @@
 - cover sudo somewhere
 - root
 
-
 -----------------
 
 content:
@@ -19,6 +18,8 @@ content:
 
 - cp
 - mv
+
+- utility / helper commands
 
 
 
@@ -167,25 +168,50 @@ Bye bye myFolder and everything inside of it!
 
 
 
+** cp ** ** mv **
+
+We've traversed our filesystem, created and deleted the files we want, but what if we want to move them or make a copy? `cp` and `mv` are the commands for that. `cp` stand for copy, and is basically a copy/paste operation, where `mv` stands for move, and is basically a cut/paste operation, while also allowing for the renaming of a file/folder. Let's start with `cp`.
+
+usage: cp <source> <destination>
+example: cp myFile.txt ../docs/myFile.txt
+This will create a copy of myFile.txt in a different directory. It is a straight copy with the same name, but you may specify any name you wish, as the contents will remain the same. If you have a folder you must use the recursive `-r` flag.
+example: cp -r myFolder ../docs/myFolder
+
+`mv` looks much the same, but removes the file from the original location, rather than keeping copies in both places.
+
+usage: mv <source> <destination>
+example: mv myFile.txt ../docs/myFile.txt
+'myFile.txt' is no longer in the current directory and has been moved to the 'docs' folder.
+example: mv -r myFolder ../docs/myFolderOld
+Here I used the `-r` flag to move a folder and renamed it at the same time. If we want to rename something without moving it we just specify a new name in the same location.
+example: mv groceryList.txt todolist.txt
+The contents of 'groceryList.txt' are now named 'todolist.txt'.
+
+
+
 --------
 EDITED TO HERE
 --------
 
-Add cp & mv....
 
 
-utility / helper commands
+** clear **
+
+If at any time your window gets too full or cluttered, type 'clear' and it will do just that.
 
 
-clear
+** history **
 
-if at any time your window gets too full or cluttered, type 'clear' and it will do just that.
+If you want to see a list of all the commands you have entered type `history`. The most useful way to use this is the up/down arrow keys. It will sort through the list, and is helpful if you want to repeat commands.
+
+** tab complete **
+
+The computer can predict your input, based on commands and things in the filesystem. By typing tab it will try to fill in the rest of what you are typing. This saves precious amounts of time.
+
+** help / man **
+
+Everybody needs some help sometimes and that's where `help` and `man` come into play. Any command will generally accept `-h` or `--help`, which will show some tips about how to use the command. `man` stands for manual, and will output a more verbose explanation of the command.
 
 
-history (up/down key)
 
-tab complete
-
-help / man
-
-links to other commands
+general reference links to other commands
