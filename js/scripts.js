@@ -1732,10 +1732,6 @@ helpList = {
     "grep": {
         name: "grep",
         info: "Grep is a search tool.<br>grep [search term] [file]<br>grep foo bar.txt"
-    },
-    "exit": {
-        name: "exit",
-        info: "Exit will close the terminal, and effectively, the tab you are in. Poof!"
     }
 }; 
 
@@ -2151,14 +2147,20 @@ function checkCommand(e) {
                     window.scroll(0, 0); // NEEDED TO RESET SCROLL TO TOP
                     break;
 
-                case "exit":
-                    window.close();
-
 
                 // TUTORIAL STUFF
                 case "tutorial":
                     if ( ! tutorial.on ) {
-                        runCommand.apply(terminal.tutorial.launch);
+                        output.innerHTML = outputHTML + "<p id='tutorial-message' style='color:" + termtheme.text + "'>The tutorial is still experimental and in development. Please, be kind and enjoy!</p>";
+                        var tutorialMessage = document.getElementById('tutorial-message');
+                        var messageTimer = setInterval(function() {
+                            tutorialMessage.innerHTML += ' . '
+                        }, 500);
+                        setTimeout(function(){
+                            clearInterval(messageTimer);
+                            output.innerHTML = "";
+                            runCommand.apply(terminal.tutorial.launch);
+                        }, 3000)
                     }
                     break;
 
@@ -2179,6 +2181,7 @@ function checkCommand(e) {
                         terminal.tutorial.exit();
                     }
                     break;
+
                 // END TUTORIAL STUFF
 
 
